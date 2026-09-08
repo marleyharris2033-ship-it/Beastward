@@ -17,13 +17,18 @@ voltwing:{id:'voltwing',name:'Voltwing',type:'Electric',role:'Chain+',cost:190,r
 scorchick:{id:'scorchick',name:'Scorchick',type:'Fire',role:'Rapid Burn',cost:135,range:120,rate:.52,damage:14,color:'#ff9a3d',evo20:'Flarewing',evo30:'Sunphoenix',sprite:'assets/sprites/scorchick.svg'},
 mosshell:{id:'mosshell',name:'Mosshell',type:'Nature',role:'Stagger',cost:160,range:112,rate:1.0,damage:23,color:'#78b85b',evo20:'Groveshell',evo30:'Worldback',sprite:'assets/sprites/mosshell.svg'},
 drizzlet:{id:'drizzlet',name:'Drizzlet',type:'Water',role:'Rapid Slow',cost:140,range:138,rate:.58,damage:15,color:'#6bcce8',evo20:'Rilltail',evo30:'Torrentusk',sprite:'assets/sprites/drizzlet.svg'},
-zapmoth:{id:'zapmoth',name:'Zapmoth',type:'Electric',role:'Fast Chain',cost:145,range:145,rate:.62,damage:15,color:'#ffe55f',evo20:'Voltmoth',evo30:'Tempestwing',sprite:'assets/sprites/zapmoth.svg'}
+zapmoth:{id:'zapmoth',name:'Zapmoth',type:'Electric',role:'Fast Chain',cost:145,range:145,rate:.62,damage:15,color:'#ffe55f',evo20:'Voltmoth',evo30:'Tempestwing',sprite:'assets/sprites/zapmoth.svg'},
+cindrake:{id:'cindrake',name:'Cindrake',type:'Fire',role:'Meteor',cost:235,range:155,rate:.92,damage:38,color:'#ff6b35',evo20:'Magmara',evo30:'Vulcanox',sprite:'assets/sprites/cindrake.svg'},
+sporeling:{id:'sporeling',name:'Sporeling',type:'Poison',role:'Toxic Burst',cost:220,range:150,rate:.82,damage:28,color:'#d47be3',evo20:'Mycomaw',evo30:'Fungorath',sprite:'assets/sprites/sporeling.svg'},
+drakeling:{id:'drakeling',name:'Drakeling',type:'Wind',role:'Piercing Gale',cost:230,range:185,rate:.68,damage:29,color:'#8de6d7',evo20:'Draconis',evo30:'Aetherion',sprite:'assets/sprites/drakeling.svg'},
+voidling:{id:'voidling',name:'Voidling',type:'Dark',role:'Void Critical',cost:240,range:160,rate:.75,damage:36,color:'#a675e8',evo20:'Riftbeast',evo30:'Oblivion',sprite:'assets/sprites/voidling.svg'}
 };
 
 const starters=['embercub','sprigpaw','bubblit'];
 const commonPool=['sparkit','pebblum','gustwing','toxip','scorchick','mosshell','drizzlet','zapmoth'];
 const rarePool=['frostkit','shadepup','lumpling','voltwing'];
-const commonCost=100,rareCost=300;
+const epicPool=['cindrake','sporeling','drakeling','voidling'];
+const commonCost=100,rareCost=300,epicCost=750;
 const beastRatings={
 embercub:{power:7,speed:8,range:6,special:7},
 sprigpaw:{power:5,speed:6,range:6,special:9},
@@ -39,7 +44,11 @@ voltwing:{power:8,speed:9,range:9,special:9},
 scorchick:{power:5,speed:10,range:5,special:7},
 mosshell:{power:8,speed:4,range:4,special:7},
 drizzlet:{power:5,speed:9,range:7,special:7},
-zapmoth:{power:5,speed:10,range:8,special:8}
+zapmoth:{power:5,speed:10,range:8,special:8},
+cindrake:{power:10,speed:6,range:8,special:9},
+sporeling:{power:8,speed:7,range:8,special:10},
+drakeling:{power:8,speed:9,range:10,special:9},
+voidling:{power:10,speed:8,range:8,special:10}
 };
 function statBars(id){
   const s=beastRatings[id];
@@ -79,6 +88,7 @@ function updateHub(){
   if($('#wardenLevel'))$('#wardenLevel').textContent=save.wardenLevel;
   if($('#commonEggCost'))$('#commonEggCost').textContent=save.freeCommonClaimed?commonCost+' Essence':'Free';
   if($('#rareEggCost'))$('#rareEggCost').textContent=rareCost+' Essence';
+  if($('#epicEggCost'))$('#epicEggCost').textContent=epicCost+' Essence';
 }
 
 function renderStarters(){
@@ -213,7 +223,11 @@ function beastLore(id){
   scorchick:['The Ember Fledgling','A tiny firebird that attacks extremely quickly.'],
   mosshell:['The Grove Tortoise','A sturdy nature beast whose heavy hits disrupt enemies.'],
   drizzlet:['The River Rascal','A nimble water beast that applies frequent slows.'],
-  zapmoth:['The Static Flutter','A lightning moth built around fast chained strikes.']
+  zapmoth:['The Static Flutter','A lightning moth built around fast chained strikes.'],
+  cindrake:['The Cinder Drake','An Epic fire drake whose impacts erupt around the target.'],
+  sporeling:['The Dreamcap','An Epic fungus beast that floods groups with toxic spores.'],
+  drakeling:['The Skyborn Whelp','An Epic dragonling with extraordinary range and piercing wind.'],
+  voidling:['The Riftling','An Epic shadow beast with brutal critical strikes and unstable void energy.']
  };
  return notes[id]||['Wild Beast','A mysterious Beastward creature.'];
 }
@@ -260,6 +274,7 @@ function hatch(pool,cost,isFreeCommon=false){
 }
 $('#openCommonEggBtn').onclick=()=>hatch(commonPool,commonCost,true);
 $('#openRareEggBtn').onclick=()=>hatch(rarePool,rareCost,false);
+$('#openEpicEggBtn').onclick=()=>hatch(epicPool,epicCost,false);
 $('#eggResultContinue').onclick=()=>$('#eggModal').classList.add('hidden');
 
 const canvas=$('#gameCanvas'),ctx=canvas.getContext('2d');
@@ -287,6 +302,29 @@ function startLevel(id){currentLevel=levels[id-1];path=currentLevel.path;reset()
 let towers=[],enemies=[],projectiles=[],effects=[],selectedSpecies=null,selectedTower=null,gold=350,lives=20,wave=0,running=false,last=0,queue=[],speed=1,waveParticipants=new Set();
 
 function ui(){$('#gold').textContent=Math.floor(gold);$('#lives').textContent=lives;$('#wave').textContent=wave}
+const upgradeDefs={
+ power:[
+  {name:'Sharpened Instinct',desc:'+20% damage',mult:.65},
+  {name:'Hunter Reach',desc:'+18% range and +10% damage',mult:1.0},
+  {name:'Apex Force',desc:'+35% damage and empowered projectiles',mult:1.6}
+ ],
+ special:[
+  {name:'Quickened Spirit',desc:'12% faster attacks',mult:.55},
+  {name:'Elemental Mastery',desc:'Stronger elemental status effects',mult:.9},
+  {name:'Primal Surge',desc:'Unlocks a powerful type-specific effect',mult:1.5}
+ ]
+};
+function upgradeCost(t,path){
+ const tier=t[path+'Tier']||0,def=upgradeDefs[path][tier];
+ return def?Math.ceil(t.baseCost*def.mult/5)*5:null;
+}
+function recalcTower(t){
+ const base=battleStats(t.b.id),p=t.powerTier||0,s=t.specialTier||0;
+ const powerDamage=[1,1.2,1.32,1.782][p]||1;
+ const powerRange=[1,1,1.18,1.18][p]||1;
+ const specialRate=[1,.88,.88,.88][s]||1;
+ t.b={...base,damage:base.damage*powerDamage,range:base.range*powerRange,rate:base.rate*specialRate};
+}
 function battleStats(id){
   const b=beasts[id];
   return {...b,damage:b.damage*levelMultiplier(id),range:b.range*rangeMultiplier(id),rate:b.rate*(1-ascension(id)*.03)};
@@ -306,8 +344,31 @@ function renderSelectedTower(){
   if(!selectedTower||!towers.includes(selectedTower)){selectedTower=null;p.classList.add('hidden');return}
   p.classList.remove('hidden');
   $('#selectedTowerName').textContent=nameFor(selectedTower.b.id);
-  $('#selectedTowerStats').innerHTML=`Level ${progress(selectedTower.b.id).level} • Sell value ${Math.floor(selectedTower.b.cost*.8)} gold`+statBars(selectedTower.b.id);
+  $('#selectedTowerStats').innerHTML=`Level ${progress(selectedTower.b.id).level} • ★${ascension(selectedTower.b.id)} • Sell ${Math.floor(selectedTower.spent*.8)} gold`+statBars(selectedTower.b.id);
+  renderUpgradeButtons();
 }
+function renderUpgradeButtons(){
+ if(!selectedTower)return;
+ ['power','special'].forEach(path=>{
+   const tier=selectedTower[path+'Tier']||0,other=path==='power'?'special':'power',otherTier=selectedTower[other+'Tier']||0;
+   const btn=$('#'+path+'UpgradeBtn'),desc=$('#'+path+'UpgradeDesc');
+   if(!btn||!desc)return;
+   if(tier>=3){btn.textContent='MAX TIER';btn.disabled=true;desc.textContent='Tier III complete.';return}
+   const locked=tier===2&&otherTier>=3,cost=upgradeCost(selectedTower,path),def=upgradeDefs[path][tier];
+   btn.disabled=locked||gold<cost;
+   btn.textContent=locked?'TIER III LOCKED':`Tier ${tier+1} • ${def.name} • ${cost}g`;
+   desc.textContent=locked?'The other path has already claimed Tier III.':def.desc;
+ }
+}
+function buyTowerUpgrade(path){
+ if(!selectedTower)return;
+ const tier=selectedTower[path+'Tier']||0,other=path==='power'?'special':'power',otherTier=selectedTower[other+'Tier']||0;
+ if(tier>=3||(tier===2&&otherTier>=3))return;
+ const cost=upgradeCost(selectedTower,path);if(gold<cost)return;
+ gold-=cost;selectedTower[path+'Tier']=tier+1;selectedTower.spent+=cost;recalcTower(selectedTower);ui();renderSelectedTower();
+}
+$('#powerUpgradeBtn').onclick=()=>buyTowerUpgrade('power');
+$('#specialUpgradeBtn').onclick=()=>buyTowerUpgrade('special');
 function reset(){
   towers=[];enemies=[];projectiles=[];effects=[];selectedSpecies=null;selectedTower=null;gold=350;lives=20;wave=0;running=false;queue=[];speed=1;waveParticipants=new Set();
   document.querySelectorAll('.speed-choice').forEach(b=>b.classList.toggle('active',Number(b.dataset.speed)===1));$('#waveXpNotice').textContent='';ui();choices();renderSelectedTower();
@@ -327,7 +388,7 @@ $('#startWaveBtn').onclick=()=>{
 $('#sellTowerBtn').onclick=()=>{
   if(!selectedTower)return;
   const idx=towers.indexOf(selectedTower);if(idx<0)return;
-  const refund=Math.floor(selectedTower.b.cost*.8);
+  const refund=Math.floor(selectedTower.spent*.8);
   gold+=refund;towers.splice(idx,1);selectedTower=null;renderSelectedTower();ui();
 };
 
@@ -338,7 +399,7 @@ canvas.addEventListener('pointerdown',e=>{
   if(!selectedSpecies)return;
   const b=beasts[selectedSpecies];
   if(gold<b.cost||distPath(x,y)<55||towers.some(t=>Math.hypot(t.x-x,t.y-y)<45))return;
-  towers.push({x,y,b:battleStats(selectedSpecies),cool:0});
+  towers.push({x,y,b:battleStats(selectedSpecies),cool:0,baseCost:b.cost,spent:b.cost,powerTier:0,specialTier:0});
   if(running)waveParticipants.add(selectedSpecies);
   gold-=b.cost;ui();
 });
@@ -362,7 +423,7 @@ function attack(t,dt){
   t.cool-=dt;if(t.cool>0)return;
   const target=enemies.filter(e=>Math.hypot(e.x-t.x,e.y-t.y)<=t.b.range).sort((a,b)=>b.seg-a.seg)[0];
   if(!target)return;
-  t.cool=t.b.rate;projectiles.push({x:t.x,y:t.y,target,damage:t.b.damage,type:t.b.type,color:t.b.color,speed:t.b.type==='Rock'?300:t.b.type==='Wind'?520:420,fromX:t.x,fromY:t.y,spin:0});
+  t.cool=t.b.rate;projectiles.push({x:t.x,y:t.y,target,damage:t.b.damage,type:t.b.type,color:t.b.color,speed:t.b.type==='Rock'?300:t.b.type==='Wind'?520:420,fromX:t.x,fromY:t.y,spin:0,powerTier:t.powerTier||0,specialTier:t.specialTier||0});
 }
 function addXP(ids,amount){
   const levelUps=[];
@@ -386,26 +447,55 @@ function completeWave(){
 }
 function fx(kind,x,y,color='#fff',extra={}){effects.push({kind,x,y,color,life:1,maxLife:1,...extra})}
 function hitProjectile(p){
+  const mastery=p.specialTier>=2,primal=p.specialTier>=3,apex=p.powerTier>=3;
   let damage=p.damage;
-  if(p.type==='Dark'&&Math.random()<.22){damage*=2;fx('crit',p.target.x,p.target.y,'#ff6cff')}
+  const critChance=p.type==='Dark'?(primal?.5:mastery?.32:.22):0;
+  if(critChance&&Math.random()<critChance){damage*=primal?2.4:2;fx('crit',p.target.x,p.target.y,'#ff6cff')}
   p.target.hp-=damage;
-  if(p.type==='Fire'){p.target.hp-=5;fx('burst',p.target.x,p.target.y,'#ff7a32',{size:42});for(let i=0;i<7;i++)fx('particle',p.target.x,p.target.y,'#ffc34f',{vx:(Math.random()-.5)*80,vy:(Math.random()-.5)*80,size:4})}
-  if(p.type==='Nature'){p.target.hp-=5;fx('roots',p.target.x,p.target.y,'#65c96b',{size:38})}
-  if(p.type==='Water'){p.target.slow=Math.max(p.target.slow,1.6);fx('splash',p.target.x,p.target.y,'#60c8ff',{size:44})}
-  if(p.type==='Ice'){p.target.slow=Math.max(p.target.slow,2.4);fx('freeze',p.target.x,p.target.y,'#c8f5ff',{size:46})}
-  if(p.type==='Poison'){p.target.hp-=5;fx('poison',p.target.x,p.target.y,'#d96ee8',{size:44})}
-  if(p.type==='Rock'){p.target.slow=Math.max(p.target.slow,.35);fx('dust',p.target.x,p.target.y,'#b7a38e',{size:48})}
-  if(p.type==='Wind'){fx('wind',p.target.x,p.target.y,'#d6ffe3',{size:46})}
+
+  if(p.type==='Fire'){
+    p.target.hp+=0; p.target.hp-=mastery?10:5;
+    fx('burst',p.target.x,p.target.y,'#ff7a32',{size:apex?58:42});
+    for(let i=0;i<(primal?11:7);i++)fx('particle',p.target.x,p.target.y,'#ffc34f',{vx:(Math.random()-.5)*90,vy:(Math.random()-.5)*90,size:4});
+    if(primal)enemies.filter(e=>e!==p.target&&Math.hypot(e.x-p.target.x,e.y-p.target.y)<72).forEach(e=>e.hp-=p.damage*.55);
+  }
+  if(p.type==='Nature'){
+    p.target.hp-=mastery?9:5;p.target.slow=Math.max(p.target.slow,mastery?1.8:.75);fx('roots',p.target.x,p.target.y,'#65c96b',{size:primal?58:38});
+    if(primal)enemies.filter(e=>e!==p.target&&Math.hypot(e.x-p.target.x,e.y-p.target.y)<70).forEach(e=>{e.slow=Math.max(e.slow,1.5);e.hp-=p.damage*.3});
+  }
+  if(p.type==='Water'){
+    p.target.slow=Math.max(p.target.slow,mastery?2.4:1.6);fx('splash',p.target.x,p.target.y,'#60c8ff',{size:primal?62:44});
+    if(primal)enemies.filter(e=>e!==p.target&&Math.hypot(e.x-p.target.x,e.y-p.target.y)<68).forEach(e=>{e.hp-=p.damage*.35;e.slow=Math.max(e.slow,1.8)});
+  }
+  if(p.type==='Ice'){
+    p.target.slow=Math.max(p.target.slow,mastery?3.2:2.4);fx('freeze',p.target.x,p.target.y,'#c8f5ff',{size:primal?66:46});
+    if(primal)enemies.filter(e=>e!==p.target&&Math.hypot(e.x-p.target.x,e.y-p.target.y)<62).forEach(e=>e.slow=Math.max(e.slow,2.6));
+  }
+  if(p.type==='Poison'){
+    p.target.hp-=mastery?12:5;fx('poison',p.target.x,p.target.y,'#d96ee8',{size:primal?68:44});
+    if(primal)enemies.filter(e=>e!==p.target&&Math.hypot(e.x-p.target.x,e.y-p.target.y)<75).forEach(e=>e.hp-=p.damage*.5);
+  }
+  if(p.type==='Rock'){
+    p.target.slow=Math.max(p.target.slow,mastery?.8:.35);fx('dust',p.target.x,p.target.y,'#b7a38e',{size:primal?64:48});
+    if(primal)p.target.slow=Math.max(p.target.slow,1.4);
+  }
+  if(p.type==='Wind'){
+    fx('wind',p.target.x,p.target.y,'#d6ffe3',{size:primal?68:46});
+    if(mastery)enemies.filter(e=>e!==p.target&&Math.hypot(e.x-p.target.x,e.y-p.target.y)<40).forEach(e=>e.hp-=p.damage*.3);
+    if(primal)enemies.filter(e=>e!==p.target&&Math.hypot(e.x-p.target.x,e.y-p.target.y)<85).forEach(e=>e.hp-=p.damage*.35);
+  }
   if(p.type==='Electric'){
-    const targets=enemies.filter(e=>e!==p.target&&Math.hypot(e.x-p.target.x,e.y-p.target.y)<70).slice(0,p.damage>20?3:2);
-    const chainDamage=p.damage*(p.damage>20?.45:.3);
+    const radius=mastery?92:70,count=primal?(p.damage>20?5:4):(p.damage>20?3:2),chainDamage=p.damage*(primal?.62:mastery?.48:(p.damage>20?.45:.3));
+    const targets=enemies.filter(e=>e!==p.target&&Math.hypot(e.x-p.target.x,e.y-p.target.y)<radius).slice(0,count);
     targets.forEach(e=>{e.hp-=chainDamage;fx('lightning',p.target.x,p.target.y,'#fff36c',{x2:e.x,y2:e.y})});
-    fx('zap',p.target.x,p.target.y,'#fff36c',{size:40});
+    fx('zap',p.target.x,p.target.y,'#fff36c',{size:primal?58:40});
   }
   if(p.type==='Light'){
-    enemies.filter(e=>e!==p.target&&Math.hypot(e.x-p.target.x,e.y-p.target.y)<55).forEach(e=>e.hp-=p.damage*.35);
-    fx('light',p.target.x,p.target.y,'#fff4a6',{size:60});
+    const radius=primal?88:mastery?68:55,ratio=primal?.65:mastery?.48:.35;
+    enemies.filter(e=>e!==p.target&&Math.hypot(e.x-p.target.x,e.y-p.target.y)<radius).forEach(e=>e.hp-=p.damage*ratio);
+    fx('light',p.target.x,p.target.y,'#fff4a6',{size:primal?82:60});
   }
+  if(apex)fx('apex',p.target.x,p.target.y,p.color,{size:54});
 }
 function update(dt){
   if(running&&queue.length){queue.forEach(s=>s.delay-=dt*1000);while(queue[0]&&queue[0].delay<=0)spawn(queue.shift())}
