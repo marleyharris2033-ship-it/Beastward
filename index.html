@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#102019"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>Beastward</title><link rel="stylesheet" href="style.css?v=20260908-8"></head><body>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#102019"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>Beastward</title><link rel="stylesheet" href="style.css?v=20260908-9"></head><body>
 <div id="app">
 <section id="titleScreen" class="screen active">
   <div class="title-shell">
@@ -72,7 +72,7 @@
 <section id="beastsScreen" class="screen"><div class="panel wide"><button class="back" data-back="hubScreen">← Sanctuary</button><h2>Beast Den</h2><p class="sub">Beasts gain permanent XP after every wave they take part in. Later waves award more XP. Levels increase combat stats; evolutions unlock at Levels 20 and 30.</p><div id="beastCollection" class="collection"></div></div></section>
 <section id="bestiaryScreen" class="screen"><div class="panel wide bestiary-panel">
     <button class="back" data-back="hubScreen">← Sanctuary</button>
-    <div class="bestiary-head"><div><div class="mini-logo">BEASTWARD</div><h2>Bestiary</h2><p class="sub">Discover. Learn. Protect.</p></div></div>
+    <div class="bestiary-head"><div><div class="mini-logo">BEASTWARD</div><h2>Bestiary</h2><p class="sub">Discover. Learn. Protect.</p></div><div id="bestiaryProgress" class="bestiary-progress">0 / 11 discovered</div></div>
     <div class="bestiary-tabs">
       <button class="bestiary-tab active" data-btab="beasts">🐾 Beasts</button>
       <button class="bestiary-tab" data-btab="enemies">☠ Enemies</button>
@@ -81,7 +81,26 @@
     <div class="bestiary-tools"><input id="bestiarySearch" placeholder="Search..." type="search"><div id="bestiaryFilters" class="bestiary-filters"></div></div>
     <div class="bestiary-layout"><div id="bestiaryList" class="bestiary-list"></div><div id="bestiaryDetail" class="bestiary-detail"></div></div>
   </div></section>
-<section id="gameScreen" class="screen game-screen"><header class="game-ui"><div>❤️ <span id="lives">20</span></div><div>🪙 <span id="gold">350</span></div><div>Wave <span id="wave">0</span>/10</div><div id="waveXpNotice" class="wave-xp-notice"></div><button id="speedBtn" class="speed-control">⏩ Speed 1×</button><button id="startWaveBtn">Start Wave</button><button id="exitLevelBtn">Exit</button></header><div class="game-layout"><canvas id="gameCanvas" width="1000" height="600"></canvas><aside class="tower-panel"><h3>Beasts</h3><div id="towerChoices"></div><div id="selectedTowerPanel" class="selected-tower-panel hidden"><b id="selectedTowerName">Selected Beast</b><div id="selectedTowerStats" class="tiny"></div><button id="sellTowerBtn" class="sell-btn">Sell for 80%</button></div><div class="tip">Choose a beast, then tap grass near the path to place it. Tap a placed beast to select it and sell it for 80% of its build cost.</div></aside></div><button id="speedBtnFloat" class="speed-float speed-control" aria-label="Change game speed">⏩ 1×</button></section>
+<section id="gameScreen" class="screen game-screen">
+  <header class="battle-hud">
+    <div class="hud-stat"><span class="hud-label">LIVES</span><b id="lives">20</b></div>
+    <div class="hud-stat"><span class="hud-label">GOLD</span><b id="gold">350</b></div>
+    <div class="hud-wave"><span class="hud-label">WAVE</span><b><span id="wave">0</span>/10</b><div id="waveXpNotice" class="wave-xp-notice"></div></div>
+    <div class="speed-segment"><button class="speed-choice active" data-speed="1">1×</button><button class="speed-choice" data-speed="2">2×</button><button class="speed-choice" data-speed="3">3×</button></div>
+    <button id="startWaveBtn" class="battle-action">START WAVE</button>
+    <button id="exitLevelBtn" class="battle-exit">EXIT</button>
+  </header>
+  <div class="next-wave-strip"><span>NEXT WAVE</span><div class="enemy-preview"><i></i><i></i><i></i></div><small>Forest Raiders</small></div>
+  <div class="game-layout">
+    <div class="battle-board"><canvas id="gameCanvas" width="1000" height="600"></canvas></div>
+    <aside class="tower-panel">
+      <div class="tower-panel-title"><span>BEASTS</span><small>Tap to deploy</small></div>
+      <div id="towerChoices"></div>
+      <div id="selectedTowerPanel" class="selected-tower-panel hidden"><b id="selectedTowerName">Selected Beast</b><div id="selectedTowerStats" class="tiny"></div><button id="sellTowerBtn" class="sell-btn">SELL • 80%</button></div>
+      <div class="tip">Tap a placed beast to inspect it or sell it. Every cleared wave awards permanent XP.</div>
+    </aside>
+  </div>
+</section>
 <div id="resultModal" class="modal hidden"><div class="modal-card"><h2 id="resultTitle"></h2><p id="resultText"></p><button id="resultContinue" class="primary">Continue</button></div></div>
 <div id="eggModal" class="modal hidden"><div class="modal-card"><h2 id="eggResultTitle"></h2><img id="eggResultSprite" class="result-sprite"><h3 id="eggResultName"></h3><p id="eggResultText"></p><button id="eggResultContinue" class="primary">Continue</button></div></div>
-</div><script src="game.js?v=20260908-8"></script></body></html>
+</div><script src="game.js?v=20260908-9"></script></body></html>
