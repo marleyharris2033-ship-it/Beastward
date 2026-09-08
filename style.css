@@ -272,3 +272,19 @@ radial-gradient(ellipse at 82% 57%,#193722 0 6%,transparent 7%);opacity:.75}
 .ascend-btn:disabled{opacity:.45;cursor:not-allowed;filter:grayscale(.4)}
 .map-node.completed{border-color:#79c889;box-shadow:0 0 0 3px #73dc8b22,0 10px 22px #0005}
 .map-node.completed:after{content:"✓";position:absolute;right:-7px;top:-9px;width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:#315d3d;border:1px solid #bde5a7;color:#dffff0;font-weight:900}
+
+/* ===== Epic Egg + battle upgrade tree ===== */
+.egg-card.epic{border-color:#9b65bd;background:linear-gradient(145deg,#3a2950,#211a31);box-shadow:inset 0 0 0 1px #c58ee533,0 0 24px #9a54c322}
+.egg-card.epic h3{color:#e3b8ff}.egg-card.epic .egg-cost{color:#e0a8ff}.epic-open{background:linear-gradient(#d6a9ef,#8a55ad);box-shadow:0 6px 0 #4a2c61;color:#24152d;border-color:#edcdfb}
+.selected-tower-panel{padding:14px}
+.selected-tower-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.sell-btn.compact{width:auto;min-width:92px;margin:0;padding:8px 10px;font-size:11px}
+.upgrade-tree{margin-top:12px;display:grid;gap:10px}
+.upgrade-rule{font-size:10px;line-height:1.35;color:#9fb0a4;padding:8px;border:1px dashed #4b6250;border-radius:9px;background:#0e1b14}
+.upgrade-path{padding:10px;border:1px solid #536b57;border-radius:12px;background:linear-gradient(145deg,#182b20,#101d17)}
+.upgrade-path-head{display:flex;gap:9px;align-items:center;margin-bottom:8px}.upgrade-path-head b{margin:0!important;color:#efd572;font-family:Georgia,serif}.upgrade-path-head small{display:block;color:#9fb0a4;font-size:10px}
+.path-icon{width:31px;height:31px;display:grid;place-items:center;border-radius:9px;background:#243f2e;border:1px solid #8a7438;color:#f2d876;font-weight:900}
+.upgrade-btn{width:100%;padding:9px 10px;border-radius:9px;border:1px solid #b99b47;background:linear-gradient(#31583a,#1e402b);color:#ffe896;font-size:11px;font-weight:900;cursor:pointer;text-align:left}
+.upgrade-btn.special{border-color:#7e73ad;background:linear-gradient(#3c365d,#262341);color:#ddd4ff}
+.upgrade-btn:disabled{opacity:.42;cursor:not-allowed;filter:grayscale(.35)}
+.upgrade-desc{margin-top:5px;color:#aebbb2;font-size:10px;line-height:1.3}
