@@ -3,25 +3,25 @@ const screens=[...document.querySelectorAll('.screen')];
 function show(id){screens.forEach(s=>s.classList.toggle('active',s.id===id))}
 
 const beasts={
-embercub:{id:'embercub',name:'Embercub',type:'Fire',role:'Damage',cost:140,range:135,rate:.65,damage:22,color:'#ff7a3d',evo20:'Pyrelion',evo30:'Infernalion',sprite:'assets/pixel/embercub.png',towerSprite:'assets/pixel/embercub_tower.png'},
-sprigpaw:{id:'sprigpaw',name:'Sprigpaw',type:'Nature',role:'Control',cost:150,range:125,rate:.85,damage:16,color:'#62c96b',evo20:'Thornmaw',evo30:'Elderfang',sprite:'assets/pixel/sprigpaw.png',towerSprite:'assets/pixel/sprigpaw_tower.png'},
-bubblit:{id:'bubblit',name:'Bubblit',type:'Water',role:'Slow',cost:145,range:130,rate:.75,damage:18,color:'#55a8ff',evo20:'Tiderex',evo30:'Abyssara',sprite:'assets/pixel/bubblit.png',towerSprite:'assets/pixel/bubblit_tower.png'},
-sparkit:{id:'sparkit',name:'Sparkit',type:'Electric',role:'Chain',cost:150,range:132,rate:.8,damage:17,color:'#ffd64e',evo20:'Voltail',evo30:'Stormclaw',sprite:'assets/pixel/sparkit.png',towerSprite:'assets/pixel/sparkit_tower.png'},
-pebblum:{id:'pebblum',name:'Pebblum',type:'Rock',role:'Heavy',cost:165,range:118,rate:1.05,damage:26,color:'#a89b8e',evo20:'Boulderback',evo30:'Titanrock',sprite:'assets/pixel/pebblum.png',towerSprite:'assets/pixel/pebblum_tower.png'},
-gustwing:{id:'gustwing',name:'Gustwing',type:'Wind',role:'Range',cost:155,range:160,rate:.78,damage:15,color:'#b6efd0',evo20:'Galehawk',evo30:'Tempestral',sprite:'assets/pixel/gustwing.png',towerSprite:'assets/pixel/gustwing_tower.png'},
-toxip:{id:'toxip',name:'Toxip',type:'Poison',role:'Damage over Time',cost:150,range:128,rate:.88,damage:15,color:'#d46be8',evo20:'Venomane',evo30:'Plaguefang',sprite:'assets/pixel/toxip.png',towerSprite:'assets/pixel/toxip_tower.png'},
-frostkit:{id:'frostkit',name:'Frostkit',type:'Ice',role:'Freeze',cost:175,range:135,rate:.9,damage:19,color:'#9fe8ff',evo20:'Glacifang',evo30:'Cryowyrm',sprite:'assets/pixel/frostkit.png',towerSprite:'assets/pixel/frostkit_tower.png'},
-shadepup:{id:'shadepup',name:'Shadepup',type:'Dark',role:'Critical',cost:180,range:125,rate:.72,damage:24,color:'#8f79cf',evo20:'Dreadfang',evo30:'Nightreaver',sprite:'assets/pixel/shadepup.png',towerSprite:'assets/pixel/shadepup_tower.png'},
-lumpling:{id:'lumpling',name:'Lumpling',type:'Light',role:'Splash',cost:185,range:145,rate:.88,damage:20,color:'#fff0a2',evo20:'Radihorn',evo30:'Solarius',sprite:'assets/pixel/lumpling.png',towerSprite:'assets/pixel/lumpling_tower.png'},
-voltwing:{id:'voltwing',name:'Voltwing',type:'Electric',role:'Chain+',cost:190,range:165,rate:.7,damage:21,color:'#fff277',evo20:'Thunderoc',evo30:'Stormra',sprite:'assets/pixel/voltwing.png',towerSprite:'assets/pixel/voltwing_tower.png'},
-scorchick:{id:'scorchick',name:'Scorchick',type:'Fire',role:'Rapid Burn',cost:135,range:120,rate:.52,damage:14,color:'#ff9a3d',evo20:'Flarewing',evo30:'Sunphoenix',sprite:'assets/pixel/scorchick.png',towerSprite:'assets/pixel/scorchick_tower.png'},
-mosshell:{id:'mosshell',name:'Mosshell',type:'Nature',role:'Stagger',cost:160,range:112,rate:1.0,damage:23,color:'#78b85b',evo20:'Groveshell',evo30:'Worldback',sprite:'assets/pixel/mosshell.png',towerSprite:'assets/pixel/mosshell_tower.png'},
-drizzlet:{id:'drizzlet',name:'Drizzlet',type:'Water',role:'Rapid Slow',cost:140,range:138,rate:.58,damage:15,color:'#6bcce8',evo20:'Rilltail',evo30:'Torrentusk',sprite:'assets/pixel/drizzlet.png',towerSprite:'assets/pixel/drizzlet_tower.png'},
-zapmoth:{id:'zapmoth',name:'Zapmoth',type:'Electric',role:'Fast Chain',cost:145,range:145,rate:.62,damage:15,color:'#ffe55f',evo20:'Voltmoth',evo30:'Tempestwing',sprite:'assets/pixel/zapmoth.png',towerSprite:'assets/pixel/zapmoth_tower.png'},
-cindrake:{id:'cindrake',name:'Cindrake',type:'Fire',role:'Meteor',cost:235,range:155,rate:.92,damage:38,color:'#ff6b35',evo20:'Magmara',evo30:'Vulcanox',sprite:'assets/pixel/cindrake.png',towerSprite:'assets/pixel/cindrake_tower.png'},
-sporeling:{id:'sporeling',name:'Sporeling',type:'Poison',role:'Toxic Burst',cost:220,range:150,rate:.82,damage:28,color:'#d47be3',evo20:'Mycomaw',evo30:'Fungorath',sprite:'assets/pixel/sporeling.png',towerSprite:'assets/pixel/sporeling_tower.png'},
-drakeling:{id:'drakeling',name:'Drakeling',type:'Wind',role:'Piercing Gale',cost:230,range:185,rate:.68,damage:29,color:'#8de6d7',evo20:'Draconis',evo30:'Aetherion',sprite:'assets/pixel/drakeling.png',towerSprite:'assets/pixel/drakeling_tower.png'},
-voidling:{id:'voidling',name:'Voidling',type:'Dark',role:'Void Critical',cost:240,range:160,rate:.75,damage:36,color:'#a675e8',evo20:'Riftbeast',evo30:'Oblivion',sprite:'assets/pixel/voidling.png',towerSprite:'assets/pixel/voidling_tower.png'}
+embercub:{id:'embercub',name:'Embercub',type:'Fire',role:'Damage',cost:140,range:138,rate:.60,damage:21,color:'#ff7a3d',evo20:'Pyrelion',evo30:'Infernalion',sprite:'assets/pixel/embercub.png',towerSprite:'assets/pixel/embercub_tower.png'},
+sprigpaw:{id:'sprigpaw',name:'Sprigpaw',type:'Nature',role:'Control',cost:150,range:135,rate:.70,damage:19,color:'#62c96b',evo20:'Thornmaw',evo30:'Elderfang',sprite:'assets/pixel/sprigpaw.png',towerSprite:'assets/pixel/sprigpaw_tower.png'},
+bubblit:{id:'bubblit',name:'Bubblit',type:'Water',role:'Slow',cost:145,range:140,rate:.65,damage:18,color:'#55a8ff',evo20:'Tiderex',evo30:'Abyssara',sprite:'assets/pixel/bubblit.png',towerSprite:'assets/pixel/bubblit_tower.png'},
+sparkit:{id:'sparkit',name:'Sparkit',type:'Electric',role:'Chain',cost:150,range:140,rate:.72,damage:18,color:'#ffd64e',evo20:'Voltail',evo30:'Stormclaw',sprite:'assets/pixel/sparkit.png',towerSprite:'assets/pixel/sparkit_tower.png'},
+pebblum:{id:'pebblum',name:'Pebblum',type:'Rock',role:'Heavy',cost:165,range:125,rate:.95,damage:31,color:'#a89b8e',evo20:'Boulderback',evo30:'Titanrock',sprite:'assets/pixel/pebblum.png',towerSprite:'assets/pixel/pebblum_tower.png'},
+gustwing:{id:'gustwing',name:'Gustwing',type:'Wind',role:'Range',cost:155,range:175,rate:.66,damage:20,color:'#b6efd0',evo20:'Galehawk',evo30:'Tempestral',sprite:'assets/pixel/gustwing.png',towerSprite:'assets/pixel/gustwing_tower.png'},
+toxip:{id:'toxip',name:'Toxip',type:'Poison',role:'Damage over Time',cost:150,range:135,rate:.74,damage:19,color:'#d46be8',evo20:'Venomane',evo30:'Plaguefang',sprite:'assets/pixel/toxip.png',towerSprite:'assets/pixel/toxip_tower.png'},
+frostkit:{id:'frostkit',name:'Frostkit',type:'Ice',role:'Freeze',cost:175,range:145,rate:.82,damage:23,color:'#9fe8ff',evo20:'Glacifang',evo30:'Cryowyrm',sprite:'assets/pixel/frostkit.png',towerSprite:'assets/pixel/frostkit_tower.png'},
+shadepup:{id:'shadepup',name:'Shadepup',type:'Dark',role:'Critical',cost:180,range:135,rate:.74,damage:24,color:'#8f79cf',evo20:'Dreadfang',evo30:'Nightreaver',sprite:'assets/pixel/shadepup.png',towerSprite:'assets/pixel/shadepup_tower.png'},
+lumpling:{id:'lumpling',name:'Lumpling',type:'Light',role:'Splash',cost:185,range:155,rate:.82,damage:24,color:'#fff0a2',evo20:'Radihorn',evo30:'Solarius',sprite:'assets/pixel/lumpling.png',towerSprite:'assets/pixel/lumpling_tower.png'},
+voltwing:{id:'voltwing',name:'Voltwing',type:'Electric',role:'Chain+',cost:190,range:175,rate:.72,damage:23,color:'#fff277',evo20:'Thunderoc',evo30:'Stormra',sprite:'assets/pixel/voltwing.png',towerSprite:'assets/pixel/voltwing_tower.png'},
+scorchick:{id:'scorchick',name:'Scorchick',type:'Fire',role:'Rapid Burn',cost:135,range:125,rate:.45,damage:13,color:'#ff9a3d',evo20:'Flarewing',evo30:'Sunphoenix',sprite:'assets/pixel/scorchick.png',towerSprite:'assets/pixel/scorchick_tower.png'},
+mosshell:{id:'mosshell',name:'Mosshell',type:'Nature',role:'Stagger',cost:160,range:120,rate:.98,damage:30,color:'#78b85b',evo20:'Groveshell',evo30:'Worldback',sprite:'assets/pixel/mosshell.png',towerSprite:'assets/pixel/mosshell_tower.png'},
+drizzlet:{id:'drizzlet',name:'Drizzlet',type:'Water',role:'Rapid Slow',cost:140,range:145,rate:.50,damage:14,color:'#6bcce8',evo20:'Rilltail',evo30:'Torrentusk',sprite:'assets/pixel/drizzlet.png',towerSprite:'assets/pixel/drizzlet_tower.png'},
+zapmoth:{id:'zapmoth',name:'Zapmoth',type:'Electric',role:'Fast Chain',cost:145,range:150,rate:.54,damage:14,color:'#ffe55f',evo20:'Voltmoth',evo30:'Tempestwing',sprite:'assets/pixel/zapmoth.png',towerSprite:'assets/pixel/zapmoth_tower.png'},
+cindrake:{id:'cindrake',name:'Cindrake',type:'Fire',role:'Meteor',cost:235,range:165,rate:.85,damage:38,color:'#ff6b35',evo20:'Magmara',evo30:'Vulcanox',sprite:'assets/pixel/cindrake.png',towerSprite:'assets/pixel/cindrake_tower.png'},
+sporeling:{id:'sporeling',name:'Sporeling',type:'Poison',role:'Toxic Burst',cost:220,range:160,rate:.78,damage:29,color:'#d47be3',evo20:'Mycomaw',evo30:'Fungorath',sprite:'assets/pixel/sporeling.png',towerSprite:'assets/pixel/sporeling_tower.png'},
+drakeling:{id:'drakeling',name:'Drakeling',type:'Wind',role:'Piercing Gale',cost:230,range:200,rate:.70,damage:30,color:'#8de6d7',evo20:'Draconis',evo30:'Aetherion',sprite:'assets/pixel/drakeling.png',towerSprite:'assets/pixel/drakeling_tower.png'},
+voidling:{id:'voidling',name:'Voidling',type:'Dark',role:'Void Critical',cost:240,range:170,rate:.78,damage:35,color:'#a675e8',evo20:'Riftbeast',evo30:'Oblivion',sprite:'assets/pixel/voidling.png',towerSprite:'assets/pixel/voidling_tower.png'}
 };
 
 const starters=['embercub','sprigpaw','bubblit'];
@@ -426,7 +426,7 @@ function renderCampaignMap(){
  levels.forEach((lvl,i)=>{const unlocked=levelUnlocked(lvl.id),done=save.completedLevels.includes(lvl.id);const el=document.createElement(unlocked?'button':'div');el.className='map-node '+(unlocked?'unlocked':'locked')+(lvl.id===10?' boss-node':'')+(done?' completed':'');el.style.setProperty('--x',coords[i][0]+'%');el.style.setProperty('--y',coords[i][1]+'%');el.innerHTML=`<span>1-${lvl.id}</span><b>${lvl.name}</b><small>${done?'✓ Cleared':unlocked?lvl.waves+' waves':'Locked'}</small>`;if(unlocked)el.onclick=()=>startLevel(lvl.id);map.appendChild(el)});
 }
 function startLevel(id){currentLevel=levels[id-1];path=currentLevel.path;reset();show('gameScreen');last=performance.now();requestAnimationFrame(loop)}
-let towers=[],enemies=[],projectiles=[],effects=[],selectedSpecies=null,selectedTower=null,gold=350,lives=20,wave=0,running=false,last=0,queue=[],speed=1,waveParticipants=new Set();
+let towers=[],enemies=[],projectiles=[],effects=[],selectedSpecies=null,selectedTower=null,gold=400,lives=20,wave=0,running=false,last=0,queue=[],speed=1,waveParticipants=new Set();
 
 function ui(){$('#gold').textContent=Math.floor(gold);$('#lives').textContent=lives;$('#wave').textContent=wave;if(selectedTower)renderUpgradeButtons()}
 const upgradeDefs={
@@ -497,7 +497,7 @@ function buyTowerUpgrade(path){
 $('#powerUpgradeBtn').onclick=()=>buyTowerUpgrade('power');
 $('#specialUpgradeBtn').onclick=()=>buyTowerUpgrade('special');
 function reset(){
-  towers=[];enemies=[];projectiles=[];effects=[];selectedSpecies=null;selectedTower=null;gold=350;lives=20;wave=0;running=false;queue=[];speed=1;waveParticipants=new Set();
+  towers=[];enemies=[];projectiles=[];effects=[];selectedSpecies=null;selectedTower=null;gold=400;lives=20;wave=0;running=false;queue=[];speed=1;waveParticipants=new Set();
   document.querySelectorAll('.speed-choice').forEach(b=>b.classList.toggle('active',Number(b.dataset.speed)===1));$('#waveXpNotice').textContent='';ui();choices();renderSelectedTower();
 }
 $('#exitLevelBtn').onclick=()=>show('campaignScreen');
@@ -506,8 +506,10 @@ document.querySelectorAll('.speed-choice').forEach(b=>b.onclick=()=>setSpeed(Num
 $('#startWaveBtn').onclick=()=>{
   if(running||wave>=10)return;
   wave++;running=true;waveParticipants=new Set(towers.map(t=>t.b.id));
-  const n=5+wave*2+Math.floor((currentLevel.id-1)*.6);queue=[];
-  for(let i=0;i<n;i++)queue.push({delay:i*Math.max(420,700-currentLevel.id*20),hp:(55+wave*20)*currentLevel.hp,speed:(45+wave*2)*currentLevel.speed,reward:12+wave+Math.floor(currentLevel.id/2)});
+  const n=4+wave*2+Math.floor((currentLevel.id-1)*.5);queue=[];
+  const waveHp=(48+wave*16+wave*wave*.7)*currentLevel.hp;
+  const waveSpeed=(42+wave*1.6)*currentLevel.speed;
+  for(let i=0;i<n;i++)queue.push({delay:i*Math.max(430,720-currentLevel.id*20),hp:waveHp,speed:waveSpeed,reward:13+wave+Math.floor(currentLevel.id/2)});
   if(wave===10&&(currentLevel.boss||currentLevel.id===10))queue.push({delay:n*600+600,hp:900*currentLevel.hp,speed:28*currentLevel.speed,reward:180+currentLevel.id*10,boss:true});
   ui();
 };
@@ -538,19 +540,22 @@ function distPath(x,y){
   }
   return best;
 }
-function spawn(s){enemies.push({x:path[0].x,y:path[0].y,seg:0,hp:s.hp,max:s.hp,speed:s.speed,reward:s.reward,boss:!!s.boss,slow:0})}
+function spawn(s){enemies.push({x:path[0].x,y:path[0].y,seg:0,hp:s.hp,max:s.hp,speed:s.speed,reward:s.reward,boss:!!s.boss,slow:0,slowFactor:.62,root:0,stun:0,burn:0,burnDps:0,poison:0,poisonDps:0})}
 function move(e,dt){
   const target=path[e.seg+1];if(!target)return false;
-  let sp=e.speed*(e.slow>0?.58:1);e.slow=Math.max(0,e.slow-dt);
+  e.slow=Math.max(0,e.slow-dt);e.root=Math.max(0,(e.root||0)-dt);e.stun=Math.max(0,(e.stun||0)-dt);
+  if(e.root>0||e.stun>0)return true;
+  const sp=e.speed*(e.slow>0?(e.slowFactor||.62):1);
   const dx=target.x-e.x,dy=target.y-e.y,d=Math.hypot(dx,dy);
   if(d<sp*dt){e.x=target.x;e.y=target.y;e.seg++;return e.seg<path.length-1}
   e.x+=dx/d*sp*dt;e.y+=dy/d*sp*dt;return true;
 }
+function defeatEnemy(e){const i=enemies.indexOf(e);if(i<0)return false;gold+=e.reward;enemies.splice(i,1);ui();return true;}
 function attack(t,dt){
   t.cool-=dt;if(t.cool>0)return;
   const target=enemies.filter(e=>Math.hypot(e.x-t.x,e.y-t.y)<=t.b.range).sort((a,b)=>b.seg-a.seg)[0];
   if(!target)return;
-  t.cool=t.b.rate;projectiles.push({x:t.x,y:t.y,target,damage:t.b.damage,type:t.b.type,color:t.b.color,speed:t.b.type==='Rock'?300:t.b.type==='Wind'?520:420,fromX:t.x,fromY:t.y,spin:0,powerTier:t.powerTier||0,specialTier:t.specialTier||0});
+  t.cool=t.b.rate;projectiles.push({x:t.x,y:t.y,target,damage:t.b.damage,type:t.b.type,color:t.b.color,beastId:t.b.id,speed:t.b.type==='Rock'?300:t.b.type==='Wind'?520:420,fromX:t.x,fromY:t.y,spin:0,powerTier:t.powerTier||0,specialTier:t.specialTier||0});
 }
 function addXP(ids,amount){
   const levelUps=[];
@@ -566,68 +571,95 @@ function addXP(ids,amount){
   return levelUps;
 }
 function completeWave(){
-  const amount=5+wave*5;
+  const amount=5+wave*5,bonus=24+wave*4;
+  gold+=bonus;ui();
   const ups=addXP(waveParticipants,amount);
-  $('#waveXpNotice').textContent=`Wave ${wave} clear • +${amount} XP`;
+  $('#waveXpNotice').textContent=`Wave ${wave} clear • +${amount} XP • +${bonus} gold`;
   if(ups.length)setTimeout(()=>alert(ups.join('\n')),80);
   setTimeout(()=>{if($('#waveXpNotice'))$('#waveXpNotice').textContent=''},1800);
 }
 function fx(kind,x,y,color='#fff',extra={}){effects.push({kind,x,y,color,life:1,maxLife:1,...extra})}
 function hitProjectile(p){
-  const mastery=p.specialTier>=2,primal=p.specialTier>=3,apex=p.powerTier>=3;
+  const mastery=p.specialTier>=2,primal=p.specialTier>=3,apex=p.powerTier>=3,t=p.target;
   let damage=p.damage;
-  const critChance=p.type==='Dark'?(primal?.5:mastery?.32:.22):0;
-  if(critChance&&Math.random()<critChance){damage*=primal?2.4:2;fx('crit',p.target.x,p.target.y,'#ff6cff')}
-  p.target.hp-=damage;
+  let critChance=0,critMult=2;
+  if(p.type==='Dark'){
+    critChance=(p.beastId==='voidling'?.35:.28)+(mastery?.10:0)+(primal?.17:0);
+    critMult=primal?2.6:mastery?2.2:2;
+    if(Math.random()<critChance){damage*=critMult;fx('crit',t.x,t.y,'#ff79ff')}
+  }
+  t.hp-=damage;
 
   if(p.type==='Fire'){
-    p.target.hp+=0; p.target.hp-=mastery?10:5;
-    fx('burst',p.target.x,p.target.y,'#ff7a32',{size:apex?58:42});
-    for(let i=0;i<(primal?11:7);i++)fx('particle',p.target.x,p.target.y,'#ffc34f',{vx:(Math.random()-.5)*90,vy:(Math.random()-.5)*90,size:4});
-    if(primal)enemies.filter(e=>e!==p.target&&Math.hypot(e.x-p.target.x,e.y-p.target.y)<72).forEach(e=>e.hp-=p.damage*.55);
+    const burnDps=p.damage*(primal?.55:mastery?.42:.28),burnTime=primal?3.4:mastery?3:2.4;
+    t.burn=Math.max(t.burn||0,burnTime);t.burnDps=Math.max(t.burnDps||0,burnDps);
+    fx('burst',t.x,t.y,'#ff7a32',{size:apex?62:46});
+    for(let i=0;i<(primal?10:6);i++)fx('particle',t.x,t.y,'#ffc34f',{vx:(Math.random()-.5)*105,vy:(Math.random()-.5)*105,size:4});
+    const splash=(p.beastId==='cindrake'?.38:primal?.48:0),rad=p.beastId==='cindrake'?72:82;
+    if(splash)enemies.filter(e=>e!==t&&Math.hypot(e.x-t.x,e.y-t.y)<rad).forEach(e=>{e.hp-=p.damage*splash;e.burn=Math.max(e.burn||0,2.2);e.burnDps=Math.max(e.burnDps||0,burnDps*.55)});
   }
   if(p.type==='Nature'){
-    p.target.hp-=mastery?9:5;p.target.slow=Math.max(p.target.slow,mastery?1.8:.75);fx('roots',p.target.x,p.target.y,'#65c96b',{size:primal?58:38});
-    if(primal)enemies.filter(e=>e!==p.target&&Math.hypot(e.x-p.target.x,e.y-p.target.y)<70).forEach(e=>{e.slow=Math.max(e.slow,1.5);e.hp-=p.damage*.3});
+    t.slow=Math.max(t.slow,mastery?1.9:1.35);t.slowFactor=Math.min(t.slowFactor||1,mastery?.66:.72);
+    t.poison=Math.max(t.poison||0,mastery?3.2:2.5);t.poisonDps=Math.max(t.poisonDps||0,p.damage*(mastery?.20:.13));
+    if(p.beastId==='mosshell'){t.stun=Math.max(t.stun,mastery?.5:.32)}
+    else if(Math.random()<(primal?.55:mastery?.38:.27))t.root=Math.max(t.root,primal?.85:mastery?.62:.45);
+    fx('roots',t.x,t.y,'#65c96b',{size:primal?62:42});
+    if(primal)enemies.filter(e=>e!==t&&Math.hypot(e.x-t.x,e.y-t.y)<75).forEach(e=>{e.root=Math.max(e.root||0,.55);e.poison=Math.max(e.poison||0,2.4);e.poisonDps=Math.max(e.poisonDps||0,p.damage*.12)});
   }
   if(p.type==='Water'){
-    p.target.slow=Math.max(p.target.slow,mastery?2.4:1.6);fx('splash',p.target.x,p.target.y,'#60c8ff',{size:primal?62:44});
-    if(primal)enemies.filter(e=>e!==p.target&&Math.hypot(e.x-p.target.x,e.y-p.target.y)<68).forEach(e=>{e.hp-=p.damage*.35;e.slow=Math.max(e.slow,1.8)});
+    const factor=p.beastId==='drizzlet'?(mastery?.44:.52):(mastery?.48:.58);
+    t.slow=Math.max(t.slow,mastery?2.6:1.9);t.slowFactor=Math.min(t.slowFactor||1,factor);
+    const radius=primal?82:52,ratio=primal?.55:.25;
+    enemies.filter(e=>e!==t&&Math.hypot(e.x-t.x,e.y-t.y)<radius).forEach(e=>{e.hp-=p.damage*ratio;e.slow=Math.max(e.slow,primal?2.0:1.1);e.slowFactor=Math.min(e.slowFactor||1,primal?.52:.7)});
+    fx('splash',t.x,t.y,'#60c8ff',{size:primal?68:48});
   }
   if(p.type==='Ice'){
-    p.target.slow=Math.max(p.target.slow,mastery?3.2:2.4);fx('freeze',p.target.x,p.target.y,'#c8f5ff',{size:primal?66:46});
-    if(primal)enemies.filter(e=>e!==p.target&&Math.hypot(e.x-p.target.x,e.y-p.target.y)<62).forEach(e=>e.slow=Math.max(e.slow,2.6));
+    t.slow=Math.max(t.slow,mastery?3.2:2.4);t.slowFactor=Math.min(t.slowFactor||1,mastery?.38:.45);
+    if(Math.random()<(primal?.48:mastery?.30:.18))t.stun=Math.max(t.stun,primal?.95:mastery?.75:.55);
+    fx('freeze',t.x,t.y,'#c8f5ff',{size:primal?70:50});
+    if(primal)enemies.filter(e=>e!==t&&Math.hypot(e.x-t.x,e.y-t.y)<68).forEach(e=>{e.slow=Math.max(e.slow,2.6);e.slowFactor=Math.min(e.slowFactor||1,.42);e.stun=Math.max(e.stun||0,.45)});
   }
   if(p.type==='Poison'){
-    p.target.hp-=mastery?12:5;fx('poison',p.target.x,p.target.y,'#d96ee8',{size:primal?68:44});
-    if(primal)enemies.filter(e=>e!==p.target&&Math.hypot(e.x-p.target.x,e.y-p.target.y)<75).forEach(e=>e.hp-=p.damage*.5);
+    const dot=p.damage*(primal?.65:mastery?.50:.35),time=primal?5:mastery?4.2:3.4;
+    t.poison=Math.max(t.poison||0,time);t.poisonDps=Math.max(t.poisonDps||0,dot);
+    fx('poison',t.x,t.y,'#d96ee8',{size:primal?72:48});
+    const spread=p.beastId==='sporeling'||primal;
+    if(spread)enemies.filter(e=>e!==t&&Math.hypot(e.x-t.x,e.y-t.y)<(primal?82:62)).forEach(e=>{e.hp-=p.damage*(primal?.35:.2);e.poison=Math.max(e.poison||0,3.2);e.poisonDps=Math.max(e.poisonDps||0,dot*.65)});
   }
   if(p.type==='Rock'){
-    p.target.slow=Math.max(p.target.slow,mastery?.8:.35);fx('dust',p.target.x,p.target.y,'#b7a38e',{size:primal?64:48});
-    if(primal)p.target.slow=Math.max(p.target.slow,1.4);
+    if(t.boss)t.hp-=p.damage*(mastery?.35:.22);
+    t.stun=Math.max(t.stun,primal?.7:mastery?.48:.28);
+    fx('dust',t.x,t.y,'#b7a38e',{size:primal?68:52});
+    if(primal)enemies.filter(e=>e!==t&&Math.hypot(e.x-t.x,e.y-t.y)<70).forEach(e=>{e.hp-=p.damage*.3;e.stun=Math.max(e.stun||0,.35)});
   }
   if(p.type==='Wind'){
-    fx('wind',p.target.x,p.target.y,'#d6ffe3',{size:primal?68:46});
-    if(mastery)enemies.filter(e=>e!==p.target&&Math.hypot(e.x-p.target.x,e.y-p.target.y)<40).forEach(e=>e.hp-=p.damage*.3);
-    if(primal)enemies.filter(e=>e!==p.target&&Math.hypot(e.x-p.target.x,e.y-p.target.y)<85).forEach(e=>e.hp-=p.damage*.35);
+    fx('wind',t.x,t.y,'#d6ffe3',{size:primal?72:50});
+    let count=primal?3:mastery?2:1;if(p.beastId==='drakeling')count++;
+    enemies.filter(e=>e!==t&&Math.hypot(e.x-t.x,e.y-t.y)<105).sort((a,b)=>Math.hypot(a.x-t.x,a.y-t.y)-Math.hypot(b.x-t.x,b.y-t.y)).slice(0,count).forEach(e=>{e.hp-=p.damage*(primal?.65:mastery?.55:.45);fx('wind',e.x,e.y,'#d6ffe3',{size:32})});
   }
   if(p.type==='Electric'){
-    const radius=mastery?92:70,count=primal?(p.damage>20?5:4):(p.damage>20?3:2),chainDamage=p.damage*(primal?.62:mastery?.48:(p.damage>20?.45:.3));
-    const targets=enemies.filter(e=>e!==p.target&&Math.hypot(e.x-p.target.x,e.y-p.target.y)<radius).slice(0,count);
-    targets.forEach(e=>{e.hp-=chainDamage;fx('lightning',p.target.x,p.target.y,'#fff36c',{x2:e.x,y2:e.y})});
-    fx('zap',p.target.x,p.target.y,'#fff36c',{size:primal?58:40});
+    const radius=primal?110:mastery?95:78;
+    let count=primal?5:mastery?3:2;if(p.beastId==='voltwing'||p.beastId==='zapmoth')count++;
+    const ratio=primal?.70:mastery?.55:.45;
+    const targets=enemies.filter(e=>e!==t&&Math.hypot(e.x-t.x,e.y-t.y)<radius).slice(0,count);
+    targets.forEach(e=>{e.hp-=p.damage*ratio;if(primal&&Math.random()<.25)e.stun=Math.max(e.stun||0,.25);fx('lightning',t.x,t.y,'#fff36c',{x2:e.x,y2:e.y})});
+    fx('zap',t.x,t.y,'#fff36c',{size:primal?64:44});
   }
   if(p.type==='Light'){
-    const radius=primal?88:mastery?68:55,ratio=primal?.65:mastery?.48:.35;
-    enemies.filter(e=>e!==p.target&&Math.hypot(e.x-p.target.x,e.y-p.target.y)<radius).forEach(e=>e.hp-=p.damage*ratio);
-    fx('light',p.target.x,p.target.y,'#fff4a6',{size:primal?82:60});
+    const radius=primal?96:mastery?76:60,ratio=primal?.80:mastery?.60:.45;
+    enemies.filter(e=>e!==t&&Math.hypot(e.x-t.x,e.y-t.y)<radius).forEach(e=>e.hp-=p.damage*ratio);
+    fx('light',t.x,t.y,'#fff4a6',{size:primal?90:66});
   }
-  if(apex)fx('apex',p.target.x,p.target.y,p.color,{size:54});
+  if(apex)fx('apex',t.x,t.y,p.color,{size:58});
 }
 function update(dt){
   if(running&&queue.length){queue.forEach(s=>s.delay-=dt*1000);while(queue[0]&&queue[0].delay<=0)spawn(queue.shift())}
   for(let i=enemies.length-1;i>=0;i--){
-    if(!move(enemies[i],dt)){lives-=enemies[i].boss?5:1;enemies.splice(i,1);ui();if(lives<=0)return finish(false)}
+    const e=enemies[i];
+    if(e.burn>0){e.burn=Math.max(0,e.burn-dt);e.hp-=(e.burnDps||0)*dt}
+    if(e.poison>0){e.poison=Math.max(0,e.poison-dt);e.hp-=(e.poisonDps||0)*dt}
+    if(e.hp<=0){defeatEnemy(e);continue}
+    if(!move(e,dt)){lives-=e.boss?5:1;enemies.splice(i,1);ui();if(lives<=0)return finish(false)}
   }
   towers.forEach(t=>attack(t,dt));
   for(let i=projectiles.length-1;i>=0;i--){
@@ -636,7 +668,7 @@ function update(dt){
     const dx=p.target.x-p.x,dy=p.target.y-p.y,d=Math.hypot(dx,dy);
     if(d<p.speed*dt+8){
       hitProjectile(p);projectiles.splice(i,1);
-      if(p.target.hp<=0){gold+=p.target.reward;enemies.splice(enemies.indexOf(p.target),1);ui()}
+      if(p.target.hp<=0)defeatEnemy(p.target)
       continue;
     }
     p.x+=dx/d*p.speed*dt;p.y+=dy/d*p.speed*dt;
@@ -845,9 +877,15 @@ function draw(){
   drawStageLabel();
 
   towers.forEach(t=>{
-    if(t===selectedTower){ctx.strokeStyle='#ffe17b';ctx.lineWidth=4;ctx.beginPath();ctx.arc(t.x,t.y,43,0,Math.PI*2);ctx.stroke()}
-    ctx.fillStyle='#102018cc';ctx.beginPath();ctx.arc(t.x,t.y,36,0,Math.PI*2);ctx.fill();
-    const img=spriteImgs[t.b.id];if(img&&img.complete)ctx.drawImage(img,t.x-37,t.y-37,74,74)
+    ctx.save();ctx.globalAlpha=.24;ctx.fillStyle='#07110c';ctx.beginPath();ctx.ellipse(t.x,t.y+29,27,8,0,0,Math.PI*2);ctx.fill();ctx.restore();
+    if(t===selectedTower){
+      ctx.strokeStyle='#ffe17b';ctx.lineWidth=3;const r=39,l=12;
+      ctx.beginPath();ctx.moveTo(t.x-r,t.y-r+l);ctx.lineTo(t.x-r,t.y-r);ctx.lineTo(t.x-r+l,t.y-r);
+      ctx.moveTo(t.x+r-l,t.y-r);ctx.lineTo(t.x+r,t.y-r);ctx.lineTo(t.x+r,t.y-r+l);
+      ctx.moveTo(t.x-r,t.y+r-l);ctx.lineTo(t.x-r,t.y+r);ctx.lineTo(t.x-r+l,t.y+r);
+      ctx.moveTo(t.x+r-l,t.y+r);ctx.lineTo(t.x+r,t.y+r);ctx.lineTo(t.x+r,t.y+r-l);ctx.stroke();
+    }
+    const img=spriteImgs[t.b.id];if(img&&img.complete)ctx.drawImage(img,t.x-39,t.y-39,78,78)
   });
 
   enemies.forEach(e=>{
