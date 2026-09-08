@@ -82,6 +82,7 @@ function renderStarters(){
 }
 function renderCollection(){
   const w=$('#beastCollection');w.innerHTML='';
+  const countEl=$('#denCollectedCount');if(countEl)countEl.textContent=save.unlocked.length;
   save.unlocked.forEach(id=>{
     const b=beasts[id],p=progress(id),need=xpNeeded(p.level);
     w.insertAdjacentHTML('beforeend',`<div class="beast-card"><div class="sprite-wrap"><img src="${b.sprite}"></div><h3>${nameFor(id)}</h3><div class="beast-meta">${b.type} • ${b.role}</div><p>Level ${p.level}/30</p><div class="xpbar"><div style="width:${p.level>=30?100:Math.min(100,p.xp/need*100)}%"></div></div><div class="tiny">${p.level>=30?'MAX LEVEL':p.xp+' / '+need+' XP'} • Damage bonus +${Math.round((levelMultiplier(id)-1)*100)}%</div><div class="tiny">Lv20 ${b.evo20} • Lv30 ${b.evo30}</div>${statBars(id)}</div>`);
