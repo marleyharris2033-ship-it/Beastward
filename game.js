@@ -3,25 +3,25 @@ const screens=[...document.querySelectorAll('.screen')];
 function show(id){screens.forEach(s=>s.classList.toggle('active',s.id===id))}
 
 const beasts={
-embercub:{id:'embercub',name:'Embercub',type:'Fire',role:'Damage',cost:140,range:135,rate:.65,damage:22,color:'#ff7a3d',evo20:'Pyrelion',evo30:'Infernalion',sprite:'assets/sprites/embercub.svg'},
-sprigpaw:{id:'sprigpaw',name:'Sprigpaw',type:'Nature',role:'Control',cost:150,range:125,rate:.85,damage:16,color:'#62c96b',evo20:'Thornmaw',evo30:'Elderfang',sprite:'assets/sprites/sprigpaw.svg'},
-bubblit:{id:'bubblit',name:'Bubblit',type:'Water',role:'Slow',cost:145,range:130,rate:.75,damage:18,color:'#55a8ff',evo20:'Tiderex',evo30:'Abyssara',sprite:'assets/sprites/bubblit.svg'},
-sparkit:{id:'sparkit',name:'Sparkit',type:'Electric',role:'Chain',cost:150,range:132,rate:.8,damage:17,color:'#ffd64e',evo20:'Voltail',evo30:'Stormclaw',sprite:'assets/sprites/sparkit.svg'},
-pebblum:{id:'pebblum',name:'Pebblum',type:'Rock',role:'Heavy',cost:165,range:118,rate:1.05,damage:26,color:'#a89b8e',evo20:'Boulderback',evo30:'Titanrock',sprite:'assets/sprites/pebblum.svg'},
-gustwing:{id:'gustwing',name:'Gustwing',type:'Wind',role:'Range',cost:155,range:160,rate:.78,damage:15,color:'#b6efd0',evo20:'Galehawk',evo30:'Tempestral',sprite:'assets/sprites/gustwing.svg'},
-toxip:{id:'toxip',name:'Toxip',type:'Poison',role:'Damage over Time',cost:150,range:128,rate:.88,damage:15,color:'#d46be8',evo20:'Venomane',evo30:'Plaguefang',sprite:'assets/sprites/toxip.svg'},
-frostkit:{id:'frostkit',name:'Frostkit',type:'Ice',role:'Freeze',cost:175,range:135,rate:.9,damage:19,color:'#9fe8ff',evo20:'Glacifang',evo30:'Cryowyrm',sprite:'assets/sprites/frostkit.svg'},
-shadepup:{id:'shadepup',name:'Shadepup',type:'Dark',role:'Critical',cost:180,range:125,rate:.72,damage:24,color:'#8f79cf',evo20:'Dreadfang',evo30:'Nightreaver',sprite:'assets/sprites/shadepup.svg'},
-lumpling:{id:'lumpling',name:'Lumpling',type:'Light',role:'Splash',cost:185,range:145,rate:.88,damage:20,color:'#fff0a2',evo20:'Radihorn',evo30:'Solarius',sprite:'assets/sprites/lumpling.svg'},
-voltwing:{id:'voltwing',name:'Voltwing',type:'Electric',role:'Chain+',cost:190,range:165,rate:.7,damage:21,color:'#fff277',evo20:'Thunderoc',evo30:'Stormra',sprite:'assets/sprites/voltwing.svg'},
-scorchick:{id:'scorchick',name:'Scorchick',type:'Fire',role:'Rapid Burn',cost:135,range:120,rate:.52,damage:14,color:'#ff9a3d',evo20:'Flarewing',evo30:'Sunphoenix',sprite:'assets/sprites/scorchick.svg'},
-mosshell:{id:'mosshell',name:'Mosshell',type:'Nature',role:'Stagger',cost:160,range:112,rate:1.0,damage:23,color:'#78b85b',evo20:'Groveshell',evo30:'Worldback',sprite:'assets/sprites/mosshell.svg'},
-drizzlet:{id:'drizzlet',name:'Drizzlet',type:'Water',role:'Rapid Slow',cost:140,range:138,rate:.58,damage:15,color:'#6bcce8',evo20:'Rilltail',evo30:'Torrentusk',sprite:'assets/sprites/drizzlet.svg'},
-zapmoth:{id:'zapmoth',name:'Zapmoth',type:'Electric',role:'Fast Chain',cost:145,range:145,rate:.62,damage:15,color:'#ffe55f',evo20:'Voltmoth',evo30:'Tempestwing',sprite:'assets/sprites/zapmoth.svg'},
-cindrake:{id:'cindrake',name:'Cindrake',type:'Fire',role:'Meteor',cost:235,range:155,rate:.92,damage:38,color:'#ff6b35',evo20:'Magmara',evo30:'Vulcanox',sprite:'assets/sprites/cindrake.svg'},
-sporeling:{id:'sporeling',name:'Sporeling',type:'Poison',role:'Toxic Burst',cost:220,range:150,rate:.82,damage:28,color:'#d47be3',evo20:'Mycomaw',evo30:'Fungorath',sprite:'assets/sprites/sporeling.svg'},
-drakeling:{id:'drakeling',name:'Drakeling',type:'Wind',role:'Piercing Gale',cost:230,range:185,rate:.68,damage:29,color:'#8de6d7',evo20:'Draconis',evo30:'Aetherion',sprite:'assets/sprites/drakeling.svg'},
-voidling:{id:'voidling',name:'Voidling',type:'Dark',role:'Void Critical',cost:240,range:160,rate:.75,damage:36,color:'#a675e8',evo20:'Riftbeast',evo30:'Oblivion',sprite:'assets/sprites/voidling.svg'}
+embercub:{id:'embercub',name:'Embercub',type:'Fire',role:'Damage',cost:140,range:135,rate:.65,damage:22,color:'#ff7a3d',evo20:'Pyrelion',evo30:'Infernalion',sprite:'assets/pixel/embercub.png',towerSprite:'assets/pixel/embercub_tower.png'},
+sprigpaw:{id:'sprigpaw',name:'Sprigpaw',type:'Nature',role:'Control',cost:150,range:125,rate:.85,damage:16,color:'#62c96b',evo20:'Thornmaw',evo30:'Elderfang',sprite:'assets/pixel/sprigpaw.png',towerSprite:'assets/pixel/sprigpaw_tower.png'},
+bubblit:{id:'bubblit',name:'Bubblit',type:'Water',role:'Slow',cost:145,range:130,rate:.75,damage:18,color:'#55a8ff',evo20:'Tiderex',evo30:'Abyssara',sprite:'assets/pixel/bubblit.png',towerSprite:'assets/pixel/bubblit_tower.png'},
+sparkit:{id:'sparkit',name:'Sparkit',type:'Electric',role:'Chain',cost:150,range:132,rate:.8,damage:17,color:'#ffd64e',evo20:'Voltail',evo30:'Stormclaw',sprite:'assets/pixel/sparkit.png',towerSprite:'assets/pixel/sparkit_tower.png'},
+pebblum:{id:'pebblum',name:'Pebblum',type:'Rock',role:'Heavy',cost:165,range:118,rate:1.05,damage:26,color:'#a89b8e',evo20:'Boulderback',evo30:'Titanrock',sprite:'assets/pixel/pebblum.png',towerSprite:'assets/pixel/pebblum_tower.png'},
+gustwing:{id:'gustwing',name:'Gustwing',type:'Wind',role:'Range',cost:155,range:160,rate:.78,damage:15,color:'#b6efd0',evo20:'Galehawk',evo30:'Tempestral',sprite:'assets/pixel/gustwing.png',towerSprite:'assets/pixel/gustwing_tower.png'},
+toxip:{id:'toxip',name:'Toxip',type:'Poison',role:'Damage over Time',cost:150,range:128,rate:.88,damage:15,color:'#d46be8',evo20:'Venomane',evo30:'Plaguefang',sprite:'assets/pixel/toxip.png',towerSprite:'assets/pixel/toxip_tower.png'},
+frostkit:{id:'frostkit',name:'Frostkit',type:'Ice',role:'Freeze',cost:175,range:135,rate:.9,damage:19,color:'#9fe8ff',evo20:'Glacifang',evo30:'Cryowyrm',sprite:'assets/pixel/frostkit.png',towerSprite:'assets/pixel/frostkit_tower.png'},
+shadepup:{id:'shadepup',name:'Shadepup',type:'Dark',role:'Critical',cost:180,range:125,rate:.72,damage:24,color:'#8f79cf',evo20:'Dreadfang',evo30:'Nightreaver',sprite:'assets/pixel/shadepup.png',towerSprite:'assets/pixel/shadepup_tower.png'},
+lumpling:{id:'lumpling',name:'Lumpling',type:'Light',role:'Splash',cost:185,range:145,rate:.88,damage:20,color:'#fff0a2',evo20:'Radihorn',evo30:'Solarius',sprite:'assets/pixel/lumpling.png',towerSprite:'assets/pixel/lumpling_tower.png'},
+voltwing:{id:'voltwing',name:'Voltwing',type:'Electric',role:'Chain+',cost:190,range:165,rate:.7,damage:21,color:'#fff277',evo20:'Thunderoc',evo30:'Stormra',sprite:'assets/pixel/voltwing.png',towerSprite:'assets/pixel/voltwing_tower.png'},
+scorchick:{id:'scorchick',name:'Scorchick',type:'Fire',role:'Rapid Burn',cost:135,range:120,rate:.52,damage:14,color:'#ff9a3d',evo20:'Flarewing',evo30:'Sunphoenix',sprite:'assets/pixel/scorchick.png',towerSprite:'assets/pixel/scorchick_tower.png'},
+mosshell:{id:'mosshell',name:'Mosshell',type:'Nature',role:'Stagger',cost:160,range:112,rate:1.0,damage:23,color:'#78b85b',evo20:'Groveshell',evo30:'Worldback',sprite:'assets/pixel/mosshell.png',towerSprite:'assets/pixel/mosshell_tower.png'},
+drizzlet:{id:'drizzlet',name:'Drizzlet',type:'Water',role:'Rapid Slow',cost:140,range:138,rate:.58,damage:15,color:'#6bcce8',evo20:'Rilltail',evo30:'Torrentusk',sprite:'assets/pixel/drizzlet.png',towerSprite:'assets/pixel/drizzlet_tower.png'},
+zapmoth:{id:'zapmoth',name:'Zapmoth',type:'Electric',role:'Fast Chain',cost:145,range:145,rate:.62,damage:15,color:'#ffe55f',evo20:'Voltmoth',evo30:'Tempestwing',sprite:'assets/pixel/zapmoth.png',towerSprite:'assets/pixel/zapmoth_tower.png'},
+cindrake:{id:'cindrake',name:'Cindrake',type:'Fire',role:'Meteor',cost:235,range:155,rate:.92,damage:38,color:'#ff6b35',evo20:'Magmara',evo30:'Vulcanox',sprite:'assets/pixel/cindrake.png',towerSprite:'assets/pixel/cindrake_tower.png'},
+sporeling:{id:'sporeling',name:'Sporeling',type:'Poison',role:'Toxic Burst',cost:220,range:150,rate:.82,damage:28,color:'#d47be3',evo20:'Mycomaw',evo30:'Fungorath',sprite:'assets/pixel/sporeling.png',towerSprite:'assets/pixel/sporeling_tower.png'},
+drakeling:{id:'drakeling',name:'Drakeling',type:'Wind',role:'Piercing Gale',cost:230,range:185,rate:.68,damage:29,color:'#8de6d7',evo20:'Draconis',evo30:'Aetherion',sprite:'assets/pixel/drakeling.png',towerSprite:'assets/pixel/drakeling_tower.png'},
+voidling:{id:'voidling',name:'Voidling',type:'Dark',role:'Void Critical',cost:240,range:160,rate:.75,damage:36,color:'#a675e8',evo20:'Riftbeast',evo30:'Oblivion',sprite:'assets/pixel/voidling.png',towerSprite:'assets/pixel/voidling_tower.png'}
 };
 
 const starters=['embercub','sprigpaw','bubblit'];
