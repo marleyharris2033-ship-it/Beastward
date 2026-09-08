@@ -194,3 +194,36 @@ linear-gradient(145deg,#274934,#173021 60%,#101d16)}
 .reduced-motion *, .reduced-motion *:before, .reduced-motion *:after{animation:none!important;transition:none!important}
 @media(max-width:900px){.hub-grid{grid-template-columns:1fr 1fr}.hub-card.big{grid-column:span 2;grid-row:auto;min-height:260px}}
 @media(max-width:760px){.hub-grid{grid-template-columns:1fr}.hub-card.big{grid-column:auto}.home-banner{min-height:280px;padding:24px}.home-banner:after{width:190px;height:150px;right:-22px;top:24%}.home-banner:before{right:8%;font-size:80px}.home-beasts{display:none}.hub-footer{font-size:9px}}
+
+/* ===== STEP 3: battle HUD + bestiary polish ===== */
+.bestiary-head{display:flex;align-items:center;justify-content:space-between;gap:18px;text-align:left}
+.bestiary-progress{padding:10px 12px;border:1px solid #6b7c59;border-radius:12px;background:#16261d;color:#f1d77a;font-weight:800;white-space:nowrap}
+.game-screen{background:linear-gradient(180deg,#0e1b14,#08110d);min-height:100svh}
+.battle-hud{
+  position:sticky;top:0;z-index:12;display:grid;grid-template-columns:auto auto auto 1fr auto auto;gap:10px;align-items:center;
+  padding:10px 14px;border-bottom:1px solid #7d6731;background:linear-gradient(180deg,#1b3124,#102018);box-shadow:0 10px 24px #0006
+}
+.hud-stat,.hud-wave{min-width:92px;padding:7px 10px;border:1px solid #4b6250;border-radius:11px;background:#13231a}
+.hud-label{display:block;color:#aebbb2;font-size:9px;letter-spacing:.16em}.hud-stat b,.hud-wave b{font-size:20px;color:#f7e6a0}
+.speed-segment{justify-self:end;display:flex;padding:4px;border:1px solid #526b58;border-radius:12px;background:#0c1811}
+.speed-choice{border:0;background:transparent;color:#aebbb2;padding:8px 10px;border-radius:8px;font-weight:900;cursor:pointer}.speed-choice.active{background:#3b603f;color:#fff3b7;box-shadow:inset 0 0 0 1px #d8bd5b}
+.battle-action{padding:11px 15px;border-radius:11px;border:1px solid #c9aa4c;background:linear-gradient(#365c3f,#21472e);color:#f4dd83;font-weight:900;cursor:pointer}
+.battle-exit{padding:11px 13px;border-radius:11px;border:1px solid #654b42;background:#2b201d;color:#e6cbc1;font-weight:800}
+.next-wave-strip{display:flex;align-items:center;gap:10px;margin:10px auto 0;width:min(1240px,calc(100% - 28px));padding:8px 12px;border:1px solid #415746;border-radius:12px;background:#111e17;color:#c7d1ca}
+.next-wave-strip>span{font-size:10px;letter-spacing:.15em;color:#e4cb76;font-weight:900}.next-wave-strip small{color:#aebbb2}.enemy-preview{display:flex;gap:5px}.enemy-preview i{width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#a36a52,#4a332b 70%);border:1px solid #7d5f50}
+.game-layout{align-items:stretch;gap:16px;padding:14px}.battle-board{flex:1;min-width:0;padding:8px;border-radius:18px;border:1px solid #5f704f;background:linear-gradient(#253c2d,#14251c);box-shadow:0 18px 40px #0005}
+#gameCanvas{display:block;width:100%;height:auto;border-radius:13px;box-shadow:inset 0 0 0 1px #ffffff0a}
+.tower-panel{width:255px;border-color:#776634;background:linear-gradient(160deg,#1b3023,#101e17);box-shadow:0 18px 40px #0005}
+.tower-panel-title{display:flex;justify-content:space-between;align-items:end;margin-bottom:10px}.tower-panel-title span{font:700 22px Georgia,serif;color:#f0d778}.tower-panel-title small{font-size:10px;color:#9fb0a4}
+.tower-choice{border-color:#536a57;background:linear-gradient(145deg,#20362a,#14241b);box-shadow:inset 0 1px #ffffff08}.tower-choice:hover{border-color:#d0b451;transform:translateX(-2px)}
+.tower-choice img{width:48px;height:48px;padding:4px;background:radial-gradient(circle,#31563b,#0d1812)}
+.selected-tower-panel{border-color:#9f843a;background:linear-gradient(145deg,#233b2d,#14251c)}.sell-btn{background:linear-gradient(#69382a,#4a251e);border-color:#b46c50}
+@media(max-width:900px){
+ .battle-hud{grid-template-columns:repeat(3,1fr);position:relative}.speed-segment{justify-self:stretch}.battle-action,.battle-exit{width:100%}
+ .game-layout{flex-direction:column}.tower-panel{width:100%}.battle-board{width:100%}
+}
+@media(max-width:620px){
+ .battle-hud{grid-template-columns:repeat(2,1fr)}
+ .next-wave-strip{font-size:11px}
+ .bestiary-head{flex-direction:column;text-align:center}.bestiary-progress{align-self:center}
+}
