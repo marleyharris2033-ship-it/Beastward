@@ -74,34 +74,36 @@ function statBars(id){
   </div>`;
 }
 
-function spritePathForStage(id,stage=1){
-  return stage===1?beasts[id].sprite:`assets/pixel/evolved/${id}_${stage}.svg`;
+function overlayPathForStage(id,stage=1){
+  return stage>1?`assets/pixel/evolved/${id}_${stage}.svg`:null;
 }
-function currentSprite(id){return spritePathForStage(id,evolutionStage(id))}
-const spriteImgs={};
+function currentSprite(id){return beasts[id].sprite}
+function stageSpriteMarkup(id,stage=evolutionStage(id),extra=''){
+  const b=beasts[id],overlay=overlayPathForStage(id,stage);
+  return `<span class="stage-sprite stage-${stage} type-${b.type.toLowerCase()} ${extra}">
+    <img class="stage-base" src="${b.sprite}" alt="${nameFor(id)}">
+    ${overlay?`<img class="stage-overlay" src="${overlay}" alt="">`:''}
+  </span>`;
+}
+const spriteImgs={},evolutionOverlayImgs={};
 Object.values(beasts).forEach(b=>{
-  spriteImgs[b.id]={};
-  [1,2,3].forEach(stage=>{
-    const i=new Image();
-    i.onerror=()=>{
-      if(!i.dataset.fallback){
-        i.dataset.fallback='1';
-        i.src=stage===1?'assets/sprites/'+b.id+'.svg':b.sprite;
-      }
-    };
-    i.src=spritePathForStage(b.id,stage);
-    spriteImgs[b.id][stage]=i;
+  const base=new Image();
+  base.onerror=()=>{if(!base.dataset.fallback){base.dataset.fallback='1';base.src='assets/sprites/'+b.id+'.svg'}};
+  base.src=b.sprite;
+  spriteImgs[b.id]=base;
+  evolutionOverlayImgs[b.id]={};
+  [2,3].forEach(stage=>{
+    const overlay=new Image();
+    overlay.src=overlayPathForStage(b.id,stage);
+    evolutionOverlayImgs[b.id][stage]=overlay;
   });
 });
 document.addEventListener('error',e=>{
   const img=e.target;
-  if(!img||img.tagName!=='IMG')return;
-  if(img.dataset.spriteFallback)return;
+  if(!img||img.tagName!=='IMG'||img.dataset.spriteFallback)return;
   const src=img.src||'',file=src.split('/').pop()||'';
   if(src.includes('/assets/pixel/evolved/')){
-    const id=file.replace(/_[23]\.svg$/,'');
-    img.dataset.spriteFallback='1';
-    img.src=beasts[id]?.sprite||'assets/sprites/'+id+'.svg';
+    img.style.display='none';
     return;
   }
   if(src.includes('/assets/pixel/')){
@@ -156,7 +158,7 @@ function renderCollection(){
     const b=beasts[id],p=progress(id),need=xpNeeded(p.level),a=ascension(id),needCopies=ascensionNeed(id),held=copies(id);
     const ascendLabel=a>=3?'MAX ASCENSION':`Ascend to ★${a+1} • ${held}/${needCopies} copies`;
     w.insertAdjacentHTML('beforeend',`<div class="beast-card">
-      <div class="beast-card-top"><div class="sprite-wrap"><img src="${currentSprite(id)}"></div><div class="ascension-stars">${'★'.repeat(a)}${'☆'.repeat(3-a)}</div></div>
+      <div class="beast-card-top"><div class="sprite-wrap">${stageSpriteMarkup(id)}</div><div class="ascension-stars">${'★'.repeat(a)}${'☆'.repeat(3-a)}</div></div>
       <h3>${nameFor(id)}</h3><div class="beast-meta">${b.type} • ${b.role}</div>
       <p>Level ${p.level}/30</p>
       <div class="xpbar"><div style="width:${p.level>=30?100:Math.min(100,p.xp/need*100)}%"></div></div>
@@ -291,10 +293,10 @@ function renderBestiary(){
    const arr=Object.values(beasts).filter(b=>(bestiaryType==='All'||b.type===bestiaryType)&&(!q||(b.name+' '+b.type+' '+b.role+' '+b.evo20+' '+b.evo30).toLowerCase().includes(q)));
    if(!bestiarySelected||!arr.some(b=>b.id===bestiarySelected))bestiarySelected=arr[0]?.id||null;
    list.innerHTML='';
-   arr.forEach(b=>{const row=document.createElement('button');row.className='best-row'+(b.id===bestiarySelected?' active':'');const unlocked=save.unlocked.includes(b.id);row.innerHTML=`<img src="${currentSprite(b.id)}"><div><h4>${nameFor(b.id)}</h4><small>${b.type} • Lv ${progress(b.id).level} • ${unlocked?'Collected':'Undiscovered'}</small></div><span class="tag">${b.role}</span>`;row.onclick=()=>{bestiarySelected=b.id;renderBestiary()};list.appendChild(row)});
+   arr.forEach(b=>{const row=document.createElement('button');row.className='best-row'+(b.id===bestiarySelected?' active':'');const unlocked=save.unlocked.includes(b.id);row.innerHTML=`${stageSpriteMarkup(b.id,evolutionStage(b.id),'row-sprite')}<div><h4>${nameFor(b.id)}</h4><small>${b.type} • Lv ${progress(b.id).level} • ${unlocked?'Collected':'Undiscovered'}</small></div><span class="tag">${b.role}</span>`;row.onclick=()=>{bestiarySelected=b.id;renderBestiary()};list.appendChild(row)});
    if(!bestiarySelected){detail.innerHTML='<div class="lore-card">No beasts match your search.</div>';return}
    const b=beasts[bestiarySelected],lore=beastLore(b.id),p=progress(b.id),unlocked=save.unlocked.includes(b.id);
-   detail.innerHTML=`<div class="best-hero"><div class="best-portrait"><img src="${currentSprite(b.id)}"></div><div class="best-detail-title"><h3>${nameFor(b.id)}</h3><div class="best-pills"><span class="best-pill">${b.type}</span><span class="best-pill">${b.role}</span><span class="best-pill">Level ${p.level}/30</span><span class="best-pill">Ascension ${ascension(b.id)}/3</span><span class="best-pill">${unlocked?'Collected':'Not collected'}</span></div><p><b>${lore[0]}</b><br>${lore[1]}</p></div></div>${statBars(b.id)}<div class="best-section"><b>Evolution line</b><div class="evo-line"><div class="evo"><img src="${spritePathForStage(b.id,1)}"><small>Lv 1</small><b>${b.name}</b></div><div class="evo"><img src="${spritePathForStage(b.id,2)}"><small>Lv 15</small><b>${b.evo20}</b></div><div class="evo"><img src="${spritePathForStage(b.id,3)}"><small>Lv 30</small><b>${b.evo30}</b></div></div></div>`;
+   detail.innerHTML=`<div class="best-hero"><div class="best-portrait">${stageSpriteMarkup(b.id,evolutionStage(b.id),'portrait-sprite')}</div><div class="best-detail-title"><h3>${nameFor(b.id)}</h3><div class="best-pills"><span class="best-pill">${b.type}</span><span class="best-pill">${b.role}</span><span class="best-pill">Level ${p.level}/30</span><span class="best-pill">Ascension ${ascension(b.id)}/3</span><span class="best-pill">${unlocked?'Collected':'Not collected'}</span></div><p><b>${lore[0]}</b><br>${lore[1]}</p></div></div>${statBars(b.id)}<div class="best-section"><b>Evolution line</b><div class="evo-line"><div class="evo">${stageSpriteMarkup(b.id,1,'evo-sprite')}<small>Lv 1</small><b>${b.name}</b></div><div class="evo">${stageSpriteMarkup(b.id,2,'evo-sprite')}<small>Lv 15</small><b>${b.evo20}</b></div><div class="evo">${stageSpriteMarkup(b.id,3,'evo-sprite')}<small>Lv 30</small><b>${b.evo30}</b></div></div></div>`;
  }else if(bestiaryTab==='enemies'){
    filters.innerHTML='';list.innerHTML='';
    bestiaryEnemies.forEach((e,i)=>{const row=document.createElement('button');row.className='best-row'+(bestiarySelected===i?' active':'');row.innerHTML=`<div style="font-size:36px">☠️</div><div><h4>${e.name}</h4><small>${e.kind}</small></div><span class="tag">Enemy</span>`;row.onclick=()=>{bestiarySelected=i;renderBestiary()};list.appendChild(row)});
@@ -479,7 +481,7 @@ function choices(){
   save.unlocked.forEach(id=>{
     const b=beasts[id],el=document.createElement('button');
     el.className='tower-choice';
-    const ss=stageStats(id);el.innerHTML=`<img src="${currentSprite(id)}"><div><b>${nameFor(id)}</b><small>Lv ${progress(id).level} • Stage ${ss.stage} • ${b.role} • ${b.cost} gold</small><small>POW ${ss.power}/${ss.cap} • SPD ${ss.speed}/${ss.cap} • RNG ${ss.range}/${ss.cap}</small></div>`;
+    const ss=stageStats(id);el.innerHTML=`${stageSpriteMarkup(id,evolutionStage(id),'tower-list-sprite')}<div><b>${nameFor(id)}</b><small>Lv ${progress(id).level} • Stage ${ss.stage} • ${b.role} • ${b.cost} gold</small><small>POW ${ss.power}/${ss.cap} • SPD ${ss.speed}/${ss.cap} • RNG ${ss.range}/${ss.cap}</small></div>`;
     el.onclick=()=>{selectedSpecies=id;selectedTower=null;renderSelectedTower();document.querySelectorAll('.tower-choice').forEach(x=>x.classList.remove('selected'));el.classList.add('selected')};
     w.appendChild(el);
   });
@@ -903,7 +905,9 @@ function draw(){
       ctx.moveTo(t.x-r,t.y+r-l);ctx.lineTo(t.x-r,t.y+r);ctx.lineTo(t.x-r+l,t.y+r);
       ctx.moveTo(t.x+r-l,t.y+r);ctx.lineTo(t.x+r,t.y+r);ctx.lineTo(t.x+r,t.y+r-l);ctx.stroke();
     }
-    const img=spriteImgs[t.b.id]?.[evolutionStage(t.b.id)];if(img&&img.complete)ctx.drawImage(img,t.x-39,t.y-39,78,78)
+    const stage=evolutionStage(t.b.id),img=spriteImgs[t.b.id];
+    if(img&&img.complete)ctx.drawImage(img,t.x-39,t.y-39,78,78);
+    if(stage>1){const overlay=evolutionOverlayImgs[t.b.id]?.[stage];if(overlay&&overlay.complete)ctx.drawImage(overlay,t.x-42,t.y-42,84,84)}
   });
 
   enemies.forEach(e=>{
