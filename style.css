@@ -21,3 +21,10 @@
   .title-actions{padding:0 18px max(18px,calc(env(safe-area-inset-bottom) + 10px))}
   .ornate{padding:16px 18px}
 }
+
+.wave-xp-notice{min-width:110px;color:#f3d66f;font-size:12px;font-weight:800}
+.selected-tower-panel{margin-top:14px;padding:12px;border:1px solid #6b806d;border-radius:12px;background:#1b2d22}
+.selected-tower-panel b{display:block;margin-bottom:5px}
+.sell-btn{width:100%;margin-top:10px;padding:10px;border-radius:10px;border:1px solid #b27054;background:#5a2f25;color:#ffe7dc;font-weight:900;cursor:pointer}
+.sell-btn:hover{background:#6b392c}
+.egg-card.rare{border-color:#6289c7;background:linear-gradient(145deg,#26394f,#1d2b3b)}
