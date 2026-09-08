@@ -30,3 +30,23 @@
 .egg-card.rare{border-color:#6289c7;background:linear-gradient(145deg,#26394f,#1d2b3b)}
 
 .game-ui #speedBtn,.game-ui #startWaveBtn,.game-ui #exitLevelBtn{margin-left:0}
+
+.topbar-actions{display:flex;align-items:center;gap:10px}
+.mini-action{background:#263d2e;color:#f6f2e4;border:1px solid #536c59;border-radius:10px;padding:9px 12px;font-weight:800;cursor:pointer}
+.save-panel{max-width:980px}
+.save-slots{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
+.save-slot{background:linear-gradient(145deg,#294233,#1c2f24);border:1px solid #4f6757;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:12px;min-height:210px}
+.save-slot.empty{border-style:dashed;opacity:.9}
+.save-slot h3{margin:0;font-size:24px}
+.save-slot .save-meta{color:#c7d1c8;line-height:1.45}
+.save-slot-actions{display:flex;gap:8px;margin-top:auto}
+.save-slot-actions button{flex:1;padding:10px;border-radius:10px;border:1px solid #607564;background:#2b4634;color:white;font-weight:800;cursor:pointer}
+.save-slot-actions .delete-save{background:#5a2f25;border-color:#9c5a46;color:#ffe8df}
+.speed-control{font-weight:900!important;background:linear-gradient(#486b4f,#294432)!important;border:1px solid #8fb39a!important;color:#fff8dc!important;box-shadow:0 0 0 2px rgba(255,225,123,.12)}
+.speed-float{display:none;position:fixed;right:14px;bottom:max(14px,env(safe-area-inset-bottom));z-index:25;padding:12px 15px;border-radius:999px}
+@media(max-width:760px){
+ .save-slots{grid-template-columns:1fr}
+ .topbar-actions{width:100%;justify-content:space-between}
+ #speedBtn{display:none}
+ .speed-float{display:block}
+}
