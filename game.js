@@ -116,6 +116,7 @@ function loadSlot(slot){
   if(!save.starter){show('starterScreen');return}
   if(pendingSaveTarget==='beasts'){renderCollection();show('beastsScreen')}
   else if(pendingSaveTarget==='hatchery')show('hatcheryScreen');
+  else if(pendingSaveTarget==='bestiary'){renderBestiary();show('bestiaryScreen');}
   else show('hubScreen');
 }
 function deleteSlot(slot){
@@ -131,17 +132,76 @@ function enter(target='hub'){
   updateHub();
   if(target==='beasts'){renderCollection();show('beastsScreen')}
   else if(target==='hatchery')show('hatcheryScreen');
+  else if(target==='bestiary'){renderBestiary();show('bestiaryScreen');}
   else show('hubScreen');
 }
 
 $('#newGameBtn').onclick=()=>openSaveSelect('hub');
 $('#titleBeastDenBtn').onclick=()=>openSaveSelect('beasts');
 $('#titleHatcheryBtn').onclick=()=>openSaveSelect('hatchery');
+$('#titleBestiaryBtn').onclick=()=>openSaveSelect('bestiary');
 $('#switchSaveBtn').onclick=()=>openSaveSelect('hub');
 $('#campaignBtn').onclick=()=>show('campaignScreen');
 $('#beastsBtn').onclick=()=>{renderCollection();show('beastsScreen')};
 $('#hatcheryBtn').onclick=()=>show('hatcheryScreen');
+$('#bestiaryBtn').onclick=()=>{renderBestiary();show('bestiaryScreen')};
 document.querySelectorAll('[data-back]').forEach(b=>b.onclick=()=>show(b.dataset.back));
+
+
+const bestiaryLore=[
+ {title:'The Beast Core',text:'Ancient living crystal that anchors a Sanctuary. If it falls, the surrounding wilds become vulnerable to corruption.'},
+ {title:'Essence',text:'A concentrated form of wild energy earned by defending the Core. Wardens use Essence to hatch new beasts.'},
+ {title:'Beastwardens',text:'Protectors who bond with beasts, train them through battle and guide them through evolution.'},
+ {title:'Evolution',text:'Every beast can evolve at Level 20 and again at Level 30, gaining greater strength as its bond with the Warden deepens.'}
+];
+const bestiaryEnemies=[
+ {name:'Forest Raider',kind:'Common',text:'A quick invader that travels the Keeper\'s Path in groups.'},
+ {name:'Stone Brute',kind:'Heavy',text:'Slow and durable. Best answered with high-power beasts.'},
+ {name:'Ruin Hound',kind:'Fast',text:'A swift enemy that punishes gaps in your defence.'},
+ {name:'Hollowmaw',kind:'Boss',text:'A corrupted alpha beast whose roar can overwhelm inexperienced Wardens.'}
+];
+let bestiaryTab='beasts',bestiaryType='All',bestiarySelected=null;
+function beastLore(id){
+ const notes={
+  embercub:['The Kindling Cub','Burns enemies with bright concentrated flame.'],
+  sprigpaw:['The Verdant Prowler','Uses poison and roots to control the path.'],
+  bubblit:['The Springling','Slows advancing enemies with magical water.'],
+  sparkit:['The Static Cub','Electric attacks leap between nearby targets.'],
+  pebblum:['The Boulder Heart','A heavy hitter built around raw impact.'],
+  gustwing:['The Gale Messenger','Excellent reach and fast wind projectiles.'],
+  toxip:['The Mire Hopper','Specialises in poisonous lingering damage.'],
+  frostkit:['The Frost Prowler','Freezes and heavily slows dangerous targets.'],
+  shadepup:['The Dusk Hunter','High damage with a chance to land critical strikes.'],
+  lumpling:['The Dawn Spark','Radiant attacks splash onto nearby enemies.'],
+  voltwing:['The Storm Glider','A stronger electric attacker with long range.']
+ };
+ return notes[id]||['Wild Beast','A mysterious Beastward creature.'];
+}
+function renderBestiary(){
+ const list=$('#bestiaryList'),detail=$('#bestiaryDetail'),filters=$('#bestiaryFilters'),search=$('#bestiarySearch');
+ if(!list||!detail)return;
+ document.querySelectorAll('.bestiary-tab').forEach(b=>b.classList.toggle('active',b.dataset.btab===bestiaryTab));
+ filters.innerHTML='';
+ if(bestiaryTab==='beasts'){
+   ['All',...new Set(Object.values(beasts).map(b=>b.type))].forEach(type=>{const btn=document.createElement('button');btn.className='best-filter'+(type===bestiaryType?' active':'');btn.textContent=type;btn.onclick=()=>{bestiaryType=type;bestiarySelected=null;renderBestiary()};filters.appendChild(btn)});
+   const q=(search.value||'').toLowerCase();
+   const arr=Object.values(beasts).filter(b=>(bestiaryType==='All'||b.type===bestiaryType)&&(!q||(b.name+' '+b.type+' '+b.role+' '+b.evo20+' '+b.evo30).toLowerCase().includes(q)));
+   if(!bestiarySelected||!arr.some(b=>b.id===bestiarySelected))bestiarySelected=arr[0]?.id||null;
+   list.innerHTML='';
+   arr.forEach(b=>{const row=document.createElement('button');row.className='best-row'+(b.id===bestiarySelected?' active':'');const unlocked=save.unlocked.includes(b.id);row.innerHTML=`<img src="${b.sprite}"><div><h4>${b.name}</h4><small>${b.type} • Lv ${progress(b.id).level}</small><small>${unlocked?'Collected':'Undiscovered'}</small></div><span class="tag">${b.role}</span>`;row.onclick=()=>{bestiarySelected=b.id;renderBestiary()};list.appendChild(row)});
+   if(!bestiarySelected){detail.innerHTML='<div class="lore-card">No beasts match your search.</div>';return}
+   const b=beasts[bestiarySelected],lore=beastLore(b.id),p=progress(b.id),unlocked=save.unlocked.includes(b.id);
+   detail.innerHTML=`<div class="best-hero"><div class="best-portrait"><img src="${b.sprite}"></div><div class="best-detail-title"><h3>${nameFor(b.id)}</h3><div class="best-pills"><span class="best-pill">${b.type}</span><span class="best-pill">${b.role}</span><span class="best-pill">Level ${p.level}/30</span><span class="best-pill">${unlocked?'Collected':'Not collected'}</span></div><p><b>${lore[0]}</b><br>${lore[1]}</p></div></div>${statBars(b.id)}<div class="best-section"><b>Evolution line</b><div class="evo-line"><div class="evo"><small>Lv 1</small><b>${b.name}</b></div><div class="evo"><small>Lv 20</small><b>${b.evo20}</b></div><div class="evo"><small>Lv 30</small><b>${b.evo30}</b></div></div></div>`;
+ }else if(bestiaryTab==='enemies'){
+   filters.innerHTML='';list.innerHTML='';
+   bestiaryEnemies.forEach((e,i)=>{const row=document.createElement('button');row.className='best-row'+(bestiarySelected===i?' active':'');row.innerHTML=`<div style="font-size:36px">☠️</div><div><h4>${e.name}</h4><small>${e.kind}</small></div><span class="tag">Enemy</span>`;row.onclick=()=>{bestiarySelected=i;renderBestiary()};list.appendChild(row)});
+   if(typeof bestiarySelected!=='number')bestiarySelected=0;const e=bestiaryEnemies[bestiarySelected]||bestiaryEnemies[0];detail.innerHTML=`<div class="lore-card"><h3>${e.name}</h3><div class="best-pills"><span class="best-pill">${e.kind}</span><span class="best-pill">Enemy</span></div><p>${e.text}</p></div><div class="best-section"><b>Warden advice</b><p>Use the beast types and stats in your collection to cover weaknesses in speed, durability and crowd size.</p></div>`;
+ }else{
+   filters.innerHTML='';list.innerHTML='<div class="lore-list">'+bestiaryLore.map(x=>`<div class="lore-card"><h3>${x.title}</h3><p>${x.text}</p></div>`).join('')+'</div>';detail.innerHTML='<div class="lore-card"><h3>Beastward</h3><p>The world is bound by living magic. Stronger beasts make a brighter tomorrow.</p></div>';
+ }
+}
+document.querySelectorAll('.bestiary-tab').forEach(btn=>btn.onclick=()=>{bestiaryTab=btn.dataset.btab;bestiarySelected=null;renderBestiary()});
+if($('#bestiarySearch'))$('#bestiarySearch').addEventListener('input',()=>{bestiarySelected=null;renderBestiary()});
 
 function hatch(pool,cost,isFreeCommon=false){
   const free=isFreeCommon&&!save.freeCommonClaimed;
