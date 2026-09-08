@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#102019"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>Beastward</title><link rel="stylesheet" href="style.css?v=20260908-11"></head><body>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#102019"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>Beastward</title><link rel="stylesheet" href="style.css?v=20260908-12"></head><body>
 <div id="app">
 <section id="titleScreen" class="screen active">
   <div class="title-shell">
@@ -65,7 +65,7 @@
   <div class="egg-row">
     <div class="egg-card common"><div class="egg-art common-egg"></div><h3>Common Egg</h3><p>Sparkit, Pebblum, Gustwing, Toxip, Scorchick, Mosshell, Drizzlet or Zapmoth.</p><div id="commonEggCost" class="egg-cost">Free</div><button id="openCommonEggBtn" class="primary">Open Common Egg</button></div>
     <div class="egg-card rare"><div class="egg-art rare-egg"></div><h3>Rare Egg</h3><p>Frostkit, Shadepup, Lumpling or Voltwing.</p><div id="rareEggCost" class="egg-cost">300 Essence</div><button id="openRareEggBtn" class="primary">Open Rare Egg</button></div>
-    <div class="egg-card locked-egg"><div class="egg-art epic-egg"></div><h3>Epic Egg</h3><p>More powerful beasts will arrive here.</p><div class="egg-cost">Locked</div></div>
+    <div class="egg-card epic"><div class="egg-art epic-egg"></div><h3>Epic Egg</h3><p>Cindrake, Sporeling, Drakeling or Voidling.</p><div id="epicEggCost" class="egg-cost">750 Essence</div><button id="openEpicEggBtn" class="primary epic-open">Open Epic Egg</button></div>
   </div>
 </div></section>
 <section id="settingsScreen" class="screen"><div class="panel wide settings-panel">
@@ -117,11 +117,26 @@
     <aside class="tower-panel">
       <div class="tower-panel-title"><span>BEASTS</span><small>Tap to deploy</small></div>
       <div id="towerChoices"></div>
-      <div id="selectedTowerPanel" class="selected-tower-panel hidden"><b id="selectedTowerName">Selected Beast</b><div id="selectedTowerStats" class="tiny"></div><button id="sellTowerBtn" class="sell-btn">SELL • 80%</button></div>
+      <div id="selectedTowerPanel" class="selected-tower-panel hidden">
+  <div class="selected-tower-head"><div><b id="selectedTowerName">Selected Beast</b><div id="selectedTowerStats" class="tiny"></div></div><button id="sellTowerBtn" class="sell-btn compact">SELL • 80%</button></div>
+  <div class="upgrade-tree">
+    <div class="upgrade-rule">Battle upgrades only last for this level. Both paths can reach Tier II; choose only one Tier III.</div>
+    <div class="upgrade-path">
+      <div class="upgrade-path-head"><span class="path-icon">⚔</span><div><b>Ferocity</b><small>Damage and reach</small></div></div>
+      <button id="powerUpgradeBtn" class="upgrade-btn"></button>
+      <div id="powerUpgradeDesc" class="upgrade-desc"></div>
+    </div>
+    <div class="upgrade-path">
+      <div class="upgrade-path-head"><span class="path-icon">✦</span><div><b>Primal Gift</b><small>Speed and elemental effects</small></div></div>
+      <button id="specialUpgradeBtn" class="upgrade-btn special"></button>
+      <div id="specialUpgradeDesc" class="upgrade-desc"></div>
+    </div>
+  </div>
+</div>
       <div class="tip">Tap a placed beast to inspect it or sell it. Every cleared wave awards permanent XP.</div>
     </aside>
   </div>
 </section>
 <div id="resultModal" class="modal hidden"><div class="modal-card"><h2 id="resultTitle"></h2><p id="resultText"></p><button id="resultContinue" class="primary">Continue</button></div></div>
 <div id="eggModal" class="modal hidden"><div class="modal-card"><h2 id="eggResultTitle"></h2><img id="eggResultSprite" class="result-sprite"><h3 id="eggResultName"></h3><p id="eggResultText"></p><button id="eggResultContinue" class="primary">Continue</button></div></div>
-</div><script src="game.js?v=20260908-11"></script></body></html>
+</div><script src="game.js?v=20260908-12"></script></body></html>
