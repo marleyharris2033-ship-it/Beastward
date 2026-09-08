@@ -304,3 +304,7 @@ radial-gradient(ellipse at 82% 57%,#193722 0 6%,transparent 7%);opacity:.75}
 .best-portrait img{max-width:160px;max-height:160px}
 .tower-choice img{object-fit:contain}
 .result-sprite{object-fit:contain}
+
+
+/* sprite readability v17 */
+.tower-choice img{width:64px!important;height:64px!important;object-fit:contain!important;image-rendering:pixelated!important}.sprite-wrap img,.best-row img,.best-portrait img,.result-sprite{image-rendering:pixelated!important;object-fit:contain!important}

@@ -75,7 +75,23 @@ function statBars(id){
 }
 
 const spriteImgs={};
-Object.values(beasts).forEach(b=>{const i=new Image();i.src=b.towerSprite||b.sprite;spriteImgs[b.id]=i});
+Object.values(beasts).forEach(b=>{
+  const i=new Image();
+  i.onerror=()=>{
+    if(!i.dataset.fallback){i.dataset.fallback='1';i.src='assets/sprites/'+b.id+'.svg'}
+  };
+  i.src=b.sprite;
+  spriteImgs[b.id]=i;
+});
+document.addEventListener('error',e=>{
+  const img=e.target;
+  if(!img||img.tagName!=='IMG'||!img.src.includes('/assets/pixel/'))return;
+  const file=img.src.split('/').pop()||'';
+  const id=file.replace('_tower.png','').replace('.png','');
+  if(img.dataset.spriteFallback)return;
+  img.dataset.spriteFallback='1';
+  img.src='assets/sprites/'+id+'.svg';
+},true);
 
 function blankSave(){return {starter:null,essence:0,wardenLevel:1,unlocked:[],freeCommonClaimed:false,beastProgress:{},beastCopies:{},ascensions:{},completedLevels:[],createdAt:Date.now(),lastPlayed:Date.now()}}
 function normaliseSave(s){s=s||blankSave();s.unlocked=s.unlocked||[];s.beastProgress=s.beastProgress||{};s.beastCopies=s.beastCopies||{};s.ascensions=s.ascensions||{};s.completedLevels=s.completedLevels||[];if(s.freeCommonClaimed===undefined)s.freeCommonClaimed=false;if(!s.wardenLevel)s.wardenLevel=1;if(s.essence===undefined)s.essence=0;return s}
@@ -296,7 +312,7 @@ const levels=[
 {
  id:1,name:"Keeper's Path",theme:"meadow",waves:10,reward:120,hp:1,speed:1,
  pathWidth:74,pathEdge:"#806943",pathFill:"#b79b68",
- path:[{x:-30,y:315},{x:175,y:315},{x:175,y:155},{x:410,y:155},{x:410,y:435},{x:675,y:435},{x:675,y:260},{x:930,y:260}],
+ path:[{x:-30,y:310},{x:145,y:310},{x:250,y:185},{x:390,y:185},{x:505,y:405},{x:650,y:405},{x:755,y:255},{x:930,y:255}],
  scenery:[
   {kind:"tree",x:90,y:105},{kind:"tree",x:305,y:500},{kind:"tree",x:805,y:95},
   {kind:"bush",x:535,y:95},{kind:"bush",x:820,y:485},{kind:"rock",x:90,y:485},
@@ -306,7 +322,7 @@ const levels=[
 {
  id:2,name:"Whispering Woods",theme:"forest",waves:10,reward:135,hp:1.12,speed:1.03,
  pathWidth:70,pathEdge:"#67533a",pathFill:"#927a54",
- path:[{x:-30,y:175},{x:205,y:175},{x:205,y:405},{x:455,y:405},{x:455,y:105},{x:720,y:105},{x:720,y:335},{x:930,y:335}],
+ path:[{x:-30,y:90},{x:865,y:90},{x:865,y:505},{x:160,y:505},{x:160,y:215},{x:690,y:215},{x:690,y:390},{x:335,y:390},{x:335,y:305},{x:930,y:305}],
  scenery:[
   {kind:"pine",x:85,y:85},{kind:"pine",x:125,y:500},{kind:"pine",x:330,y:80},{kind:"pine",x:575,y:505},
   {kind:"pine",x:850,y:90},{kind:"stump",x:315,y:285},{kind:"mushroom",x:570,y:255},
@@ -316,7 +332,7 @@ const levels=[
 {
  id:3,name:"Broken Bridge",theme:"river",waves:10,reward:150,hp:1.25,speed:1.05,
  pathWidth:68,pathEdge:"#786145",pathFill:"#ad9167",
- path:[{x:-30,y:430},{x:240,y:430},{x:240,y:310},{x:500,y:310},{x:500,y:175},{x:765,y:175},{x:765,y:345},{x:930,y:345}],
+ path:[{x:-30,y:500},{x:185,y:500},{x:315,y:390},{x:430,y:330},{x:505,y:310},{x:580,y:240},{x:705,y:145},{x:825,y:145},{x:930,y:255}],
  scenery:[
   {kind:"river",x:430,y:0,w:145,h:600,block:true},{kind:"bridge",x:502,y:310,w:150,h:54,dir:"h"},
   {kind:"brokenBridge",x:500,y:485,w:120,h:42},{kind:"reed",x:402,y:95},{kind:"reed",x:598,y:115},
@@ -326,7 +342,7 @@ const levels=[
 {
  id:4,name:"Mosswood Village",theme:"village",waves:10,reward:165,hp:1.4,speed:1.07,
  pathWidth:72,pathEdge:"#7b6645",pathFill:"#b49a6d",
- path:[{x:-30,y:265},{x:160,y:265},{x:160,y:470},{x:390,y:470},{x:390,y:185},{x:655,y:185},{x:655,y:390},{x:930,y:390}],
+ path:[{x:-30,y:160},{x:210,y:160},{x:210,y:500},{x:505,y:500},{x:505,y:285},{x:325,y:285},{x:325,y:80},{x:735,y:80},{x:735,y:390},{x:930,y:390}],
  scenery:[
   {kind:"hut",x:85,y:95,block:true},{kind:"hut",x:300,y:120,block:true},{kind:"hut",x:825,y:115,block:true},
   {kind:"hut",x:815,y:500,block:true},{kind:"fence",x:80,y:375,w:130},{kind:"fence",x:480,y:510,w:170},
@@ -337,7 +353,7 @@ const levels=[
 {
  id:5,name:"Ancient Shrine",theme:"shrine",waves:10,reward:185,hp:1.58,speed:1.08,boss:true,
  pathWidth:70,pathEdge:"#55594e",pathFill:"#8d917d",
- path:[{x:-30,y:125},{x:270,y:125},{x:270,y:315},{x:520,y:315},{x:520,y:500},{x:755,y:500},{x:755,y:245},{x:930,y:245}],
+ path:[{x:-30,y:300},{x:175,y:120},{x:385,y:300},{x:540,y:105},{x:710,y:300},{x:545,y:500},{x:340,y:365},{x:780,y:365},{x:930,y:245}],
  scenery:[
   {kind:"shrine",x:555,y:115,block:true},{kind:"pillar",x:115,y:285},{kind:"pillar",x:165,y:285},
   {kind:"pillar",x:630,y:385},{kind:"pillar",x:680,y:385},{kind:"rune",x:370,y:245},
@@ -348,7 +364,7 @@ const levels=[
 {
  id:6,name:"River Crossing",theme:"wetlands",waves:10,reward:205,hp:1.78,speed:1.1,
  pathWidth:66,pathEdge:"#665c45",pathFill:"#9f8d67",
- path:[{x:-30,y:360},{x:180,y:360},{x:180,y:105},{x:485,y:105},{x:485,y:365},{x:805,y:365},{x:805,y:185},{x:930,y:185}],
+ path:[{x:-30,y:475},{x:180,y:475},{x:180,y:155},{x:335,y:155},{x:485,y:275},{x:635,y:155},{x:805,y:155},{x:805,y:470},{x:930,y:470}],
  scenery:[
   {kind:"water",x:0,y:225,w:1000,h:105,block:true},{kind:"bridge",x:485,y:277,w:125,h:52,dir:"v"},
   {kind:"lily",x:90,y:255},{kind:"lily",x:290,y:292},{kind:"lily",x:680,y:252},{kind:"lily",x:905,y:285},
@@ -359,7 +375,7 @@ const levels=[
 {
  id:7,name:"Corrupted Grove",theme:"corrupted",waves:10,reward:230,hp:2.0,speed:1.12,
  pathWidth:70,pathEdge:"#40364d",pathFill:"#6a5678",
- path:[{x:-30,y:495},{x:155,y:495},{x:155,y:220},{x:345,y:220},{x:345,y:80},{x:645,y:80},{x:645,y:430},{x:930,y:430}],
+ path:[{x:-30,y:115},{x:190,y:115},{x:190,y:470},{x:350,y:470},{x:350,y:190},{x:520,y:190},{x:520,y:505},{x:690,y:505},{x:690,y:120},{x:845,y:120},{x:845,y:430},{x:930,y:430}],
  scenery:[
   {kind:"corruption",x:455,y:320,rx:105,ry:80,block:true},{kind:"corruption",x:835,y:125,rx:75,ry:55,block:true},
   {kind:"deadTree",x:90,y:95},{kind:"deadTree",x:250,y:500},{kind:"deadTree",x:545,y:510},
@@ -370,7 +386,7 @@ const levels=[
 {
  id:8,name:"Beastkeeper Ruins",theme:"ruins",waves:10,reward:255,hp:2.25,speed:1.14,
  pathWidth:70,pathEdge:"#5b5d55",pathFill:"#858779",
- path:[{x:-30,y:210},{x:300,y:210},{x:300,y:470},{x:550,y:470},{x:550,y:160},{x:815,y:160},{x:815,y:340},{x:930,y:340}],
+ path:[{x:-30,y:525},{x:130,y:525},{x:130,y:410},{x:300,y:410},{x:300,y:290},{x:470,y:290},{x:470,y:170},{x:650,y:170},{x:650,y:300},{x:815,y:300},{x:815,y:145},{x:930,y:145}],
  scenery:[
   {kind:"wall",x:120,y:95,w:185,h:30,block:true},{kind:"wall",x:675,y:520,w:210,h:28,block:true},
   {kind:"pillar",x:430,y:95},{kind:"pillar",x:470,y:95},{kind:"pillar",x:690,y:285},
@@ -381,7 +397,7 @@ const levels=[
 {
  id:9,name:"Hollow Pass",theme:"canyon",waves:10,reward:285,hp:2.55,speed:1.16,
  pathWidth:64,pathEdge:"#6e5037",pathFill:"#a47b54",
- path:[{x:-30,y:105},{x:185,y:105},{x:185,y:355},{x:425,y:355},{x:425,y:150},{x:695,y:150},{x:695,y:475},{x:930,y:475}],
+ path:[{x:-30,y:105},{x:250,y:105},{x:375,y:250},{x:235,y:410},{x:505,y:500},{x:660,y:340},{x:535,y:185},{x:790,y:80},{x:930,y:220}],
  scenery:[
   {kind:"cliff",x:0,y:0,w:1000,h:58,block:true},{kind:"cliff",x:0,y:545,w:1000,h:55,block:true},
   {kind:"boulder",x:105,y:470,block:true},{kind:"boulder",x:315,y:95,block:true},{kind:"boulder",x:845,y:155,block:true},
@@ -392,7 +408,7 @@ const levels=[
 {
  id:10,name:"Hollowmaw's Den",theme:"den",waves:10,reward:350,hp:2.9,speed:1.18,boss:true,
  pathWidth:66,pathEdge:"#352d31",pathFill:"#5d4b4e",
- path:[{x:-30,y:300},{x:125,y:300},{x:125,y:100},{x:385,y:100},{x:385,y:500},{x:650,y:500},{x:650,y:210},{x:825,y:210},{x:825,y:380},{x:930,y:380}],
+ path:[{x:-30,y:300},{x:120,y:300},{x:120,y:75},{x:875,y:75},{x:875,y:525},{x:245,y:525},{x:245,y:185},{x:745,y:185},{x:745,y:410},{x:385,y:410},{x:385,y:285},{x:620,y:285},{x:620,y:350},{x:930,y:350}],
  scenery:[
   {kind:"cavePool",x:240,y:315,rx:92,ry:70,block:true},{kind:"cavePool",x:745,y:505,rx:75,ry:46,block:true},
   {kind:"caveCrystal",x:80,y:485},{kind:"caveCrystal",x:520,y:85},{kind:"caveCrystal",x:900,y:125},
@@ -505,11 +521,11 @@ $('#sellTowerBtn').onclick=()=>{
 
 canvas.addEventListener('pointerdown',e=>{
   const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)*canvas.width/r.width,y=(e.clientY-r.top)*canvas.height/r.height;
-  const hit=towers.find(t=>Math.hypot(t.x-x,t.y-y)<=30);
+  const hit=towers.find(t=>Math.hypot(t.x-x,t.y-y)<=40);
   if(hit){selectedTower=hit;selectedSpecies=null;document.querySelectorAll('.tower-choice').forEach(x=>x.classList.remove('selected'));renderSelectedTower();return}
   if(!selectedSpecies)return;
   const b=beasts[selectedSpecies];
-  if(gold<b.cost||distPath(x,y)<55||blockedByScenery(x,y)||towers.some(t=>Math.hypot(t.x-x,t.y-y)<45))return;
+  if(gold<b.cost||distPath(x,y)<55||blockedByScenery(x,y)||towers.some(t=>Math.hypot(t.x-x,t.y-y)<64))return;
   towers.push({x,y,b:battleStats(selectedSpecies),cool:0,baseCost:b.cost,spent:b.cost,powerTier:0,specialTier:0});
   if(running)waveParticipants.add(selectedSpecies);
   gold-=b.cost;ui();
@@ -829,9 +845,9 @@ function draw(){
   drawStageLabel();
 
   towers.forEach(t=>{
-    if(t===selectedTower){ctx.strokeStyle='#ffe17b';ctx.lineWidth=4;ctx.beginPath();ctx.arc(t.x,t.y,32,0,Math.PI*2);ctx.stroke()}
-    ctx.fillStyle='#102018cc';ctx.beginPath();ctx.arc(t.x,t.y,27,0,Math.PI*2);ctx.fill();
-    const img=spriteImgs[t.b.id];if(img&&img.complete)ctx.drawImage(img,t.x-23,t.y-23,46,46)
+    if(t===selectedTower){ctx.strokeStyle='#ffe17b';ctx.lineWidth=4;ctx.beginPath();ctx.arc(t.x,t.y,43,0,Math.PI*2);ctx.stroke()}
+    ctx.fillStyle='#102018cc';ctx.beginPath();ctx.arc(t.x,t.y,36,0,Math.PI*2);ctx.fill();
+    const img=spriteImgs[t.b.id];if(img&&img.complete)ctx.drawImage(img,t.x-37,t.y-37,74,74)
   });
 
   enemies.forEach(e=>{
