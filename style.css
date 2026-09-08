@@ -157,3 +157,40 @@ linear-gradient(95deg,transparent 45%,#364c3299 47% 50%,transparent 52%);opacity
  .title-tile{min-height:76px}
  .title-primary{width:100%}
 }
+
+/* ===== STEP 2: sanctuary hub rebuild ===== */
+.hub{max-width:1180px}
+.home-banner{min-height:300px;display:flex;align-items:center;padding:34px 38px;background:
+linear-gradient(90deg,rgba(10,20,14,.9) 0%,rgba(10,20,14,.68) 45%,rgba(10,20,14,.18) 76%),
+radial-gradient(circle at 72% 48%,#7ff29d33 0 7%,transparent 26%),
+linear-gradient(145deg,#274934,#173021 60%,#101d16)}
+.home-banner:after{content:"";position:absolute;right:8%;top:14%;width:280px;height:210px;border:14px solid #65745f;border-bottom-width:22px;border-radius:140px 140px 28px 28px;box-shadow:inset 0 0 0 2px #b7a05255,0 0 32px #65d78633}
+.home-banner:before{z-index:2;font-size:120px;left:auto;right:15%;top:45%}
+.home-banner-copy{z-index:3;max-width:560px;background:transparent;border:0;padding:0}
+.home-banner-copy h2{font-size:42px;line-height:1.04}
+.home-beasts{z-index:4;right:3%;bottom:8px}
+.home-beasts img{width:78px;height:78px}.home-beasts img:nth-child(2){width:90px;height:90px}
+.hub-grid{grid-template-columns:1.45fr 1fr 1fr;align-items:stretch}
+.hub-card{position:relative;overflow:hidden;min-height:190px;border-color:#6b795b;padding:24px 24px 22px}
+.hub-card:before{content:"";position:absolute;inset:0;background:linear-gradient(145deg,#ffffff08,transparent 38%);pointer-events:none}
+.hub-card.big{grid-column:span 1;grid-row:span 2;min-height:400px}
+.hub-card b{font-family:Georgia,serif;color:#f2d978;font-size:28px}.hub-card small{max-width:260px}
+.hub-card em{font-style:normal;margin-top:18px;color:#fff0b1;font-size:13px;font-weight:800}
+.hub-icon{width:58px;height:58px;border-radius:16px;border:1px solid #a88d45;background:linear-gradient(#2f5038,#173020);display:grid!important;place-items:center;font-size:29px!important;color:#f0d776;box-shadow:inset 0 0 0 2px #102219,0 8px 16px #0004}
+.sword-icon:before{content:"";width:28px;height:5px;border-radius:8px;background:#efd36e;transform:rotate(-45deg);box-shadow:0 0 0 1px #7d6328}
+.sword-icon:after{content:"";position:absolute;width:28px;height:5px;border-radius:8px;background:#efd36e;transform:rotate(45deg);box-shadow:0 0 0 1px #7d6328}
+.hatch-card{background:radial-gradient(circle at 80% 18%,#e9d98118,transparent 22%),linear-gradient(145deg,#2f4937,#182b20)}
+.den-card{background:radial-gradient(circle at 80% 18%,#7dcf861a,transparent 22%),linear-gradient(145deg,#294334,#17281e)}
+.book-card{background:radial-gradient(circle at 80% 18%,#a17ad81a,transparent 22%),linear-gradient(145deg,#2e3e32,#17261d)}
+.hub-footer{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding:11px 14px;border:1px solid #4d6250;border-radius:14px;background:#101d17aa;color:#d4c98f;font-size:11px;letter-spacing:.12em}
+.footer-action{border:0;background:transparent;color:#efd373;font-weight:800;cursor:pointer}
+.settings-panel{border-color:#8c7135}
+.settings-grid{display:grid;gap:12px;margin-top:24px}
+.setting-card{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;padding:18px;border-radius:16px;border:1px solid #4c6451;background:linear-gradient(145deg,#20362a,#14251c)}
+.setting-card b{display:block;color:#efd572;font:22px Georgia,serif}.setting-card small{display:block;color:#b9c6bd;margin-top:4px}
+.setting-toggle,.setting-action{padding:10px 15px;border-radius:11px;border:1px solid #7e8f6a;background:#284731;color:#fff3bf;font-weight:900;cursor:pointer}
+.setting-toggle.on{background:#3f7049;border-color:#d8bd5b}
+.setting-version{color:#c5cfca}
+.reduced-motion *, .reduced-motion *:before, .reduced-motion *:after{animation:none!important;transition:none!important}
+@media(max-width:900px){.hub-grid{grid-template-columns:1fr 1fr}.hub-card.big{grid-column:span 2;grid-row:auto;min-height:260px}}
+@media(max-width:760px){.hub-grid{grid-template-columns:1fr}.hub-card.big{grid-column:auto}.home-banner{min-height:280px;padding:24px}.home-banner:after{width:190px;height:150px;right:-22px;top:24%}.home-banner:before{right:8%;font-size:80px}.home-beasts{display:none}.hub-footer{font-size:9px}}
