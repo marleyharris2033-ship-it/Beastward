@@ -13,11 +13,15 @@ toxip:{id:'toxip',name:'Toxip',type:'Poison',role:'Damage over Time',cost:150,ra
 frostkit:{id:'frostkit',name:'Frostkit',type:'Ice',role:'Freeze',cost:175,range:135,rate:.9,damage:19,color:'#9fe8ff',evo20:'Glacifang',evo30:'Cryowyrm',sprite:'assets/sprites/frostkit.svg'},
 shadepup:{id:'shadepup',name:'Shadepup',type:'Dark',role:'Critical',cost:180,range:125,rate:.72,damage:24,color:'#8f79cf',evo20:'Dreadfang',evo30:'Nightreaver',sprite:'assets/sprites/shadepup.svg'},
 lumpling:{id:'lumpling',name:'Lumpling',type:'Light',role:'Splash',cost:185,range:145,rate:.88,damage:20,color:'#fff0a2',evo20:'Radihorn',evo30:'Solarius',sprite:'assets/sprites/lumpling.svg'},
-voltwing:{id:'voltwing',name:'Voltwing',type:'Electric',role:'Chain+',cost:190,range:165,rate:.7,damage:21,color:'#fff277',evo20:'Thunderoc',evo30:'Stormra',sprite:'assets/sprites/voltwing.svg'}
+voltwing:{id:'voltwing',name:'Voltwing',type:'Electric',role:'Chain+',cost:190,range:165,rate:.7,damage:21,color:'#fff277',evo20:'Thunderoc',evo30:'Stormra',sprite:'assets/sprites/voltwing.svg'},
+scorchick:{id:'scorchick',name:'Scorchick',type:'Fire',role:'Rapid Burn',cost:135,range:120,rate:.52,damage:14,color:'#ff9a3d',evo20:'Flarewing',evo30:'Sunphoenix',sprite:'assets/sprites/scorchick.svg'},
+mosshell:{id:'mosshell',name:'Mosshell',type:'Nature',role:'Stagger',cost:160,range:112,rate:1.0,damage:23,color:'#78b85b',evo20:'Groveshell',evo30:'Worldback',sprite:'assets/sprites/mosshell.svg'},
+drizzlet:{id:'drizzlet',name:'Drizzlet',type:'Water',role:'Rapid Slow',cost:140,range:138,rate:.58,damage:15,color:'#6bcce8',evo20:'Rilltail',evo30:'Torrentusk',sprite:'assets/sprites/drizzlet.svg'},
+zapmoth:{id:'zapmoth',name:'Zapmoth',type:'Electric',role:'Fast Chain',cost:145,range:145,rate:.62,damage:15,color:'#ffe55f',evo20:'Voltmoth',evo30:'Tempestwing',sprite:'assets/sprites/zapmoth.svg'}
 };
 
 const starters=['embercub','sprigpaw','bubblit'];
-const commonPool=['sparkit','pebblum','gustwing','toxip'];
+const commonPool=['sparkit','pebblum','gustwing','toxip','scorchick','mosshell','drizzlet','zapmoth'];
 const rarePool=['frostkit','shadepup','lumpling','voltwing'];
 const commonCost=100,rareCost=300;
 const beastRatings={
@@ -31,7 +35,11 @@ toxip:{power:5,speed:6,range:6,special:9},
 frostkit:{power:6,speed:6,range:7,special:9},
 shadepup:{power:9,speed:9,range:5,special:7},
 lumpling:{power:7,speed:6,range:8,special:8},
-voltwing:{power:8,speed:9,range:9,special:9}
+voltwing:{power:8,speed:9,range:9,special:9},
+scorchick:{power:5,speed:10,range:5,special:7},
+mosshell:{power:8,speed:4,range:4,special:7},
+drizzlet:{power:5,speed:9,range:7,special:7},
+zapmoth:{power:5,speed:10,range:8,special:8}
 };
 function statBars(id){
   const s=beastRatings[id];
@@ -46,8 +54,8 @@ function statBars(id){
 const spriteImgs={};
 Object.values(beasts).forEach(b=>{const i=new Image();i.src=b.sprite;spriteImgs[b.id]=i});
 
-function blankSave(){return {starter:null,essence:0,wardenLevel:1,unlocked:[],freeCommonClaimed:false,beastProgress:{},createdAt:Date.now(),lastPlayed:Date.now()}}
-function normaliseSave(s){s=s||blankSave();s.unlocked=s.unlocked||[];s.beastProgress=s.beastProgress||{};if(s.freeCommonClaimed===undefined)s.freeCommonClaimed=false;if(!s.wardenLevel)s.wardenLevel=1;if(s.essence===undefined)s.essence=0;return s}
+function blankSave(){return {starter:null,essence:0,wardenLevel:1,unlocked:[],freeCommonClaimed:false,beastProgress:{},beastCopies:{},ascensions:{},completedLevels:[],createdAt:Date.now(),lastPlayed:Date.now()}}
+function normaliseSave(s){s=s||blankSave();s.unlocked=s.unlocked||[];s.beastProgress=s.beastProgress||{};s.beastCopies=s.beastCopies||{};s.ascensions=s.ascensions||{};s.completedLevels=s.completedLevels||[];if(s.freeCommonClaimed===undefined)s.freeCommonClaimed=false;if(!s.wardenLevel)s.wardenLevel=1;if(s.essence===undefined)s.essence=0;return s}
 const legacy=localStorage.getItem('beastward-save');
 if(legacy&&!localStorage.getItem('beastward-save-1')&&!localStorage.getItem('beastward-save-2')&&!localStorage.getItem('beastward-save-3')){
   localStorage.setItem('beastward-save-1',legacy);
@@ -60,8 +68,11 @@ function xpNeeded(level){return 60+(level-1)*15}
 function progress(id){return save.beastProgress[id]||(save.beastProgress[id]={level:1,xp:0})}
 function addBeast(id){if(!save.unlocked.includes(id))save.unlocked.push(id);progress(id)}
 function nameFor(id){const b=beasts[id],l=progress(id).level;return l>=30?b.evo30:l>=20?b.evo20:b.name}
-function levelMultiplier(id){const l=progress(id).level;return 1+(l-1)*.03+(l>=20?.15:0)+(l>=30?.2:0)}
-function rangeMultiplier(id){return 1+(progress(id).level-1)*.005}
+function ascension(id){return save.ascensions[id]||0}
+function copies(id){return save.beastCopies[id]||0}
+function ascensionNeed(id){return [2,5,10][ascension(id)]||null}
+function levelMultiplier(id){const l=progress(id).level,a=ascension(id);return (1+(l-1)*.03+(l>=20?.15:0)+(l>=30?.2:0))*(1+a*.08)}
+function rangeMultiplier(id){return (1+(progress(id).level-1)*.005)*(1+ascension(id)*.02)}
 function persist(){if(!activeSlot)return;save.lastPlayed=Date.now();localStorage.setItem('beastward-save-'+activeSlot,JSON.stringify(save));localStorage.setItem('beastward-active-slot',String(activeSlot));updateHub()}
 function updateHub(){
   if($('#essenceTotal'))$('#essenceTotal').textContent=save.essence;
@@ -84,11 +95,26 @@ function renderCollection(){
   const w=$('#beastCollection');w.innerHTML='';
   const countEl=$('#denCollectedCount');if(countEl)countEl.textContent=save.unlocked.length;
   save.unlocked.forEach(id=>{
-    const b=beasts[id],p=progress(id),need=xpNeeded(p.level);
-    w.insertAdjacentHTML('beforeend',`<div class="beast-card"><div class="sprite-wrap"><img src="${b.sprite}"></div><h3>${nameFor(id)}</h3><div class="beast-meta">${b.type} • ${b.role}</div><p>Level ${p.level}/30</p><div class="xpbar"><div style="width:${p.level>=30?100:Math.min(100,p.xp/need*100)}%"></div></div><div class="tiny">${p.level>=30?'MAX LEVEL':p.xp+' / '+need+' XP'} • Damage bonus +${Math.round((levelMultiplier(id)-1)*100)}%</div><div class="tiny">Lv20 ${b.evo20} • Lv30 ${b.evo30}</div>${statBars(id)}</div>`);
+    const b=beasts[id],p=progress(id),need=xpNeeded(p.level),a=ascension(id),needCopies=ascensionNeed(id),held=copies(id);
+    const ascendLabel=a>=3?'MAX ASCENSION':`Ascend to ★${a+1} • ${held}/${needCopies} copies`;
+    w.insertAdjacentHTML('beforeend',`<div class="beast-card">
+      <div class="beast-card-top"><div class="sprite-wrap"><img src="${b.sprite}"></div><div class="ascension-stars">${'★'.repeat(a)}${'☆'.repeat(3-a)}</div></div>
+      <h3>${nameFor(id)}</h3><div class="beast-meta">${b.type} • ${b.role}</div>
+      <p>Level ${p.level}/30</p>
+      <div class="xpbar"><div style="width:${p.level>=30?100:Math.min(100,p.xp/need*100)}%"></div></div>
+      <div class="tiny">${p.level>=30?'MAX LEVEL':p.xp+' / '+need+' XP'} • Combat bonus +${Math.round((levelMultiplier(id)-1)*100)}%</div>
+      <div class="tiny">Lv20 ${b.evo20} • Lv30 ${b.evo30}</div>
+      ${statBars(id)}
+      <div class="ascend-box"><div><b>Ascension ${a}/3</b><small>${a>=3?'Fully ascended':'Duplicate copies are used here — not Essence.'}</small></div>
+      <button class="ascend-btn" data-ascend="${id}" ${a>=3||held<needCopies?'disabled':''}>${ascendLabel}</button></div>
+    </div>`);
   });
+  document.querySelectorAll('[data-ascend]').forEach(btn=>btn.onclick=()=>ascendBeast(btn.dataset.ascend));
 }
-function slotData(slot){try{return normaliseSave(JSON.parse(localStorage.getItem('beastward-save-'+slot)||'null'))}catch(e){return null}}
+function ascendBeast(id){
+  const a=ascension(id),need=ascensionNeed(id);if(a>=3||copies(id)<need)return;
+  save.beastCopies[id]-=need;save.ascensions[id]=a+1;persist();renderCollection();
+}function slotData(slot){try{return normaliseSave(JSON.parse(localStorage.getItem('beastward-save-'+slot)||'null'))}catch(e){return null}}
 function renderSaveSlots(){
   const wrap=$('#saveSlots');if(!wrap)return;wrap.innerHTML='';
   for(let slot=1;slot<=3;slot++){
@@ -144,7 +170,7 @@ $('#titleBestiaryBtn').onclick=()=>openSaveSelect('bestiary');
 $('#titleSaveSlotsBtn').onclick=()=>openSaveSelect('hub');
 $('#titleSettingsBtn').onclick=()=>show('settingsScreen');
 $('#switchSaveBtn').onclick=()=>openSaveSelect('hub');
-$('#campaignBtn').onclick=()=>show('campaignScreen');
+$('#campaignBtn').onclick=()=>{renderCampaignMap();show('campaignScreen')};
 $('#beastsBtn').onclick=()=>{renderCollection();show('beastsScreen')};
 $('#hatcheryBtn').onclick=()=>show('hatcheryScreen');
 $('#bestiaryBtn').onclick=()=>{renderBestiary();show('bestiaryScreen')};
@@ -183,7 +209,11 @@ function beastLore(id){
   frostkit:['The Frost Prowler','Freezes and heavily slows dangerous targets.'],
   shadepup:['The Dusk Hunter','High damage with a chance to land critical strikes.'],
   lumpling:['The Dawn Spark','Radiant attacks splash onto nearby enemies.'],
-  voltwing:['The Storm Glider','A stronger electric attacker with long range.']
+  voltwing:['The Storm Glider','A stronger electric attacker with long range.'],
+  scorchick:['The Ember Fledgling','A tiny firebird that attacks extremely quickly.'],
+  mosshell:['The Grove Tortoise','A sturdy nature beast whose heavy hits disrupt enemies.'],
+  drizzlet:['The River Rascal','A nimble water beast that applies frequent slows.'],
+  zapmoth:['The Static Flutter','A lightning moth built around fast chained strikes.']
  };
  return notes[id]||['Wild Beast','A mysterious Beastward creature.'];
 }
@@ -202,7 +232,7 @@ function renderBestiary(){
    arr.forEach(b=>{const row=document.createElement('button');row.className='best-row'+(b.id===bestiarySelected?' active':'');const unlocked=save.unlocked.includes(b.id);row.innerHTML=`<img src="${b.sprite}"><div><h4>${b.name}</h4><small>${b.type} • Lv ${progress(b.id).level}</small><small>${unlocked?'Collected':'Undiscovered'}</small></div><span class="tag">${b.role}</span>`;row.onclick=()=>{bestiarySelected=b.id;renderBestiary()};list.appendChild(row)});
    if(!bestiarySelected){detail.innerHTML='<div class="lore-card">No beasts match your search.</div>';return}
    const b=beasts[bestiarySelected],lore=beastLore(b.id),p=progress(b.id),unlocked=save.unlocked.includes(b.id);
-   detail.innerHTML=`<div class="best-hero"><div class="best-portrait"><img src="${b.sprite}"></div><div class="best-detail-title"><h3>${nameFor(b.id)}</h3><div class="best-pills"><span class="best-pill">${b.type}</span><span class="best-pill">${b.role}</span><span class="best-pill">Level ${p.level}/30</span><span class="best-pill">${unlocked?'Collected':'Not collected'}</span></div><p><b>${lore[0]}</b><br>${lore[1]}</p></div></div>${statBars(b.id)}<div class="best-section"><b>Evolution line</b><div class="evo-line"><div class="evo"><small>Lv 1</small><b>${b.name}</b></div><div class="evo"><small>Lv 20</small><b>${b.evo20}</b></div><div class="evo"><small>Lv 30</small><b>${b.evo30}</b></div></div></div>`;
+   detail.innerHTML=`<div class="best-hero"><div class="best-portrait"><img src="${b.sprite}"></div><div class="best-detail-title"><h3>${nameFor(b.id)}</h3><div class="best-pills"><span class="best-pill">${b.type}</span><span class="best-pill">${b.role}</span><span class="best-pill">Level ${p.level}/30</span><span class="best-pill">Ascension ${ascension(b.id)}/3</span><span class="best-pill">${unlocked?'Collected':'Not collected'}</span></div><p><b>${lore[0]}</b><br>${lore[1]}</p></div></div>${statBars(b.id)}<div class="best-section"><b>Evolution line</b><div class="evo-line"><div class="evo"><small>Lv 1</small><b>${b.name}</b></div><div class="evo"><small>Lv 20</small><b>${b.evo20}</b></div><div class="evo"><small>Lv 30</small><b>${b.evo30}</b></div></div></div>`;
  }else if(bestiaryTab==='enemies'){
    filters.innerHTML='';list.innerHTML='';
    bestiaryEnemies.forEach((e,i)=>{const row=document.createElement('button');row.className='best-row'+(bestiarySelected===i?' active':'');row.innerHTML=`<div style="font-size:36px">☠️</div><div><h4>${e.name}</h4><small>${e.kind}</small></div><span class="tag">Enemy</span>`;row.onclick=()=>{bestiarySelected=i;renderBestiary()};list.appendChild(row)});
@@ -216,15 +246,16 @@ if($('#bestiarySearch'))$('#bestiarySearch').addEventListener('input',()=>{besti
 
 function hatch(pool,cost,isFreeCommon=false){
   const free=isFreeCommon&&!save.freeCommonClaimed;
-  if(!free&&save.essence<cost){alert("Not enough Essence yet. Beat Keeper's Path to earn more.");return}
+  if(!free&&save.essence<cost){alert("Not enough Essence yet. Beat campaign levels to earn more.");return}
   if(free)save.freeCommonClaimed=true;else save.essence-=cost;
   const id=pool[Math.floor(Math.random()*pool.length)],isNew=!save.unlocked.includes(id);
-  if(isNew)addBeast(id);else save.essence+=Math.floor(cost*.2);
+  if(isNew)addBeast(id);else save.beastCopies[id]=(save.beastCopies[id]||0)+1;
   persist();
-  $('#eggResultTitle').textContent=isNew?'New Beast Hatched!':'Duplicate Hatched';
+  $('#eggResultTitle').textContent=isNew?'New Beast Hatched!':'Duplicate Bond!';
   $('#eggResultSprite').src=beasts[id].sprite;
   $('#eggResultName').textContent=beasts[id].name;
-  $('#eggResultText').textContent=isNew?`${beasts[id].name} joined your Beast Den.`:`${beasts[id].name} was already unlocked, so you received ${Math.floor(cost*.2)} Essence back.`;
+  const a=ascension(id),need=ascensionNeed(id),held=copies(id);
+  $('#eggResultText').textContent=isNew?`${beasts[id].name} joined your Beast Den.`:`${beasts[id].name} duplicate gained. You now have ${held}${a<3?'/'+need:''} copies towards the next Ascension.`;
   $('#eggModal').classList.remove('hidden');
 }
 $('#openCommonEggBtn').onclick=()=>hatch(commonPool,commonCost,true);
@@ -232,13 +263,33 @@ $('#openRareEggBtn').onclick=()=>hatch(rarePool,rareCost,false);
 $('#eggResultContinue').onclick=()=>$('#eggModal').classList.add('hidden');
 
 const canvas=$('#gameCanvas'),ctx=canvas.getContext('2d');
-const path=[{x:0,y:300},{x:180,y:300},{x:180,y:150},{x:430,y:150},{x:430,y:420},{x:700,y:420},{x:700,y:250},{x:1000,y:250}];
+const levels=[
+{id:1,name:"Keeper's Path",waves:10,reward:120,hp:1,speed:1,path:[{x:0,y:300},{x:180,y:300},{x:180,y:150},{x:430,y:150},{x:430,y:420},{x:700,y:420},{x:700,y:250},{x:1000,y:250}]},
+{id:2,name:"Whispering Woods",waves:10,reward:135,hp:1.12,speed:1.03,path:[{x:0,y:180},{x:210,y:180},{x:210,y:390},{x:440,y:390},{x:440,y:120},{x:720,y:120},{x:720,y:330},{x:1000,y:330}]},
+{id:3,name:"Broken Bridge",waves:10,reward:150,hp:1.25,speed:1.05,path:[{x:0,y:430},{x:240,y:430},{x:240,y:210},{x:520,y:210},{x:520,y:460},{x:770,y:460},{x:770,y:240},{x:1000,y:240}]},
+{id:4,name:"Mosswood Village",waves:10,reward:165,hp:1.4,speed:1.07,path:[{x:0,y:260},{x:150,y:260},{x:150,y:470},{x:390,y:470},{x:390,y:180},{x:650,y:180},{x:650,y:390},{x:1000,y:390}]},
+{id:5,name:"Ancient Shrine",waves:10,reward:185,hp:1.58,speed:1.08,boss:true,path:[{x:0,y:120},{x:280,y:120},{x:280,y:320},{x:520,y:320},{x:520,y:500},{x:760,y:500},{x:760,y:250},{x:1000,y:250}]},
+{id:6,name:"River Crossing",waves:10,reward:205,hp:1.78,speed:1.1,path:[{x:0,y:360},{x:190,y:360},{x:190,y:110},{x:500,y:110},{x:500,y:380},{x:810,y:380},{x:810,y:180},{x:1000,y:180}]},
+{id:7,name:"Corrupted Grove",waves:10,reward:230,hp:2.0,speed:1.12,path:[{x:0,y:490},{x:160,y:490},{x:160,y:220},{x:350,y:220},{x:350,y:80},{x:650,y:80},{x:650,y:430},{x:1000,y:430}]},
+{id:8,name:"Beastkeeper Ruins",waves:10,reward:255,hp:2.25,speed:1.14,path:[{x:0,y:210},{x:300,y:210},{x:300,y:470},{x:550,y:470},{x:550,y:160},{x:820,y:160},{x:820,y:340},{x:1000,y:340}]},
+{id:9,name:"Hollow Pass",waves:10,reward:285,hp:2.55,speed:1.16,path:[{x:0,y:100},{x:180,y:100},{x:180,y:360},{x:420,y:360},{x:420,y:150},{x:690,y:150},{x:690,y:480},{x:1000,y:480}]},
+{id:10,name:"Hollowmaw's Den",waves:10,reward:350,hp:2.9,speed:1.18,boss:true,path:[{x:0,y:300},{x:130,y:300},{x:130,y:100},{x:390,y:100},{x:390,y:500},{x:660,y:500},{x:660,y:210},{x:840,y:210},{x:840,y:380},{x:1000,y:380}]}
+];
+let currentLevel=levels[0],path=currentLevel.path;
+function levelUnlocked(id){return id===1||save.completedLevels.includes(id-1)}
+function renderCampaignMap(){
+ const map=$('.campaign-map');if(!map)return;
+ map.innerHTML='<div class="map-path"></div>';
+ const coords=[[12,78],[27,60],[43,73],[55,48],[72,63],[82,42],[68,24],[47,30],[29,17],[88,14]];
+ levels.forEach((lvl,i)=>{const unlocked=levelUnlocked(lvl.id),done=save.completedLevels.includes(lvl.id);const el=document.createElement(unlocked?'button':'div');el.className='map-node '+(unlocked?'unlocked':'locked')+(lvl.id===10?' boss-node':'')+(done?' completed':'');el.style.setProperty('--x',coords[i][0]+'%');el.style.setProperty('--y',coords[i][1]+'%');el.innerHTML=`<span>1-${lvl.id}</span><b>${lvl.name}</b><small>${done?'✓ Cleared':unlocked?lvl.waves+' waves':'Locked'}</small>`;if(unlocked)el.onclick=()=>startLevel(lvl.id);map.appendChild(el)});
+}
+function startLevel(id){currentLevel=levels[id-1];path=currentLevel.path;reset();show('gameScreen');last=performance.now();requestAnimationFrame(loop)}
 let towers=[],enemies=[],projectiles=[],effects=[],selectedSpecies=null,selectedTower=null,gold=350,lives=20,wave=0,running=false,last=0,queue=[],speed=1,waveParticipants=new Set();
 
 function ui(){$('#gold').textContent=Math.floor(gold);$('#lives').textContent=lives;$('#wave').textContent=wave}
 function battleStats(id){
   const b=beasts[id];
-  return {...b,damage:b.damage*levelMultiplier(id),range:b.range*rangeMultiplier(id)};
+  return {...b,damage:b.damage*levelMultiplier(id),range:b.range*rangeMultiplier(id),rate:b.rate*(1-ascension(id)*.03)};
 }
 function choices(){
   const w=$('#towerChoices');w.innerHTML='';
@@ -261,16 +312,15 @@ function reset(){
   towers=[];enemies=[];projectiles=[];effects=[];selectedSpecies=null;selectedTower=null;gold=350;lives=20;wave=0;running=false;queue=[];speed=1;waveParticipants=new Set();
   document.querySelectorAll('.speed-choice').forEach(b=>b.classList.toggle('active',Number(b.dataset.speed)===1));$('#waveXpNotice').textContent='';ui();choices();renderSelectedTower();
 }
-$('#level1Btn').onclick=()=>{reset();show('gameScreen');last=performance.now();requestAnimationFrame(loop)};
 $('#exitLevelBtn').onclick=()=>show('campaignScreen');
 function setSpeed(next){speed=next;document.querySelectorAll('.speed-choice').forEach(b=>b.classList.toggle('active',Number(b.dataset.speed)===speed))}
 document.querySelectorAll('.speed-choice').forEach(b=>b.onclick=()=>setSpeed(Number(b.dataset.speed)));
 $('#startWaveBtn').onclick=()=>{
   if(running||wave>=10)return;
   wave++;running=true;waveParticipants=new Set(towers.map(t=>t.b.id));
-  const n=5+wave*2;queue=[];
-  for(let i=0;i<n;i++)queue.push({delay:i*700,hp:55+wave*20,speed:45+wave*2,reward:12+wave});
-  if(wave===10)queue.push({delay:n*700+600,hp:900,speed:28,reward:180,boss:true});
+  const n=5+wave*2+Math.floor((currentLevel.id-1)*.6);queue=[];
+  for(let i=0;i<n;i++)queue.push({delay:i*Math.max(420,700-currentLevel.id*20),hp:(55+wave*20)*currentLevel.hp,speed:(45+wave*2)*currentLevel.speed,reward:12+wave+Math.floor(currentLevel.id/2)});
+  if(wave===10&&(currentLevel.boss||currentLevel.id===10))queue.push({delay:n*600+600,hp:900*currentLevel.hp,speed:28*currentLevel.speed,reward:180+currentLevel.id*10,boss:true});
   ui();
 };
 
@@ -385,8 +435,8 @@ function finish(win){
   $('#resultModal').classList.remove('hidden');
   $('#resultTitle').textContent=win?'Victory!':'The Core Has Fallen';
   if(win){
-    save.essence+=120;save.wardenLevel=Math.max(save.wardenLevel,2);persist();
-    $('#resultText').textContent="Keeper's Path defended. You earned 120 Essence. XP was awarded after every completed wave.";
+    save.essence+=currentLevel.reward;if(!save.completedLevels.includes(currentLevel.id))save.completedLevels.push(currentLevel.id);save.wardenLevel=Math.max(save.wardenLevel,1+Math.ceil(currentLevel.id/2));persist();
+    $('#resultText').textContent=`${currentLevel.name} defended. You earned ${currentLevel.reward} Essence. Level ${currentLevel.id<10?'1-'+(currentLevel.id+1)+' unlocked.':'region complete!'}`;
   }else $('#resultText').textContent='Strengthen your defence and try again.';
 }
 $('#resultContinue').onclick=()=>{$('#resultModal').classList.add('hidden');show('hubScreen')};
@@ -406,4 +456,4 @@ function loop(ts){
   const dt=Math.min(.033,(ts-last)/1000||0);last=ts;
   update(dt*speed);draw();requestAnimationFrame(loop);
 }
-renderStarters();updateHub();renderSaveSlots();applyMotionSetting();setSpeed(1);
+renderStarters();updateHub();renderSaveSlots();applyMotionSetting();setSpeed(1);renderCampaignMap();
