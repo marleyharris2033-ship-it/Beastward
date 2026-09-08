@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" shape-rendering="crispEdges">
+ <defs><filter id="g"><feGaussianBlur stdDeviation="1.5"/></filter></defs>
+ <g transform="translate(-7.68 -7.68) scale(1.16)"><image href="../lumpling.png" x="0" y="0" width="96" height="96" image-rendering="pixelated"/></g>
+ <g style="color:#b7eac6"><g fill="none" stroke="#fff0a2" stroke-width="3" opacity="1">
+ <ellipse cx="48" cy="15" rx="23" ry="7"/><path d="M13 44 17 38 21 44 17 50Z" fill="#fff5bc"/><path d="M78 47 82 40 86 47 82 54Z" fill="#fff5bc"/>
+ <ellipse cx="48" cy="15" rx="30" ry="10"/><path d="M48 2 52 9 48 16 44 9Z" fill="#fff5bc"/><path d="M12 72 16 65 20 72 16 79Z" fill="#fff5bc"/><path d="M79 72 83 65 87 72 83 79Z" fill="#fff5bc"/></g>
+ <circle cx="48" cy="48" r="42" fill="none" stroke="currentColor" stroke-width="2" opacity=".22"/>
+ <circle cx="48" cy="48" r="36" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".16"/></g>
+ </svg>
