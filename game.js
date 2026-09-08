@@ -50,13 +50,27 @@ sporeling:{power:8,speed:7,range:8,special:10},
 drakeling:{power:8,speed:9,range:10,special:9},
 voidling:{power:10,speed:8,range:8,special:10}
 };
+function evolutionStage(id){
+  const l=progress(id).level;
+  return l>=30?3:l>=15?2:1;
+}
+function stageStats(id){
+  const base=beastRatings[id],stage=evolutionStage(id),cap=stage*10;
+  return {
+    stage,cap,
+    power:Math.min(cap,base.power*stage),
+    speed:Math.min(cap,base.speed*stage),
+    range:Math.min(cap,base.range*stage),
+    special:Math.min(cap,base.special*stage)
+  };
+}
 function statBars(id){
-  const s=beastRatings[id];
+  const s=stageStats(id);
   return `<div class="stat-grid">
-    <div><span>Power</span><b>${s.power}/10</b></div>
-    <div><span>Speed</span><b>${s.speed}/10</b></div>
-    <div><span>Range</span><b>${s.range}/10</b></div>
-    <div><span>Special</span><b>${s.special}/10</b></div>
+    <div><span>Power</span><b>${s.power}/${s.cap}</b></div>
+    <div><span>Speed</span><b>${s.speed}/${s.cap}</b></div>
+    <div><span>Range</span><b>${s.range}/${s.cap}</b></div>
+    <div><span>Special</span><b>${s.special}/${s.cap}</b></div>
   </div>`;
 }
 
@@ -76,11 +90,11 @@ let pendingSaveTarget='hub';
 function xpNeeded(level){return 60+(level-1)*15}
 function progress(id){return save.beastProgress[id]||(save.beastProgress[id]={level:1,xp:0})}
 function addBeast(id){if(!save.unlocked.includes(id))save.unlocked.push(id);progress(id)}
-function nameFor(id){const b=beasts[id],l=progress(id).level;return l>=30?b.evo30:l>=20?b.evo20:b.name}
+function nameFor(id){const b=beasts[id],l=progress(id).level;return l>=30?b.evo30:l>=15?b.evo20:b.name}
 function ascension(id){return save.ascensions[id]||0}
 function copies(id){return save.beastCopies[id]||0}
 function ascensionNeed(id){return [2,5,10][ascension(id)]||null}
-function levelMultiplier(id){const l=progress(id).level,a=ascension(id);return (1+(l-1)*.03+(l>=20?.15:0)+(l>=30?.2:0))*(1+a*.08)}
+function levelMultiplier(id){const l=progress(id).level,a=ascension(id);return (1+(l-1)*.03+(l>=15?.15:0)+(l>=30?.2:0))*(1+a*.08)}
 function rangeMultiplier(id){return (1+(progress(id).level-1)*.005)*(1+ascension(id)*.02)}
 function persist(){if(!activeSlot)return;save.lastPlayed=Date.now();localStorage.setItem('beastward-save-'+activeSlot,JSON.stringify(save));localStorage.setItem('beastward-active-slot',String(activeSlot));updateHub()}
 function updateHub(){
@@ -96,7 +110,7 @@ function renderStarters(){
   starters.forEach(id=>{
     const b=beasts[id],el=document.createElement('button');
     el.className='starter-card';
-    el.innerHTML=`<div class="sprite-wrap"><img src="${b.sprite}"></div><h3>${b.name}</h3><span>${b.type} • ${b.role}</span><p>${id==='embercub'?'Burn enemies over time.':id==='sprigpaw'?'Poison and crowd control.':'Slow groups and splash damage.'}</p><div class="tiny">Lv20 ${b.evo20} • Lv30 ${b.evo30}</div>${statBars(id)}`;
+    el.innerHTML=`<div class="sprite-wrap"><img src="${b.sprite}"></div><h3>${b.name}</h3><span>${b.type} • ${b.role}</span><p>${id==='embercub'?'Burn enemies over time.':id==='sprigpaw'?'Poison and crowd control.':'Slow groups and splash damage.'}</p><div class="tiny">Lv15 ${b.evo20} • Lv30 ${b.evo30}</div>${statBars(id)}`;
     el.onclick=()=>{save.starter=id;addBeast(id);persist();show('hubScreen')};
     w.appendChild(el);
   });
@@ -113,7 +127,7 @@ function renderCollection(){
       <p>Level ${p.level}/30</p>
       <div class="xpbar"><div style="width:${p.level>=30?100:Math.min(100,p.xp/need*100)}%"></div></div>
       <div class="tiny">${p.level>=30?'MAX LEVEL':p.xp+' / '+need+' XP'} • Combat bonus +${Math.round((levelMultiplier(id)-1)*100)}%</div>
-      <div class="tiny">Lv20 ${b.evo20} • Lv30 ${b.evo30}</div>
+      <div class="tiny">Lv15 ${b.evo20} • Lv30 ${b.evo30}</div>
       ${statBars(id)}
       <div class="ascend-box"><div><b>Ascension ${a}/3</b><small>${a>=3?'Fully ascended':'Duplicate copies are used here — not Essence.'}</small></div>
       <button class="ascend-btn" data-ascend="${id}" ${a>=3||held<needCopies?'disabled':''}>${ascendLabel}</button></div>
@@ -198,7 +212,7 @@ const bestiaryLore=[
  {title:'The Beast Core',text:'Ancient living crystal that anchors a Sanctuary. If it falls, the surrounding wilds become vulnerable to corruption.'},
  {title:'Essence',text:'A concentrated form of wild energy earned by defending the Core. Wardens use Essence to hatch new beasts.'},
  {title:'Beastwardens',text:'Protectors who bond with beasts, train them through battle and guide them through evolution.'},
- {title:'Evolution',text:'Every beast can evolve at Level 20 and again at Level 30, gaining greater strength as its bond with the Warden deepens.'}
+ {title:'Evolution',text:'Every beast can evolve at Level 15 and again at Level 30, gaining greater strength as its bond with the Warden deepens.'}
 ];
 const bestiaryEnemies=[
  {name:'Forest Raider',kind:'Common',text:'A quick invader that travels the Keeper\'s Path in groups.'},
@@ -246,7 +260,7 @@ function renderBestiary(){
    arr.forEach(b=>{const row=document.createElement('button');row.className='best-row'+(b.id===bestiarySelected?' active':'');const unlocked=save.unlocked.includes(b.id);row.innerHTML=`<img src="${b.sprite}"><div><h4>${b.name}</h4><small>${b.type} • Lv ${progress(b.id).level}</small><small>${unlocked?'Collected':'Undiscovered'}</small></div><span class="tag">${b.role}</span>`;row.onclick=()=>{bestiarySelected=b.id;renderBestiary()};list.appendChild(row)});
    if(!bestiarySelected){detail.innerHTML='<div class="lore-card">No beasts match your search.</div>';return}
    const b=beasts[bestiarySelected],lore=beastLore(b.id),p=progress(b.id),unlocked=save.unlocked.includes(b.id);
-   detail.innerHTML=`<div class="best-hero"><div class="best-portrait"><img src="${b.sprite}"></div><div class="best-detail-title"><h3>${nameFor(b.id)}</h3><div class="best-pills"><span class="best-pill">${b.type}</span><span class="best-pill">${b.role}</span><span class="best-pill">Level ${p.level}/30</span><span class="best-pill">Ascension ${ascension(b.id)}/3</span><span class="best-pill">${unlocked?'Collected':'Not collected'}</span></div><p><b>${lore[0]}</b><br>${lore[1]}</p></div></div>${statBars(b.id)}<div class="best-section"><b>Evolution line</b><div class="evo-line"><div class="evo"><small>Lv 1</small><b>${b.name}</b></div><div class="evo"><small>Lv 20</small><b>${b.evo20}</b></div><div class="evo"><small>Lv 30</small><b>${b.evo30}</b></div></div></div>`;
+   detail.innerHTML=`<div class="best-hero"><div class="best-portrait"><img src="${b.sprite}"></div><div class="best-detail-title"><h3>${nameFor(b.id)}</h3><div class="best-pills"><span class="best-pill">${b.type}</span><span class="best-pill">${b.role}</span><span class="best-pill">Level ${p.level}/30</span><span class="best-pill">Ascension ${ascension(b.id)}/3</span><span class="best-pill">${unlocked?'Collected':'Not collected'}</span></div><p><b>${lore[0]}</b><br>${lore[1]}</p></div></div>${statBars(b.id)}<div class="best-section"><b>Evolution line</b><div class="evo-line"><div class="evo"><small>Lv 1</small><b>${b.name}</b></div><div class="evo"><small>Lv 15</small><b>${b.evo20}</b></div><div class="evo"><small>Lv 30</small><b>${b.evo30}</b></div></div></div>`;
  }else if(bestiaryTab==='enemies'){
    filters.innerHTML='';list.innerHTML='';
    bestiaryEnemies.forEach((e,i)=>{const row=document.createElement('button');row.className='best-row'+(bestiarySelected===i?' active':'');row.innerHTML=`<div style="font-size:36px">☠️</div><div><h4>${e.name}</h4><small>${e.kind}</small></div><span class="tag">Enemy</span>`;row.onclick=()=>{bestiarySelected=i;renderBestiary()};list.appendChild(row)});
@@ -334,7 +348,7 @@ function choices(){
   save.unlocked.forEach(id=>{
     const b=beasts[id],el=document.createElement('button');
     el.className='tower-choice';
-    el.innerHTML=`<img src="${b.sprite}"><div><b>${nameFor(id)}</b><small>Lv ${progress(id).level} • ${b.role} • ${b.cost} gold</small><small>POW ${beastRatings[id].power} • SPD ${beastRatings[id].speed} • RNG ${beastRatings[id].range}</small></div>`;
+    const ss=stageStats(id);el.innerHTML=`<img src="${b.sprite}"><div><b>${nameFor(id)}</b><small>Lv ${progress(id).level} • Stage ${ss.stage} • ${b.role} • ${b.cost} gold</small><small>POW ${ss.power}/${ss.cap} • SPD ${ss.speed}/${ss.cap} • RNG ${ss.range}/${ss.cap}</small></div>`;
     el.onclick=()=>{selectedSpecies=id;selectedTower=null;renderSelectedTower();document.querySelectorAll('.tower-choice').forEach(x=>x.classList.remove('selected'));el.classList.add('selected')};
     w.appendChild(el);
   });
