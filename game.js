@@ -23,10 +23,15 @@ const commonCost=100,rareCost=300;
 const spriteImgs={};
 Object.values(beasts).forEach(b=>{const i=new Image();i.src=b.sprite;spriteImgs[b.id]=i});
 
-let save=JSON.parse(localStorage.getItem('beastward-save')||'null')||{starter:null,essence:0,wardenLevel:1,unlocked:[],freeCommonClaimed:false,beastProgress:{}};
-save.unlocked=save.unlocked||[];
-save.beastProgress=save.beastProgress||{};
-if(save.freeCommonClaimed===undefined)save.freeCommonClaimed=false;
+function blankSave(){return {starter:null,essence:0,wardenLevel:1,unlocked:[],freeCommonClaimed:false,beastProgress:{},createdAt:Date.now(),lastPlayed:Date.now()}}
+function normaliseSave(s){s=s||blankSave();s.unlocked=s.unlocked||[];s.beastProgress=s.beastProgress||{};if(s.freeCommonClaimed===undefined)s.freeCommonClaimed=false;if(!s.wardenLevel)s.wardenLevel=1;if(s.essence===undefined)s.essence=0;return s}
+const legacy=localStorage.getItem('beastward-save');
+if(legacy&&!localStorage.getItem('beastward-save-1')&&!localStorage.getItem('beastward-save-2')&&!localStorage.getItem('beastward-save-3')){
+  localStorage.setItem('beastward-save-1',legacy);
+}
+let activeSlot=Number(localStorage.getItem('beastward-active-slot')||'0');
+let save=activeSlot?normaliseSave(JSON.parse(localStorage.getItem('beastward-save-'+activeSlot)||'null')):blankSave();
+let pendingSaveTarget='hub';
 
 function xpNeeded(level){return 60+(level-1)*15}
 function progress(id){return save.beastProgress[id]||(save.beastProgress[id]={level:1,xp:0})}
@@ -34,7 +39,7 @@ function addBeast(id){if(!save.unlocked.includes(id))save.unlocked.push(id);prog
 function nameFor(id){const b=beasts[id],l=progress(id).level;return l>=30?b.evo30:l>=20?b.evo20:b.name}
 function levelMultiplier(id){const l=progress(id).level;return 1+(l-1)*.03+(l>=20?.15:0)+(l>=30?.2:0)}
 function rangeMultiplier(id){return 1+(progress(id).level-1)*.005}
-function persist(){localStorage.setItem('beastward-save',JSON.stringify(save));updateHub()}
+function persist(){if(!activeSlot)return;save.lastPlayed=Date.now();localStorage.setItem('beastward-save-'+activeSlot,JSON.stringify(save));localStorage.setItem('beastward-active-slot',String(activeSlot));updateHub()}
 function updateHub(){
   if($('#essenceTotal'))$('#essenceTotal').textContent=save.essence;
   if($('#wardenLevel'))$('#wardenLevel').textContent=save.wardenLevel;
@@ -59,7 +64,46 @@ function renderCollection(){
     w.insertAdjacentHTML('beforeend',`<div class="beast-card"><div class="sprite-wrap"><img src="${b.sprite}"></div><h3>${nameFor(id)}</h3><div class="beast-meta">${b.type} • ${b.role}</div><p>Level ${p.level}/30</p><div class="xpbar"><div style="width:${p.level>=30?100:Math.min(100,p.xp/need*100)}%"></div></div><div class="tiny">${p.level>=30?'MAX LEVEL':p.xp+' / '+need+' XP'} • Damage bonus +${Math.round((levelMultiplier(id)-1)*100)}%</div><div class="tiny">Lv20 ${b.evo20} • Lv30 ${b.evo30}</div></div>`);
   });
 }
+function slotData(slot){try{return normaliseSave(JSON.parse(localStorage.getItem('beastward-save-'+slot)||'null'))}catch(e){return null}}
+function renderSaveSlots(){
+  const wrap=$('#saveSlots');if(!wrap)return;wrap.innerHTML='';
+  for(let slot=1;slot<=3;slot++){
+    const raw=localStorage.getItem('beastward-save-'+slot);
+    const s=raw?slotData(slot):null;
+    const card=document.createElement('div');
+    card.className='save-slot'+(s?'':' empty');
+    if(s){
+      const starter=s.starter&&beasts[s.starter]?beasts[s.starter].name:'Starter not chosen';
+      const count=(s.unlocked||[]).length;
+      card.innerHTML=`<h3>Save ${slot}</h3><div class="save-meta"><b>${starter}</b><br>Warden Level ${s.wardenLevel||1}<br>${s.essence||0} Essence • ${count} beasts</div><div class="save-slot-actions"><button class="load-save">Load</button><button class="delete-save">Delete</button></div>`;
+      card.querySelector('.load-save').onclick=()=>loadSlot(slot);
+      card.querySelector('.delete-save').onclick=()=>deleteSlot(slot);
+    }else{
+      card.innerHTML=`<h3>Save ${slot}</h3><div class="save-meta">Empty slot<br>Start a new Beastwarden journey.</div><div class="save-slot-actions"><button class="create-save">New Game</button></div>`;
+      card.querySelector('.create-save').onclick=()=>createSlot(slot);
+    }
+    wrap.appendChild(card);
+  }
+}
+function openSaveSelect(target='hub'){pendingSaveTarget=target;renderSaveSlots();show('saveSelectScreen')}
+function createSlot(slot){activeSlot=slot;save=blankSave();persist();show('starterScreen')}
+function loadSlot(slot){
+  const s=slotData(slot);if(!s)return;
+  activeSlot=slot;save=s;localStorage.setItem('beastward-active-slot',String(slot));updateHub();
+  if(!save.starter){show('starterScreen');return}
+  if(pendingSaveTarget==='beasts'){renderCollection();show('beastsScreen')}
+  else if(pendingSaveTarget==='hatchery')show('hatcheryScreen');
+  else show('hubScreen');
+}
+function deleteSlot(slot){
+  if(!confirm('Delete Save '+slot+' permanently? This cannot be undone.'))return;
+  localStorage.removeItem('beastward-save-'+slot);
+  if(activeSlot===slot){activeSlot=0;save=blankSave();localStorage.removeItem('beastward-active-slot')}
+  renderSaveSlots();
+}
 function enter(target='hub'){
+  if(!activeSlot||!localStorage.getItem('beastward-save-'+activeSlot)){openSaveSelect(target);return}
+  save=slotData(activeSlot)||blankSave();
   if(!save.starter){show('starterScreen');return}
   updateHub();
   if(target==='beasts'){renderCollection();show('beastsScreen')}
@@ -67,9 +111,10 @@ function enter(target='hub'){
   else show('hubScreen');
 }
 
-$('#newGameBtn').onclick=()=>enter();
-$('#titleBeastDenBtn').onclick=()=>enter('beasts');
-$('#titleHatcheryBtn').onclick=()=>enter('hatchery');
+$('#newGameBtn').onclick=()=>openSaveSelect('hub');
+$('#titleBeastDenBtn').onclick=()=>openSaveSelect('beasts');
+$('#titleHatcheryBtn').onclick=()=>openSaveSelect('hatchery');
+$('#switchSaveBtn').onclick=()=>openSaveSelect('hub');
 $('#campaignBtn').onclick=()=>show('campaignScreen');
 $('#beastsBtn').onclick=()=>{renderCollection();show('beastsScreen')};
 $('#hatcheryBtn').onclick=()=>show('hatcheryScreen');
@@ -120,11 +165,12 @@ function renderSelectedTower(){
 }
 function reset(){
   towers=[];enemies=[];projectiles=[];selectedSpecies=null;selectedTower=null;gold=350;lives=20;wave=0;running=false;queue=[];speed=1;waveParticipants=new Set();
-  $('#speedBtn').textContent='⏩ 1×';$('#waveXpNotice').textContent='';ui();choices();renderSelectedTower();
+  document.querySelectorAll('.speed-control').forEach(b=>b.textContent=b.id==='speedBtn'?'⏩ Speed 1×':'⏩ 1×');$('#waveXpNotice').textContent='';ui();choices();renderSelectedTower();
 }
 $('#level1Btn').onclick=()=>{reset();show('gameScreen');last=performance.now();requestAnimationFrame(loop)};
 $('#exitLevelBtn').onclick=()=>show('campaignScreen');
-$('#speedBtn').onclick=()=>{speed=speed===1?2:speed===2?3:1;$('#speedBtn').textContent='⏩ '+speed+'×'};
+function cycleSpeed(){speed=speed===1?2:speed===2?3:1;document.querySelectorAll('.speed-control').forEach(b=>b.textContent=b.id==='speedBtn'?'⏩ Speed '+speed+'×':'⏩ '+speed+'×')}
+document.querySelectorAll('.speed-control').forEach(b=>b.onclick=cycleSpeed);
 $('#startWaveBtn').onclick=()=>{
   if(running||wave>=10)return;
   wave++;running=true;waveParticipants=new Set(towers.map(t=>t.b.id));
@@ -256,4 +302,4 @@ function loop(ts){
   const dt=Math.min(.033,(ts-last)/1000||0);last=ts;
   update(dt*speed);draw();requestAnimationFrame(loop);
 }
-renderStarters();updateHub();
+renderStarters();updateHub();renderSaveSlots();
