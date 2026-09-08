@@ -28,3 +28,5 @@
 .sell-btn{width:100%;margin-top:10px;padding:10px;border-radius:10px;border:1px solid #b27054;background:#5a2f25;color:#ffe7dc;font-weight:900;cursor:pointer}
 .sell-btn:hover{background:#6b392c}
 .egg-card.rare{border-color:#6289c7;background:linear-gradient(145deg,#26394f,#1d2b3b)}
+
+.game-ui #speedBtn,.game-ui #startWaveBtn,.game-ui #exitLevelBtn{margin-left:0}
