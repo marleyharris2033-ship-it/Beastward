@@ -188,6 +188,7 @@ function beastLore(id){
 }
 function renderBestiary(){
  const list=$('#bestiaryList'),detail=$('#bestiaryDetail'),filters=$('#bestiaryFilters'),search=$('#bestiarySearch');
+ const bp=$('#bestiaryProgress');if(bp)bp.textContent=`${save.unlocked.length} / ${Object.keys(beasts).length} discovered`;
  if(!list||!detail)return;
  document.querySelectorAll('.bestiary-tab').forEach(b=>b.classList.toggle('active',b.dataset.btab===bestiaryTab));
  filters.innerHTML='';
@@ -257,12 +258,12 @@ function renderSelectedTower(){
 }
 function reset(){
   towers=[];enemies=[];projectiles=[];effects=[];selectedSpecies=null;selectedTower=null;gold=350;lives=20;wave=0;running=false;queue=[];speed=1;waveParticipants=new Set();
-  document.querySelectorAll('.speed-control').forEach(b=>b.textContent=b.id==='speedBtn'?'⏩ Speed 1×':'⏩ 1×');$('#waveXpNotice').textContent='';ui();choices();renderSelectedTower();
+  document.querySelectorAll('.speed-choice').forEach(b=>b.classList.toggle('active',Number(b.dataset.speed)===1));$('#waveXpNotice').textContent='';ui();choices();renderSelectedTower();
 }
 $('#level1Btn').onclick=()=>{reset();show('gameScreen');last=performance.now();requestAnimationFrame(loop)};
 $('#exitLevelBtn').onclick=()=>show('campaignScreen');
-function cycleSpeed(){speed=speed===1?2:speed===2?3:1;document.querySelectorAll('.speed-control').forEach(b=>b.textContent=b.id==='speedBtn'?'⏩ Speed '+speed+'×':'⏩ '+speed+'×')}
-document.querySelectorAll('.speed-control').forEach(b=>b.onclick=cycleSpeed);
+function setSpeed(next){speed=next;document.querySelectorAll('.speed-choice').forEach(b=>b.classList.toggle('active',Number(b.dataset.speed)===speed))}
+document.querySelectorAll('.speed-choice').forEach(b=>b.onclick=()=>setSpeed(Number(b.dataset.speed)));
 $('#startWaveBtn').onclick=()=>{
   if(running||wave>=10)return;
   wave++;running=true;waveParticipants=new Set(towers.map(t=>t.b.id));
@@ -404,4 +405,4 @@ function loop(ts){
   const dt=Math.min(.033,(ts-last)/1000||0);last=ts;
   update(dt*speed);draw();requestAnimationFrame(loop);
 }
-renderStarters();updateHub();renderSaveSlots();applyMotionSetting();
+renderStarters();updateHub();renderSaveSlots();applyMotionSetting();setSpeed(1);
