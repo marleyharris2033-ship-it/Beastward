@@ -140,12 +140,21 @@ $('#newGameBtn').onclick=()=>openSaveSelect('hub');
 $('#titleBeastDenBtn').onclick=()=>openSaveSelect('beasts');
 $('#titleHatcheryBtn').onclick=()=>openSaveSelect('hatchery');
 $('#titleBestiaryBtn').onclick=()=>openSaveSelect('bestiary');
+$('#titleSaveSlotsBtn').onclick=()=>openSaveSelect('hub');
+$('#titleSettingsBtn').onclick=()=>show('settingsScreen');
 $('#switchSaveBtn').onclick=()=>openSaveSelect('hub');
 $('#campaignBtn').onclick=()=>show('campaignScreen');
 $('#beastsBtn').onclick=()=>{renderCollection();show('beastsScreen')};
 $('#hatcheryBtn').onclick=()=>show('hatcheryScreen');
 $('#bestiaryBtn').onclick=()=>{renderBestiary();show('bestiaryScreen')};
+$('#hubSettingsBtn').onclick=()=>show('settingsScreen');
+$('#hubSaveBtn').onclick=()=>openSaveSelect('hub');
+$('#settingsSavesBtn').onclick=()=>openSaveSelect('hub');
 document.querySelectorAll('[data-back]').forEach(b=>b.onclick=()=>show(b.dataset.back));
+const motionKey='beastward-reduced-motion';
+function applyMotionSetting(){const on=localStorage.getItem(motionKey)==='1';document.body.classList.toggle('reduced-motion',on);const b=$('#motionToggle');if(b){b.textContent=on?'On':'Off';b.classList.toggle('on',on)}}
+if($('#motionToggle'))$('#motionToggle').onclick=()=>{localStorage.setItem(motionKey,localStorage.getItem(motionKey)==='1'?'0':'1');applyMotionSetting()};
+
 
 
 const bestiaryLore=[
@@ -395,4 +404,4 @@ function loop(ts){
   const dt=Math.min(.033,(ts-last)/1000||0);last=ts;
   update(dt*speed);draw();requestAnimationFrame(loop);
 }
-renderStarters();updateHub();renderSaveSlots();
+renderStarters();updateHub();renderSaveSlots();applyMotionSetting();
