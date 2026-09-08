@@ -75,7 +75,7 @@ function statBars(id){
 }
 
 const spriteImgs={};
-Object.values(beasts).forEach(b=>{const i=new Image();i.src=b.sprite;spriteImgs[b.id]=i});
+Object.values(beasts).forEach(b=>{const i=new Image();i.src=b.towerSprite||b.sprite;spriteImgs[b.id]=i});
 
 function blankSave(){return {starter:null,essence:0,wardenLevel:1,unlocked:[],freeCommonClaimed:false,beastProgress:{},beastCopies:{},ascensions:{},completedLevels:[],createdAt:Date.now(),lastPlayed:Date.now()}}
 function normaliseSave(s){s=s||blankSave();s.unlocked=s.unlocked||[];s.beastProgress=s.beastProgress||{};s.beastCopies=s.beastCopies||{};s.ascensions=s.ascensions||{};s.completedLevels=s.completedLevels||[];if(s.freeCommonClaimed===undefined)s.freeCommonClaimed=false;if(!s.wardenLevel)s.wardenLevel=1;if(s.essence===undefined)s.essence=0;return s}
@@ -546,6 +546,7 @@ function finish(win){
 $('#resultContinue').onclick=()=>{$('#resultModal').classList.add('hidden');show('hubScreen')};
 
 function draw(){
+  ctx.imageSmoothingEnabled=false;
   ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#4f824d';ctx.fillRect(0,0,canvas.width,canvas.height);
   for(let x=0;x<canvas.width;x+=50)for(let y=0;y<canvas.height;y+=50)if((x+y)%100===0){ctx.fillStyle='#5c8f56';ctx.fillRect(x,y,50,50)}
   ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#8e7652';ctx.lineWidth=76;ctx.beginPath();ctx.moveTo(path[0].x,path[0].y);path.slice(1).forEach(p=>ctx.lineTo(p.x,p.y));ctx.stroke();ctx.strokeStyle='#b39a6a';ctx.lineWidth=58;ctx.stroke();
