@@ -262,3 +262,13 @@ radial-gradient(ellipse at 82% 57%,#193722 0 6%,transparent 7%);opacity:.75}
 .den-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0}.den-summary>div{text-align:center;padding:13px;border:1px solid #4f6552;border-radius:12px;background:#13231a}.den-summary span{display:block;font-size:9px;letter-spacing:.15em;color:#aebbb2}.den-summary b{display:block;margin-top:4px;color:#efd674;font-size:18px}
 .den-panel .beast-card{position:relative;overflow:hidden}.den-panel .beast-card:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(145deg,#ffffff08,transparent 35%)}
 @media(max-width:760px){.campaign-heading{flex-direction:column;align-items:stretch}.region-progress{text-align:center}.campaign-map{height:620px}.map-node{width:126px;font-size:12px}.den-summary{grid-template-columns:1fr 1fr 1fr}.egg-row{grid-template-columns:1fr}}
+
+/* ===== Ascension + expanded campaign ===== */
+.beast-card-top{position:relative}
+.ascension-stars{position:absolute;right:8px;top:8px;padding:5px 8px;border-radius:999px;background:#0d1812dd;border:1px solid #9e843d;color:#f3d66f;font-size:12px;letter-spacing:.08em;z-index:2}
+.ascend-box{margin-top:12px;padding:11px;border:1px solid #655f42;border-radius:12px;background:linear-gradient(145deg,#17271e,#101b15)}
+.ascend-box b{display:block;color:#efd572}.ascend-box small{display:block;color:#aebbb2;margin-top:2px}
+.ascend-btn{width:100%;margin-top:9px;padding:10px;border-radius:10px;border:1px solid #c0a34b;background:linear-gradient(#31583a,#1e402b);color:#ffe997;font-weight:900;cursor:pointer}
+.ascend-btn:disabled{opacity:.45;cursor:not-allowed;filter:grayscale(.4)}
+.map-node.completed{border-color:#79c889;box-shadow:0 0 0 3px #73dc8b22,0 10px 22px #0005}
+.map-node.completed:after{content:"✓";position:absolute;right:-7px;top:-9px;width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:#315d3d;border:1px solid #bde5a7;color:#dffff0;font-weight:900}
