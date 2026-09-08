@@ -1,6 +1,7 @@
 name: Apply level and sprite polish
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - '.github/workflows/apply-level-sprite-polish.yml'
@@ -24,7 +25,6 @@ jobs:
           game_path = Path('game.js')
           game = game_path.read_text()
 
-          # Make every campaign route visibly and structurally different.
           paths = {
             1: '[{x:-30,y:310},{x:145,y:310},{x:250,y:185},{x:390,y:185},{x:505,y:405},{x:650,y:405},{x:755,y:255},{x:930,y:255}]',
             2: '[{x:-30,y:90},{x:865,y:90},{x:865,y:505},{x:160,y:505},{x:160,y:215},{x:690,y:215},{x:690,y:390},{x:335,y:390},{x:335,y:305},{x:930,y:305}]',
@@ -43,7 +43,6 @@ jobs:
               if count != 1:
                   raise RuntimeError(f'Could not patch path for level {level_id}')
 
-          # Use the larger detailed beast art in battle and provide robust fallbacks.
           old_preload = "const spriteImgs={};\nObject.values(beasts).forEach(b=>{const i=new Image();i.src=b.towerSprite||b.sprite;spriteImgs[b.id]=i});"
           new_preload = """const spriteImgs={};
 Object.values(beasts).forEach(b=>{
@@ -67,13 +66,11 @@ document.addEventListener('error',e=>{
               raise RuntimeError('Sprite preload block not found')
           game = game.replace(old_preload, new_preload, 1)
 
-          # Enlarge placed beasts so each species is clearly readable on a phone.
           game = game.replace("ctx.arc(t.x,t.y,32,0,Math.PI*2)", "ctx.arc(t.x,t.y,43,0,Math.PI*2)")
           game = game.replace("ctx.arc(t.x,t.y,27,0,Math.PI*2)", "ctx.arc(t.x,t.y,36,0,Math.PI*2)")
           game = game.replace("ctx.drawImage(img,t.x-23,t.y-23,46,46)", "ctx.drawImage(img,t.x-37,t.y-37,74,74)")
           game = game.replace("Math.hypot(t.x-x,t.y-y)<=30", "Math.hypot(t.x-x,t.y-y)<=40")
           game = game.replace("Math.hypot(t.x-x,t.y-y)<45", "Math.hypot(t.x-x,t.y-y)<64")
-
           game_path.write_text(game)
 
           style_path = Path('style.css')
