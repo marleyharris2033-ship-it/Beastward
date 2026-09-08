@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" shape-rendering="crispEdges">
+ <defs><filter id="g"><feGaussianBlur stdDeviation="1.5"/></filter></defs>
+ <g transform="translate(-7.68 -7.68) scale(1.16)"><image href="../sparkit.png" x="0" y="0" width="96" height="96" image-rendering="pixelated"/></g>
+ <g style="color:#ffe34b"><g fill="#ffe647" stroke="#fff4a3" stroke-width="3" opacity="1">
+ <path d="M15 18 28 22 21 35 35 31 23 52 25 37 12 40 18 28 8 27Z"/><path d="M81 12 91 27 82 31 91 42 76 36 82 28 73 24Z"/>
+ <path d="M12 69 24 66 20 79 31 78 17 94 21 82 9 84Z"/><path d="M78 67 91 62 86 76 95 78 79 91 83 80 72 82Z"/></g>
+ <circle cx="48" cy="48" r="42" fill="none" stroke="currentColor" stroke-width="2" opacity=".22"/>
+ <circle cx="48" cy="48" r="36" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".16"/></g>
+ </svg>
