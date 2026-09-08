@@ -55,3 +55,30 @@
 .stat-grid>div{display:flex;justify-content:space-between;gap:8px;padding:7px 9px;border-radius:9px;background:#13231a;border:1px solid #3f5545;font-size:12px}
 .stat-grid span{color:#b9c5bc}.stat-grid b{color:#f3d66f}
 .selected-tower-panel .stat-grid{margin-top:9px}
+
+/* Beastward sanctuary theme refresh */
+body{background:
+radial-gradient(circle at 50% -10%,#476341 0,#203827 28%,#0c1710 72%),
+linear-gradient(#0a130e,#08100c);background-attachment:fixed}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;background:
+radial-gradient(circle at 15% 20%,#f5d66a55 0 1px,transparent 2px),
+radial-gradient(circle at 80% 35%,#76e59a55 0 1px,transparent 2px);
+background-size:70px 70px,95px 95px;z-index:-1}
+.themed-topbar{border-color:#8c7130;box-shadow:inset 0 0 0 1px #2b5b39,0 15px 35px #0005}
+.home-banner{position:relative;min-height:260px;margin-bottom:18px;padding:28px;border-radius:24px;overflow:hidden;border:1px solid #8c7130;background:
+radial-gradient(circle at 50% 45%,#59c97955,transparent 18%),
+linear-gradient(135deg,#203f2a,#172b20 55%,#101c16);box-shadow:0 20px 45px #0005}
+.home-banner:before{content:"✦";position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);font-size:150px;color:#83efa0;text-shadow:0 0 20px #73f598,0 0 60px #4cc875;opacity:.75}
+.home-banner-copy{position:relative;z-index:2;max-width:520px;background:#0c1811aa;border:1px solid #ffffff15;border-radius:18px;padding:18px}
+.home-banner-copy h2{margin:4px 0 8px;font-family:Georgia,serif;color:#f0d778;font-size:34px}
+.home-banner-copy p{color:#d2ddd4;margin:0;line-height:1.5}.home-kicker{font-size:11px;letter-spacing:.18em;color:#a9d9af;font-weight:800}
+.home-beasts{position:absolute;right:20px;bottom:12px;display:flex;gap:5px;align-items:end}.home-beasts img{width:92px;height:92px;filter:drop-shadow(0 12px 15px #0009)}.home-beasts img:nth-child(2){width:104px;height:104px}
+.journey-card{background:radial-gradient(circle at 72% 30%,#75e69544,transparent 25%),linear-gradient(145deg,#315439,#16291e)!important}
+.themed-menu-row{grid-template-columns:repeat(3,1fr)}
+.bestiary-panel{background:linear-gradient(150deg,#183022f5,#0f1d16fa);border-color:#9b7a31;box-shadow:0 28px 70px #0008,inset 0 0 0 1px #31563d}
+.bestiary-head{text-align:center;border:1px solid #816a30;border-radius:20px;padding:16px;background:linear-gradient(#213d2b,#15251c);margin-bottom:14px}.bestiary-head h2{font-family:Georgia,serif;color:#f1d77a;font-size:42px;margin:2px 0}
+.bestiary-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}.bestiary-tab{padding:13px;border-radius:12px;border:1px solid #4e6855;background:#17271e;color:#d8dfd9;font-weight:900}.bestiary-tab.active{background:linear-gradient(#315d3e,#21452d);color:#ffe894;border-color:#c8a84c}
+.bestiary-tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}#bestiarySearch{flex:1;min-width:220px;background:#0f1d16;color:white;border:1px solid #4d6653;border-radius:12px;padding:12px}.bestiary-filters{display:flex;gap:6px;flex-wrap:wrap}.best-filter{padding:9px 11px;border-radius:10px;border:1px solid #4d6653;background:#1c3024;color:white}.best-filter.active{border-color:#e5c75f;color:#ffe894;background:#284b34}
+.bestiary-layout{display:grid;grid-template-columns:310px 1fr;gap:16px;min-height:590px}.bestiary-list{display:flex;flex-direction:column;gap:8px;max-height:650px;overflow:auto}.best-row{display:grid;grid-template-columns:58px 1fr auto;gap:10px;align-items:center;text-align:left;padding:9px;border:1px solid #465f4d;background:#14231b;color:white;border-radius:14px}.best-row.active{border-color:#ebc85b;box-shadow:0 0 0 2px #e7c25322}.best-row img{width:58px;height:58px;object-fit:contain;background:#0d1812;border-radius:10px}.best-row h4{margin:0 0 3px;font-size:18px}.best-row small{color:#bdc8bf}.best-row .tag{font-size:10px;color:#f2d674}
+.bestiary-detail{border:1px solid #4b6451;border-radius:18px;background:#101e17;padding:18px}.best-hero{display:grid;grid-template-columns:180px 1fr;gap:16px}.best-portrait{height:180px;background:radial-gradient(circle,#315a3b,#0d1812 68%);border:1px solid #6c784e;border-radius:16px;display:grid;place-items:center}.best-portrait img{width:130px;height:130px;object-fit:contain}.best-detail-title h3{font:34px Georgia,serif;margin:0;color:#f0d778}.best-detail-title p{color:#cbd5cd;line-height:1.5}.best-pills{display:flex;gap:7px;flex-wrap:wrap}.best-pill{padding:6px 9px;border-radius:99px;border:1px solid #58715d;background:#1a3023;color:#f7e9b4;font-size:12px}.best-section{margin-top:14px;padding:14px;background:#14241b;border:1px solid #405947;border-radius:14px}.evo-line{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.evo{padding:10px;text-align:center;border:1px solid #4b6250;border-radius:12px;background:#102018}.evo b{display:block;color:#f1d77a}.lore-list{display:grid;gap:10px}.lore-card{padding:15px;border:1px solid #465f4d;border-radius:14px;background:#14231b}.lore-card h3{color:#f0d778;margin:0 0 7px}
+@media(max-width:760px){.themed-menu-row{grid-template-columns:1fr}.home-banner{min-height:320px}.home-beasts{opacity:.7;right:4px}.home-beasts img{width:72px;height:72px}.home-beasts img:nth-child(2){width:82px;height:82px}.bestiary-layout{grid-template-columns:1fr}.best-hero{grid-template-columns:1fr}.bestiary-tabs{grid-template-columns:1fr}.bestiary-list{max-height:330px}}
