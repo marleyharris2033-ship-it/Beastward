@@ -1,9 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" shape-rendering="crispEdges">
- <defs><filter id="g"><feGaussianBlur stdDeviation="1.5"/></filter></defs>
- <g transform="translate(-7.68 -7.68) scale(1.16)"><image href="../shadepup.png" x="0" y="0" width="96" height="96" image-rendering="pixelated"/></g>
  <g style="color:#9d66e8"><g fill="#8656d6" stroke="#d3a3ff" stroke-width="3" opacity="1">
- <path d="M20 31 15 10 31 24Z"/><path d="M75 25 88 9 84 33Z"/><path d="M9 66 Q16 54 22 65 Q16 78 9 66Z"/>
- <path d="M74 71 Q84 55 91 69 Q84 84 74 71Z"/><circle cx="48" cy="8" r="5"/><circle cx="8" cy="48" r="4"/><circle cx="89" cy="48" r="4"/></g>
- <circle cx="48" cy="48" r="42" fill="none" stroke="currentColor" stroke-width="2" opacity=".22"/>
- <circle cx="48" cy="48" r="36" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".16"/></g>
+   <path d="M20 31 15 10 31 24Z"/><path d="M75 25 88 9 84 33Z"/><path d="M9 66 Q16 54 22 65 Q16 78 9 66Z"/>
+   <path d="M74 71 Q84 55 91 69 Q84 84 74 71Z"/><circle cx="48" cy="8" r="5"/><circle cx="8" cy="48" r="4"/><circle cx="89" cy="48" r="4"/>
+ </g></g>
+ <circle cx="48" cy="48" r="42" fill="none" stroke="#9d66e8" stroke-width="2" opacity=".22"/><circle cx="48" cy="48" r="36" fill="none" stroke="#9d66e8" stroke-width="1.5" opacity=".16"/>
  </svg>

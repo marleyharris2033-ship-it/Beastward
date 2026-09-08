@@ -1,1 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" shape-rendering="crispEdges"><g transform="translate(-3.84 -3.84) scale(1.08)"><image href="../drakeling.png" x="0" y="0" width="96" height="96" image-rendering="pixelated"/></g><g style="color:#b7eac6"><g fill="none" stroke="#d9ffe8" stroke-width="2" stroke-linecap="round" opacity="0.85"><path d="M7 30 Q25 19 39 30 Q25 38 13 34"/><path d="M59 20 Q76 10 90 23 Q78 31 67 27"/></g></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" shape-rendering="crispEdges">
+ <g style="color:#d9ffe8"><g fill="none" stroke="#d9ffe8" stroke-width="2" stroke-linecap="round" opacity="0.9">
+   <path d="M7 30 Q25 19 39 30 Q25 38 13 34"/><path d="M59 20 Q76 10 90 23 Q78 31 67 27"/>
+   
+ </g></g>
+ 
+ </svg>

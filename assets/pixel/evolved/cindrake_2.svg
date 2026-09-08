@@ -1,1 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" shape-rendering="crispEdges"><g transform="translate(-3.84 -3.84) scale(1.08)"><image href="../cindrake.png" x="0" y="0" width="96" height="96" image-rendering="pixelated"/></g><g style="color:#ff9a39"><g fill="#ff8b2f" stroke="#ffdf74" stroke-width="2" opacity="0.85"><path d="M18 68 C8 55 16 47 23 40 C21 54 34 56 27 70 Z"/><path d="M72 34 C68 22 79 16 83 8 C84 20 92 25 83 38 Z"/></g></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" shape-rendering="crispEdges">
+ <g style="color:#ff9a39"><g fill="#ff8b2f" stroke="#ffdf74" stroke-width="2" opacity="0.9">
+   <path d="M17 70 C7 56 15 46 24 37 C22 53 35 58 27 72 Z"/>
+   <path d="M72 34 C67 22 79 15 84 7 C84 20 93 25 83 39 Z"/>
+   
+ </g></g>
+ 
+ </svg>

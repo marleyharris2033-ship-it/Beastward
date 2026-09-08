@@ -1,7 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" shape-rendering="crispEdges">
- <defs><filter id="g"><feGaussianBlur stdDeviation="1"/></filter></defs>
- <g transform="translate(-3.84 -3.84) scale(1.08)"><image href="../sprigpaw.png" x="0" y="0" width="96" height="96" image-rendering="pixelated"/></g>
- <g style="color:#b7eac6"><g fill="#75d85c" stroke="#d8f7a3" stroke-width="2" opacity="0.85">
- <ellipse cx="18" cy="26" rx="7" ry="13" transform="rotate(-35 18 26)"/><ellipse cx="80" cy="24" rx="7" ry="13" transform="rotate(38 80 24)"/>
+ <g style="color:#7ad95f"><g fill="#75d85c" stroke="#d8f7a3" stroke-width="2" opacity="0.9">
+   <ellipse cx="18" cy="26" rx="7" ry="13" transform="rotate(-35 18 26)"/>
+   <ellipse cx="80" cy="24" rx="7" ry="13" transform="rotate(38 80 24)"/>
+   
  </g></g>
+ 
  </svg>
