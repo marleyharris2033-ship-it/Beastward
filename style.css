@@ -308,3 +308,9 @@ radial-gradient(ellipse at 82% 57%,#193722 0 6%,transparent 7%);opacity:.75}
 
 /* sprite readability v17 */
 .tower-choice img{width:64px!important;height:64px!important;object-fit:contain!important;image-rendering:pixelated!important}.sprite-wrap img,.best-row img,.best-portrait img,.result-sprite{image-rendering:pixelated!important;object-fit:contain!important}
+
+/* ===== Evolution sprite presentation ===== */
+.evo-line .evo{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
+.evo-line .evo img{width:58px;height:58px;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 4px 5px #0008)}
+.evo-line .evo:nth-child(2) img{width:64px;height:64px}
+.evo-line .evo:nth-child(3) img{width:70px;height:70px}
