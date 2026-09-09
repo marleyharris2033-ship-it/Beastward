@@ -577,3 +577,14 @@ radial-gradient(ellipse at 82% 57%,#193722 0 6%,transparent 7%);opacity:.75}
 .progress-toast.hidden{display:none}.progress-toast b{display:block;color:#f3d86f;letter-spacing:.13em;font-size:11px}.progress-toast span{display:block;margin-top:4px;color:#e8eee8;font-size:12px}
 .progress-toast.evolution{border-color:#b177d6;background:linear-gradient(145deg,#302746,#182331)}.progress-toast.evolution b{color:#e2b5ff}
 @keyframes toastIn{from{opacity:0;transform:translate(-50%,-10px)}to{opacity:1;transform:translate(-50%,0)}}
+
+/* ===== Sound, haptics + boss presentation v38 ===== */
+.sound-toggle{padding:8px 10px;border:1px solid #66765f;border-radius:10px;background:#132219;color:#c6d1c8;font-size:9px;font-weight:900;letter-spacing:.08em}
+.boss-intro{position:fixed;inset:0;z-index:1450;display:grid;place-items:center;pointer-events:none;background:radial-gradient(circle,#401b23aa 0,transparent 52%);animation:bossFlash 2.2s ease both}
+.boss-intro.hidden{display:none}
+.boss-intro-inner{width:min(520px,calc(100vw - 32px));padding:22px 18px;text-align:center;border-top:1px solid #a85b61;border-bottom:1px solid #a85b61;background:linear-gradient(90deg,transparent,#1e1217ed 15% 85%,transparent);box-shadow:0 0 55px #9c334b44}
+.boss-intro small{display:block;color:#d5968e;font-size:10px;font-weight:900;letter-spacing:.28em}
+.boss-intro b{display:block;margin:5px 0;font:700 clamp(30px,8vw,54px) Georgia,serif;color:#f0c677;text-shadow:0 2px 0 #38151d,0 0 18px #d15a5555;letter-spacing:.06em}
+.boss-intro span{color:#d9d0c6;font-size:12px}
+@keyframes bossFlash{0%{opacity:0;transform:scale(1.04)}15%{opacity:1;transform:scale(1)}78%{opacity:1}100%{opacity:0}}
+@media(max-width:760px){.sound-toggle{grid-column:auto}.battle-hud{gap:5px}.boss-intro-inner{padding:18px 12px}}
