@@ -377,9 +377,28 @@ radial-gradient(ellipse at 82% 57%,#193722 0 6%,transparent 7%);opacity:.75}
 .upgrade-path.talent-path .path-icon{background:#3a2b55;border-color:#b38add;color:#e7caff}
 .upgrade-btn.talent{border-color:#a97ad0;background:linear-gradient(#5b3d78,#34254d);color:#f0d7ff}
 .upgrade-btn.talent:not(:disabled){box-shadow:0 0 12px #9f69c322}
-@media(max-width:760px){.tower-panel{max-height:52svh;overflow:auto}}
+@media(max-width:760px){.tower-panel{max-height:58svh;overflow:hidden}}
 
 /* ===== Drag-and-drop tower placement ===== */
-.tower-choice{touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;transition:transform .12s ease,border-color .12s ease,opacity .12s ease}
+.tower-choice{touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab;transition:transform .12s ease,border-color .12s ease,opacity .12s ease}
 .tower-choice:active,.tower-choice.dragging{cursor:grabbing;transform:scale(.97);border-color:#f0d05d;box-shadow:0 0 0 2px #f0d05d33,0 8px 18px #0007;opacity:.78}
 #gameCanvas{touch-action:none}
+
+/* ===== Clear beast-list scrolling ===== */
+#towerChoices{
+  max-height:min(48svh,520px);
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-gutter:stable;
+  padding-right:5px;
+}
+#towerChoices::-webkit-scrollbar{width:10px}
+#towerChoices::-webkit-scrollbar-track{background:#0d1812;border-radius:10px}
+#towerChoices::-webkit-scrollbar-thumb{background:#667b68;border:2px solid #0d1812;border-radius:10px}
+#towerChoices::-webkit-scrollbar-thumb:hover{background:#8ea28f}
+#towerChoices{scrollbar-width:auto;scrollbar-color:#667b68 #0d1812}
+@media(max-width:760px){
+  #towerChoices{max-height:34svh;padding-right:8px}
+  .tower-choice{touch-action:pan-y}
+}
