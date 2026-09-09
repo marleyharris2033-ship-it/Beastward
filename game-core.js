@@ -372,7 +372,12 @@ const enemyTypes={
  thornling:{id:'thornling',name:'Thornling',kind:'Skirmisher',hp:.82,speed:1.28,reward:.95,size:17,sprite:'assets/enemies/thornling.svg',text:'A nimble thorn beast that sits between a Raider and a Hound in speed and toughness.'},
  shellback:{id:'shellback',name:'Moss Shellback',kind:'Armoured',hp:1.62,speed:.82,reward:1.4,size:21,sprite:'assets/enemies/moss_shellback.svg',text:'A plated forest beast with solid health that pressures low-damage defences.'},
  glimmer:{id:'glimmer',name:'Glimmer Moth',kind:'Flutter',hp:.56,speed:1.38,reward:.72,size:16,sprite:'assets/enemies/glimmer_moth.svg',text:'A fragile but erratic flier that reaches the Core quickly if ignored.'},
- hollowmaw:{id:'hollowmaw',name:'Hollowmaw',kind:'Boss',hp:1,speed:1,reward:1,size:42,sprite:'assets/enemies/hollowmaw.svg',text:'A corrupted alpha beast with enormous health. Five lives are lost if it reaches the Core.'}
+ frostling:{id:'frostling',name:'Frostling',kind:'Common',hp:1.08,speed:1.04,reward:1.05,size:18,sprite:'assets/enemies/frostling.svg',text:'A hardy snow creature that forms the backbone of Frostfall enemy waves.'},
+ snowstalker:{id:'snowstalker',name:'Snow Stalker',kind:'Fast',hp:.72,speed:1.62,reward:.95,size:18,sprite:'assets/enemies/snow_stalker.svg',text:'A white-furred hunter that races through exposed sections of the frozen path.'},
+ icegolem:{id:'icegolem',name:'Ice Golem',kind:'Heavy',hp:2.5,speed:.62,reward:1.9,size:25,sprite:'assets/enemies/ice_golem.svg',text:'A massive animated block of ice with extremely high health and low speed.'},
+ shardwisp:{id:'shardwisp',name:'Shard Wisp',kind:'Swarm',hp:.5,speed:1.3,reward:.62,size:16,sprite:'assets/enemies/shard_wisp.svg',text:'Small crystalline spirits that attack in dense, fast-moving groups.'},
+ hollowmaw:{id:'hollowmaw',name:'Hollowmaw',kind:'Boss',hp:1,speed:1,reward:1,size:42,sprite:'assets/enemies/hollowmaw.svg',text:'A corrupted alpha beast with enormous health. Five lives are lost if it reaches the Core.'},
+ glaciermaw:{id:'glaciermaw',name:'Glaciermaw',kind:'Boss',hp:1,speed:1,reward:1,size:46,sprite:'assets/enemies/glaciermaw.svg',text:'The ancient alpha of Frostfall Expanse. Its frozen hide and summoned pack make it a major regional boss.'}
 };
 const bestiaryEnemies=Object.values(enemyTypes);
 let bestiaryTab='beasts',bestiaryType='All',bestiarySelected=null;
@@ -1016,6 +1021,18 @@ if($('#exitConfirmModal'))$('#exitConfirmModal').addEventListener('pointerdown',
 function setSpeed(next){speed=next;document.querySelectorAll('.speed-choice').forEach(b=>b.classList.toggle('active',Number(b.dataset.speed)===speed))}
 document.querySelectorAll('.speed-choice').forEach(b=>b.onclick=()=>setSpeed(Number(b.dataset.speed)));
 function waveEnemyMix(w){
+  if(levelWorld(currentLevel)===2){
+    if(w===1)return ['frostling'];
+    if(w===2)return ['frostling','snowstalker'];
+    if(w===3)return ['frostling','snowstalker','shardwisp'];
+    if(w===4)return ['frostling','shardwisp','snowstalker'];
+    if(w===5)return ['icegolem','frostling'];
+    if(w===6)return ['shardwisp','snowstalker','frostling'];
+    if(w===7)return ['icegolem','snowstalker','frostling'];
+    if(w===8)return ['shardwisp','icegolem','snowstalker'];
+    if(w===9)return ['icegolem','snowstalker','shardwisp','frostling'];
+    return ['icegolem','snowstalker','shardwisp','frostling'];
+  }
   if(w===1)return ['raider'];
   if(w===2)return ['raider','thornling'];
   if(w===3)return ['raider','hound','thornling'];
@@ -1027,6 +1044,8 @@ function waveEnemyMix(w){
   if(w===9)return ['brute','hound','wisp','shellback','glimmer'];
   return ['brute','hound','wisp','thornling','shellback','glimmer','raider'];
 }
+function bossTypeForLevel(){return currentLevel.bossType||'hollowmaw'}
+function bossNameForLevel(){return currentLevel.bossName||enemyTypes[bossTypeForLevel()]?.name||'Boss'}
 function waveEnemyCount(w){
   const base=4+w*2+Math.floor((currentLevel.id-1)*.5);
   return Math.ceil(base*1.5);
@@ -1034,7 +1053,7 @@ function waveEnemyCount(w){
 function waveComposition(w){
   const n=waveEnemyCount(w),mix=waveEnemyMix(Math.min(10,w)),counts={};
   for(let i=0;i<n;i++){const id=mix[i%mix.length];counts[id]=(counts[id]||0)+1}
-  if(w===10&&currentLevel.boss)counts.hollowmaw=1;
+  if(w===10&&currentLevel.boss)counts[bossTypeForLevel()]=1;
   return counts;
 }
 function wavePreviewText(w){
@@ -1073,9 +1092,9 @@ $('#startWaveBtn').onclick=()=>{
         type:id
       });
     }
-    queue.push({delay:bossSpacing*5,hp:bossHp,speed:20*currentLevel.speed*(battleMode==='hard'?1.08:1),reward:500,boss:true,type:'hollowmaw'});
+    queue.push({delay:bossSpacing*5,hp:bossHp,speed:20*currentLevel.speed*(battleMode==='hard'?1.08:1),reward:500,boss:true,type:bossTypeForLevel()});
     queue.sort((a,b)=>a.delay-b.delay);
-    showProgressToast('HOLLOWMAW APPROACHES',`Boss Wave • Hollowmaw enters alongside ${n} normal enemies. Hold the line.`,'boss');
+    showProgressToast(bossNameForLevel().toUpperCase()+' APPROACHES',`Boss Wave • ${bossNameForLevel()} enters alongside ${n} normal enemies. Hold the line.`,'boss');
   }else{
     for(let i=0;i<n;i++){
       const id=mix[i%mix.length],type=enemyTypes[id];
