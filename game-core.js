@@ -339,6 +339,8 @@ $('#titleSaveSlotsBtn').onclick=()=>openSaveSelect('hub');
 $('#titleSettingsBtn').onclick=()=>show('settingsScreen');
 $('#switchSaveBtn').onclick=()=>openSaveSelect('hub');
 $('#campaignBtn').onclick=()=>{renderCampaignMap();show('campaignScreen')};
+if($('#campaignWorld1Btn'))$('#campaignWorld1Btn').onclick=()=>setCampaignWorld(1);
+if($('#campaignWorld2Btn'))$('#campaignWorld2Btn').onclick=()=>setCampaignWorld(2);
 if($('#campaignNormalBtn'))$('#campaignNormalBtn').onclick=()=>setCampaignMode('normal');
 if($('#campaignHardBtn'))$('#campaignHardBtn').onclick=()=>setCampaignMode('hard');
 $('#beastsBtn').onclick=()=>{renderCollection();show('beastsScreen')}
@@ -627,45 +629,168 @@ const levels=[
   {kind:"bones",x:255,y:190},{kind:"bones",x:540,y:400},{kind:"torch",x:290,y:90},
   {kind:"torch",x:770,y:205},{kind:"stalagmite",x:540,y:555,block:true},{kind:"stalagmite",x:900,y:510,block:true}
  ]
+},
+{
+ id:11,world:2,name:"Snowbound Trail",theme:"snowfield",waves:10,reward:390,hp:3.2,speed:1.19,
+ pathWidth:72,pathEdge:"#8ba7b4",pathFill:"#dbeaf0",
+ path:[{x:-30,y:455},{x:150,y:455},{x:245,y:315},{x:390,y:315},{x:500,y:155},{x:650,y:155},{x:745,y:340},{x:930,y:340}],
+ scenery:[
+  {kind:"snowPine",x:95,y:115},{kind:"snowPine",x:315,y:505},{kind:"snowPine",x:830,y:105},
+  {kind:"snowdrift",x:520,y:500},{kind:"iceRock",x:120,y:300},{kind:"iceRock",x:690,y:510},
+  {kind:"iceCrystal",x:560,y:95},{kind:"iceCrystal",x:855,y:455}
+ ]
+},
+{
+ id:12,world:2,name:"Whitepine Woods",theme:"frostforest",waves:10,reward:420,hp:3.5,speed:1.2,
+ pathWidth:68,pathEdge:"#718b98",pathFill:"#cfdee5",
+ path:[{x:-30,y:115},{x:205,y:115},{x:205,y:470},{x:420,y:470},{x:420,y:210},{x:675,y:210},{x:675,y:500},{x:850,y:500},{x:850,y:295},{x:930,y:295}],
+ scenery:[
+  {kind:"snowPine",x:80,y:95},{kind:"snowPine",x:310,y:125},{kind:"snowPine",x:545,y:110},{kind:"snowPine",x:785,y:105},
+  {kind:"snowPine",x:105,y:510},{kind:"snowPine",x:535,y:505},{kind:"iceRock",x:310,y:330},
+  {kind:"snowdrift",x:770,y:360},{kind:"iceCrystal",x:540,y:325}
+ ]
+},
+{
+ id:13,world:2,name:"Frozen Crossing",theme:"frozenriver",waves:10,reward:455,hp:3.8,speed:1.21,
+ pathWidth:66,pathEdge:"#78939f",pathFill:"#d7e6eb",
+ path:[{x:-30,y:500},{x:165,y:500},{x:300,y:390},{x:420,y:300},{x:520,y:300},{x:625,y:205},{x:770,y:115},{x:930,y:190}],
+ scenery:[
+  {kind:"frozenLake",x:430,y:0,w:150,h:600,block:true},{kind:"iceBridge",x:505,y:300,w:160,h:54,dir:"h"},
+  {kind:"snowPine",x:100,y:115},{kind:"snowPine",x:830,y:475},{kind:"iceCrystal",x:390,y:90},
+  {kind:"iceCrystal",x:615,y:500},{kind:"snowdrift",x:150,y:310}
+ ]
+},
+{
+ id:14,world:2,name:"Frosthaven Outpost",theme:"snowvillage",waves:10,reward:490,hp:4.15,speed:1.22,
+ pathWidth:70,pathEdge:"#8399a2",pathFill:"#dce8ec",
+ path:[{x:-30,y:170},{x:185,y:170},{x:185,y:485},{x:370,y:485},{x:370,y:330},{x:570,y:330},{x:570,y:100},{x:760,y:100},{x:760,y:430},{x:930,y:430}],
+ scenery:[
+  {kind:"snowHut",x:90,y:105,block:true},{kind:"snowHut",x:300,y:110,block:true},{kind:"snowHut",x:845,y:125,block:true},
+  {kind:"snowHut",x:845,y:520,block:true},{kind:"snowPine",x:485,y:105},{kind:"iceRock",x:285,y:360},
+  {kind:"frostRune",x:520,y:480},{kind:"snowdrift",x:660,y:470}
+ ]
+},
+{
+ id:15,world:2,name:"Crystal Basin",theme:"crystal",waves:10,reward:530,hp:4.5,speed:1.23,
+ pathWidth:68,pathEdge:"#708e9d",pathFill:"#d4e7ee",
+ path:[{x:-30,y:310},{x:150,y:125},{x:335,y:305},{x:515,y:115},{x:700,y:310},{x:525,y:500},{x:345,y:370},{x:790,y:370},{x:930,y:235}],
+ scenery:[
+  {kind:"iceCrystal",x:105,y:485},{kind:"iceCrystal",x:300,y:95},{kind:"iceCrystal",x:555,y:520},
+  {kind:"iceCrystal",x:860,y:110},{kind:"icePillar",x:470,y:285},{kind:"icePillar",x:610,y:300},
+  {kind:"snowdrift",x:800,y:500},{kind:"iceRock",x:120,y:250}
+ ]
+},
+{
+ id:16,world:2,name:"Blizzard Ridge",theme:"blizzard",waves:10,reward:570,hp:4.9,speed:1.25,
+ pathWidth:64,pathEdge:"#768c96",pathFill:"#d5e2e7",
+ path:[{x:-30,y:95},{x:235,y:95},{x:345,y:245},{x:205,y:415},{x:465,y:510},{x:610,y:345},{x:500,y:185},{x:770,y:80},{x:930,y:245}],
+ scenery:[
+  {kind:"iceCliff",x:0,y:0,w:1000,h:55,block:true},{kind:"iceCliff",x:0,y:545,w:1000,h:55,block:true},
+  {kind:"snowPine",x:95,y:475},{kind:"iceRock",x:300,y:90},{kind:"iceRock",x:840,y:170},
+  {kind:"snowdrift",x:550,y:255},{kind:"iceCrystal",x:805,y:390}
+ ]
+},
+{
+ id:17,world:2,name:"Shattered Glacier",theme:"glacier",waves:10,reward:615,hp:5.3,speed:1.26,
+ pathWidth:66,pathEdge:"#668593",pathFill:"#cce1e9",
+ path:[{x:-30,y:520},{x:135,y:520},{x:135,y:375},{x:310,y:375},{x:310,y:230},{x:485,y:230},{x:485,y:95},{x:660,y:95},{x:660,y:300},{x:815,y:300},{x:815,y:150},{x:930,y:150}],
+ scenery:[
+  {kind:"frozenLake",x:20,y:120,w:185,h:145,block:true},{kind:"frozenLake",x:690,y:390,w:210,h:145,block:true},
+  {kind:"iceBridge",x:225,y:375,w:120,h:48,dir:"h"},{kind:"iceCrystal",x:420,y:500},
+  {kind:"iceCrystal",x:560,y:365},{kind:"iceRock",x:860,y:500}
+ ]
+},
+{
+ id:18,world:2,name:"Icebound Ruins",theme:"frostruins",waves:10,reward:660,hp:5.7,speed:1.28,
+ pathWidth:68,pathEdge:"#71838e",pathFill:"#d0dce3",
+ path:[{x:-30,y:505},{x:120,y:505},{x:120,y:395},{x:285,y:395},{x:285,y:255},{x:455,y:255},{x:455,y:125},{x:650,y:125},{x:650,y:285},{x:820,y:285},{x:820,y:455},{x:930,y:455}],
+ scenery:[
+  {kind:"iceWall",x:160,y:90,w:185,h:30,block:true},{kind:"iceWall",x:675,y:520,w:210,h:28,block:true},
+  {kind:"icePillar",x:405,y:95},{kind:"icePillar",x:705,y:310},{kind:"frostRune",x:500,y:390},
+  {kind:"iceCrystal",x:880,y:115},{kind:"snowPine",x:80,y:105}
+ ]
+},
+{
+ id:19,world:2,name:"Summit Pass",theme:"mountain",waves:10,reward:710,hp:6.15,speed:1.3,
+ pathWidth:62,pathEdge:"#6f8793",pathFill:"#d2e0e6",
+ path:[{x:-30,y:130},{x:170,y:130},{x:280,y:300},{x:150,y:475},{x:425,y:475},{x:535,y:285},{x:420,y:105},{x:720,y:105},{x:800,y:330},{x:930,y:330}],
+ scenery:[
+  {kind:"iceCliff",x:0,y:0,w:1000,h:50,block:true},{kind:"iceCliff",x:0,y:550,w:1000,h:50,block:true},
+  {kind:"iceRock",x:90,y:500},{kind:"iceRock",x:315,y:105},{kind:"iceRock",x:850,y:130},
+  {kind:"iceCrystal",x:570,y:490},{kind:"snowdrift",x:735,y:500}
+ ]
+},
+{
+ id:20,world:2,name:"Glaciermaw's Lair",theme:"frostden",waves:10,reward:800,hp:6.7,speed:1.32,boss:true,bossType:"glaciermaw",bossName:"Glaciermaw",bossReward:"rare",
+ pathWidth:64,pathEdge:"#536f7e",pathFill:"#b9d4df",
+ path:[{x:-30,y:295},{x:115,y:295},{x:115,y:80},{x:875,y:80},{x:875,y:520},{x:220,y:520},{x:220,y:185},{x:760,y:185},{x:760,y:405},{x:360,y:405},{x:360,y:285},{x:625,y:285},{x:625,y:350},{x:930,y:350}],
+ scenery:[
+  {kind:"frozenLake",x:250,y:315,w:150,h:115,block:true},{kind:"frozenLake",x:735,y:470,w:145,h:90,block:true},
+  {kind:"iceCrystal",x:70,y:485},{kind:"iceCrystal",x:520,y:100},{kind:"iceCrystal",x:900,y:125},
+  {kind:"icePillar",x:285,y:105},{kind:"icePillar",x:770,y:215},{kind:"frostRune",x:520,y:430},
+  {kind:"iceRock",x:900,y:510}
+ ]
 }
 ];
 let currentLevel=levels[0],path=currentLevel.path;
-let campaignMode='normal',battleMode='normal',pendingMode='normal';
-function hardModeUnlocked(){return save.completedLevels.includes(10)}
+let campaignMode='normal',battleMode='normal',pendingMode='normal',campaignWorld=1;
+const worldMeta={
+  1:{name:'Verdant Valley',subtitle:'The first region of Beastward.',label:'REGION I',boss:'Hollowmaw'},
+  2:{name:'Frostfall Expanse',subtitle:'A frozen wilderness of snow, ice and ancient ruins.',label:'REGION II',boss:'Glaciermaw'}
+};
+function levelWorld(lvl){return lvl.world||1}
+function localLevelNumber(lvl){return ((lvl.id-1)%10)+1}
+function levelCode(lvl){return levelWorld(lvl)+'-'+localLevelNumber(lvl)}
+function worldUnlocked(world){
+  if(world===1)return true;
+  return save.completedLevels.includes((world-1)*10);
+}
+function hardModeUnlocked(world=campaignWorld){
+  return save.completedLevels.includes(world*10);
+}
 function modeDifficulty(mode=battleMode){return mode==='hard'?2:1}
 function levelUnlocked(id,mode=campaignMode){
+  const lvl=levels.find(x=>x.id===id);if(!lvl)return false;
+  const world=levelWorld(lvl),startId=(world-1)*10+1;
+  if(!worldUnlocked(world))return false;
   if(mode==='hard'){
-    if(!hardModeUnlocked())return false;
-    return id===1||save.hardCompletedLevels.includes(id-1);
+    if(!hardModeUnlocked(world))return false;
+    return id===startId||save.hardCompletedLevels.includes(id-1);
   }
-  return id===1||save.completedLevels.includes(id-1);
+  return id===startId||save.completedLevels.includes(id-1);
+}
+function setCampaignWorld(world){
+  if(!worldUnlocked(world))return;
+  campaignWorld=world;
+  if(campaignMode==='hard'&&!hardModeUnlocked(world))campaignMode='normal';
+  renderCampaignMap();
 }
 function setCampaignMode(mode){
-  if(mode==='hard'&&!hardModeUnlocked())return;
+  if(mode==='hard'&&!hardModeUnlocked(campaignWorld))return;
   campaignMode=mode;
   renderCampaignMap();
 }
 function renderCampaignMap(){
  const map=$('.campaign-map');if(!map)return;
- const hard=campaignMode==='hard',completed=hard?save.hardCompletedLevels:save.completedLevels;
+ const meta=worldMeta[campaignWorld],hard=campaignMode==='hard',completed=hard?save.hardCompletedLevels:save.completedLevels;
+ const world1Btn=$('#campaignWorld1Btn'),world2Btn=$('#campaignWorld2Btn');
+ if(world1Btn)world1Btn.classList.toggle('active',campaignWorld===1);
+ if(world2Btn){world2Btn.disabled=!worldUnlocked(2);world2Btn.classList.toggle('active',campaignWorld===2);world2Btn.textContent=worldUnlocked(2)?'WORLD 2 • FROSTFALL':'WORLD 2 • LOCKED'}
+ const title=$('#campaignWorldTitle'),sub=$('#campaignWorldSubtitle'),region=$('#campaignRegionLabel');
+ if(title)title.textContent=meta.name;if(sub)sub.textContent=meta.subtitle;if(region)region.textContent=meta.label;
  const normalBtn=$('#campaignNormalBtn'),hardBtn=$('#campaignHardBtn'),hint=$('#campaignModeHint');
  if(normalBtn)normalBtn.classList.toggle('active',!hard);
- if(hardBtn){
-   hardBtn.disabled=!hardModeUnlocked();
-   hardBtn.classList.toggle('active',hard);
-   hardBtn.textContent=hardModeUnlocked()?'HARD • 2×':'HARD • LOCKED';
- }
- if(hint)hint.textContent=hard?'Enemies have 2× health and move 12% faster. Hard Mode has its own stage progression.':hardModeUnlocked()?'Hard Mode unlocked — switch modes whenever you are ready.':'Defeat Hollowmaw on 1-10 to unlock Hard Mode.';
- map.classList.toggle('hard-map',hard);
- map.innerHTML='<div class="map-route-line"></div><div class="map-start-label">'+(hard?'VERDANT VALLEY • HARD MODE':'VERDANT VALLEY')+'</div>';
- levels.forEach((lvl,i)=>{
+ if(hardBtn){hardBtn.disabled=!hardModeUnlocked(campaignWorld);hardBtn.classList.toggle('active',hard);hardBtn.textContent=hardModeUnlocked(campaignWorld)?'HARD • 2×':'HARD • LOCKED'}
+ if(hint)hint.textContent=hard?'Enemies have 2× health and move 12% faster. Hard Mode has its own stage progression.':hardModeUnlocked(campaignWorld)?'Hard Mode unlocked — switch modes whenever you are ready.':'Defeat '+meta.boss+' on '+campaignWorld+'-10 to unlock this world\'s Hard Mode.';
+ map.classList.toggle('hard-map',hard);map.classList.toggle('snow-map',campaignWorld===2);
+ map.innerHTML='<div class="map-route-line"></div><div class="map-start-label">'+(hard?meta.name.toUpperCase()+' • HARD MODE':meta.name.toUpperCase())+'</div>';
+ levels.filter(lvl=>levelWorld(lvl)===campaignWorld).forEach((lvl,i)=>{
    const unlocked=levelUnlocked(lvl.id,campaignMode),done=completed.includes(lvl.id);
-   const row=document.createElement('div');
-   row.className='map-stage-row '+(i%2===0?'left':'right');
+   const row=document.createElement('div');row.className='map-stage-row '+(i%2===0?'left':'right');
    const el=document.createElement(unlocked?'button':'div');
-   el.className='map-node '+(unlocked?'unlocked':'locked')+(lvl.id===10?' boss-node':'')+(done?' completed':'')+(hard?' hard-node':'');
-   const marker=lvl.id===10?'◆':done?'✓':unlocked?'✦':'•';
-   el.innerHTML=`<span class="map-marker">${marker}</span><div class="map-node-copy"><span>${hard?'HARD ':''}1-${lvl.id}</span><b>${lvl.name}</b><small>${done?'Cleared':unlocked?lvl.waves+' waves':'Locked'}</small></div>`;
+   el.className='map-node '+(unlocked?'unlocked':'locked')+(lvl.boss?' boss-node':'')+(done?' completed':'')+(hard?' hard-node':'')+(campaignWorld===2?' snow-node':'');
+   const marker=lvl.boss?'◆':done?'✓':unlocked?'✦':'•';
+   el.innerHTML=`<span class="map-marker">${marker}</span><div class="map-node-copy"><span>${hard?'HARD ':''}${levelCode(lvl)}</span><b>${lvl.name}</b><small>${done?'Cleared':unlocked?lvl.waves+' waves':'Locked'}</small></div>`;
    if(unlocked)el.onclick=()=>startLevel(lvl.id);
    row.appendChild(el);map.appendChild(row);
  });
@@ -674,7 +799,7 @@ let pendingLevelId=null,loadoutDraft=[],battleLoadout=[];
 function renderLoadoutPicker(){
   const grid=$('#loadoutGrid'),count=$('#loadoutCount'),start=$('#loadoutStartBtn'),title=$('#loadoutLevelName');
   if(!grid)return;
-  if(title&&pendingLevelId)title.textContent=(pendingMode==='hard'?'HARD • ':'')+'1-'+pendingLevelId+' • '+levels[pendingLevelId-1].name+(pendingMode==='hard'?' • 2× HP • +12% speed':'');
+  if(title&&pendingLevelId){const lvl=levels.find(x=>x.id===pendingLevelId);title.textContent=(pendingMode==='hard'?'HARD • ':'')+levelCode(lvl)+' • '+lvl.name+(pendingMode==='hard'?' • 2× HP • +12% speed':'')}
   grid.innerHTML='';
   save.unlocked.forEach(id=>{
     const b=beasts[id],selected=loadoutDraft.includes(id),card=document.createElement('button'),ss=stageStats(id);
@@ -697,7 +822,7 @@ function startLevel(id){openLoadoutPicker(id)}
 function beginSelectedLevel(){
   if(!pendingLevelId||!loadoutDraft.length)return;
   battleLoadout=[...loadoutDraft].slice(0,4);save.lastLoadout=[...battleLoadout];persist();
-  currentLevel=levels[pendingLevelId-1];path=currentLevel.path;battleMode=pendingMode;$('#loadoutModal').classList.add('hidden');pendingLevelId=null;
+  currentLevel=levels.find(x=>x.id===pendingLevelId);path=currentLevel.path;battleMode=pendingMode;$('#loadoutModal').classList.add('hidden');pendingLevelId=null;
   reset();show('gameScreen');last=performance.now();requestAnimationFrame(loop);
 }
 if($('#loadoutStartBtn'))$('#loadoutStartBtn').onclick=()=>beginSelectedLevel();
@@ -1343,7 +1468,17 @@ function groundPalette(theme){
     corrupted:["#443b50","#50445f","#393342"],
     ruins:["#596958","#647363","#4f5d4f"],
     canyon:["#876747","#957555","#765a3e"],
-    den:["#27272f","#303039","#202028"]
+    den:["#27272f","#303039","#202028"],
+    snowfield:["#d7e5e9","#e7f0f2","#c7d9df"],
+    frostforest:["#b8cdd3","#cadbe0","#a9c0c7"],
+    frozenriver:["#c9dce3","#dce9ed","#b5cbd4"],
+    snowvillage:["#c7d7dc","#d9e4e7","#b4c8cf"],
+    crystal:["#b8d7e5","#d5e9f0","#a7c8d7"],
+    blizzard:["#b2c4cc","#cbd8dd","#9eb4be"],
+    glacier:["#a9cbd9","#cce2ea","#94b7c7"],
+    frostruins:["#b7c9d1","#cedbe0","#9fb4bd"],
+    mountain:["#afc1c8","#c8d5da","#98adb7"],
+    frostden:["#9dbbc9","#b9d2dc","#829fac"]
   }[theme]||["#4f824d","#5c8f56","#447643"];
 }
 function drawGround(level){
@@ -1359,6 +1494,11 @@ function drawGround(level){
   if(level.theme==='den'){
     ctx.fillStyle='#ffffff08';
     for(let x=25;x<1000;x+=100){ctx.beginPath();ctx.arc(x,80+((x*3)%430),2,0,Math.PI*2);ctx.fill()}
+  }
+  if(levelWorld(level)===2){
+    ctx.fillStyle='#ffffff75';
+    for(let x=18;x<1000;x+=56)for(let y=22;y<600;y+=64){const off=((x+y+level.id*7)%17);ctx.beginPath();ctx.arc(x+off,y+(off%9),1.6,0,Math.PI*2);ctx.fill()}
+    if(level.theme==='blizzard'){ctx.strokeStyle='#ffffff66';ctx.lineWidth=2;for(let y=35;y<600;y+=55){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(1000,y-85);ctx.stroke()}}
   }
 }
 function roundedRect(x,y,w,h,r){
@@ -1386,6 +1526,15 @@ function drawUnderScenery(level){
       ctx.fillStyle='#5c412f';ctx.fillRect(s.x,s.y,s.w,s.h);ctx.fillStyle='#a27b56';
       for(let x=s.x;x<s.x+s.w;x+=48){ctx.fillRect(x+6,s.y+9+(x%17),26,8)}
     }
+    if(s.kind==='frozenLake'){
+      ctx.fillStyle='#8fc7da';ctx.fillRect(s.x,s.y,s.w,s.h);ctx.fillStyle='#dff7ff88';
+      for(let y=s.y+12;y<s.y+s.h;y+=30)for(let x=s.x+8;x<s.x+s.w;x+=70){ctx.fillRect(x,y,28,3)}
+      ctx.strokeStyle='#ecfbff99';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(s.x+12,s.y+15);ctx.lineTo(s.x+s.w-18,s.y+s.h-22);ctx.moveTo(s.x+s.w*.7,s.y+5);ctx.lineTo(s.x+s.w*.35,s.y+s.h-8);ctx.stroke();
+    }
+    if(s.kind==='iceCliff'){
+      ctx.fillStyle='#7899a8';ctx.fillRect(s.x,s.y,s.w,s.h);ctx.fillStyle='#d4eef7';
+      for(let x=s.x;x<s.x+s.w;x+=52){ctx.beginPath();ctx.moveTo(x,s.y+s.h);ctx.lineTo(x+18,s.y+s.h+18);ctx.lineTo(x+34,s.y+s.h);ctx.fill()}
+    }
   });
 }
 function drawPath(level){
@@ -1404,6 +1553,18 @@ function drawPine(x,y){
   ctx.fillStyle='#513725';ctx.fillRect(x-4,y+18,8,22);ctx.fillStyle='#1d4d31';
   for(let i=0;i<3;i++){ctx.beginPath();ctx.moveTo(x,y-30+i*18);ctx.lineTo(x-27+i*3,y+10+i*14);ctx.lineTo(x+27-i*3,y+10+i*14);ctx.closePath();ctx.fill()}
 }
+function drawSnowPine(x,y){
+  ctx.fillStyle='#5b4a40';ctx.fillRect(x-4,y+18,8,24);
+  for(let i=0;i<3;i++){ctx.fillStyle=i===0?'#eaf7fa':'#c5dfe5';ctx.beginPath();ctx.moveTo(x,y-34+i*19);ctx.lineTo(x-29+i*3,y+10+i*14);ctx.lineTo(x+29-i*3,y+10+i*14);ctx.closePath();ctx.fill();ctx.strokeStyle='#6c8d91';ctx.lineWidth=2;ctx.stroke()}
+}
+function drawIceRock(x,y,scale=1){ctx.fillStyle='#7ea7b6';ctx.beginPath();ctx.moveTo(x-16*scale,y+10*scale);ctx.lineTo(x-9*scale,y-12*scale);ctx.lineTo(x+8*scale,y-16*scale);ctx.lineTo(x+18*scale,y+7*scale);ctx.lineTo(x+2*scale,y+16*scale);ctx.closePath();ctx.fill();ctx.strokeStyle='#d8f1f8';ctx.lineWidth=2;ctx.stroke()}
+function drawIceCrystal(x,y){ctx.fillStyle='#78d8f4';ctx.shadowBlur=14;ctx.shadowColor='#9feaff';ctx.beginPath();ctx.moveTo(x,y-27);ctx.lineTo(x+13,y+9);ctx.lineTo(x+3,y+23);ctx.lineTo(x-12,y+10);ctx.closePath();ctx.fill();ctx.fillStyle='#d9f8ff';ctx.beginPath();ctx.moveTo(x,y-22);ctx.lineTo(x+4,y+8);ctx.lineTo(x,y+13);ctx.closePath();ctx.fill();ctx.shadowBlur=0}
+function drawSnowHut(x,y){ctx.fillStyle='#6a5444';roundedRect(x-31,y-8,62,41,6);ctx.fill();ctx.fillStyle='#eef7f8';ctx.beginPath();ctx.moveTo(x-40,y-7);ctx.lineTo(x,y-39);ctx.lineTo(x+40,y-7);ctx.closePath();ctx.fill();ctx.strokeStyle='#91a9ae';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#31414a';ctx.fillRect(x-8,y+8,16,25);ctx.fillStyle='#ffe7a0';ctx.fillRect(x+15,y+3,10,9)}
+function drawSnowdrift(x,y){ctx.fillStyle='#f2f8fa';ctx.beginPath();ctx.ellipse(x,y,28,10,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#cfe2e8';ctx.beginPath();ctx.ellipse(x+8,y+2,18,6,0,0,Math.PI*2);ctx.fill()}
+function drawIcePillar(x,y){ctx.fillStyle='#84b9ca';ctx.beginPath();ctx.moveTo(x-11,y+26);ctx.lineTo(x-8,y-23);ctx.lineTo(x,y-34);ctx.lineTo(x+10,y-22);ctx.lineTo(x+12,y+26);ctx.closePath();ctx.fill();ctx.strokeStyle='#d9f6ff';ctx.lineWidth=3;ctx.stroke()}
+function drawFrostRune(x,y){ctx.strokeStyle='#bff6ff';ctx.shadowBlur=10;ctx.shadowColor='#9beaff';ctx.lineWidth=3;ctx.beginPath();ctx.arc(x,y,15,0,Math.PI*2);ctx.stroke();for(let i=0;i<6;i++){ctx.save();ctx.translate(x,y);ctx.rotate(i*Math.PI/3);ctx.beginPath();ctx.moveTo(0,-5);ctx.lineTo(0,-18);ctx.stroke();ctx.restore()}ctx.shadowBlur=0}
+function drawIceWall(x,y,w,h){ctx.fillStyle='#739bab';ctx.fillRect(x-w/2,y-h/2,w,h);ctx.strokeStyle='#d8f3f8';ctx.lineWidth=3;for(let xx=x-w/2+18;xx<x+w/2;xx+=34){ctx.beginPath();ctx.moveTo(xx,y-h/2);ctx.lineTo(xx,y+h/2);ctx.stroke()}}
+function drawIceBridge(s){ctx.save();ctx.translate(s.x,s.y);if(s.dir==='v')ctx.rotate(Math.PI/2);ctx.fillStyle='#8ec7d8';ctx.fillRect(-s.w/2,-s.h/2,s.w,s.h);ctx.strokeStyle='#e9fbff';ctx.lineWidth=3;for(let x=-s.w/2+8;x<s.w/2;x+=18){ctx.beginPath();ctx.moveTo(x,-s.h/2);ctx.lineTo(x,s.h/2);ctx.stroke()}ctx.strokeStyle='#5e8796';ctx.strokeRect(-s.w/2,-s.h/2,s.w,s.h);ctx.restore()}
 function drawBush(x,y){ctx.fillStyle='#2d6b3a';for(const [dx,dy,r] of [[-11,2,12],[10,2,13],[0,-7,15]]){ctx.beginPath();ctx.arc(x+dx,y+dy,r,0,Math.PI*2);ctx.fill()}}
 function drawRock(x,y,scale=1){ctx.fillStyle='#77736b';ctx.beginPath();ctx.moveTo(x-14*scale,y+9*scale);ctx.lineTo(x-8*scale,y-10*scale);ctx.lineTo(x+8*scale,y-14*scale);ctx.lineTo(x+17*scale,y+6*scale);ctx.lineTo(x+2*scale,y+15*scale);ctx.closePath();ctx.fill();ctx.strokeStyle='#a8a39a';ctx.lineWidth=2;ctx.stroke()}
 function drawFlowers(x,y){for(let i=0;i<5;i++){const dx=(i%3)*10-10,dy=Math.floor(i/3)*10-5;ctx.fillStyle=i%2?'#f7d56b':'#e89acd';ctx.fillRect(x+dx,y+dy,4,4);ctx.fillStyle='#dff0c3';ctx.fillRect(x+dx+1,y+dy+4,2,5)}}
@@ -1446,7 +1607,7 @@ function drawTorch(x,y){ctx.fillStyle='#493327';ctx.fillRect(x-3,y,6,22);ctx.fil
 function drawStalagmite(x,y){ctx.fillStyle='#5d5960';ctx.beginPath();ctx.moveTo(x-15,y+18);ctx.lineTo(x,y-28);ctx.lineTo(x+15,y+18);ctx.closePath();ctx.fill();ctx.fillStyle='#79737c';ctx.beginPath();ctx.moveTo(x-5,y+12);ctx.lineTo(x,y-20);ctx.lineTo(x+4,y+12);ctx.closePath();ctx.fill()}
 function drawScenery(level){
   (level.scenery||[]).forEach(s=>{
-    if(['river','water','corruption','cavePool','cliff'].includes(s.kind))return;
+    if(['river','water','corruption','cavePool','cliff','frozenLake','iceCliff'].includes(s.kind))return;
     if(s.kind==='tree')drawTree(s.x,s.y);
     else if(s.kind==='pine')drawPine(s.x,s.y);
     else if(s.kind==='bush')drawBush(s.x,s.y);
@@ -1478,33 +1639,43 @@ function drawScenery(level){
     else if(s.kind==='caveCrystal')drawCaveCrystal(s.x,s.y);
     else if(s.kind==='torch')drawTorch(s.x,s.y);
     else if(s.kind==='stalagmite')drawStalagmite(s.x,s.y);
+    else if(s.kind==='snowPine')drawSnowPine(s.x,s.y);
+    else if(s.kind==='iceRock')drawIceRock(s.x,s.y);
+    else if(s.kind==='iceCrystal')drawIceCrystal(s.x,s.y);
+    else if(s.kind==='snowHut')drawSnowHut(s.x,s.y);
+    else if(s.kind==='snowdrift')drawSnowdrift(s.x,s.y);
+    else if(s.kind==='icePillar')drawIcePillar(s.x,s.y);
+    else if(s.kind==='frostRune')drawFrostRune(s.x,s.y);
+    else if(s.kind==='iceWall')drawIceWall(s.x,s.y,s.w,s.h);
+    else if(s.kind==='iceBridge')drawIceBridge(s);
   });
 }
 function drawCore(){
   const end=path[path.length-1],x=Math.min(canvas.width-62,end.x),y=end.y;
   ctx.save();ctx.translate(x,y);
   ctx.fillStyle='#1d3b2b';ctx.beginPath();ctx.arc(0,0,48,0,Math.PI*2);ctx.fill();
-  ctx.strokeStyle=currentLevel.theme==='den'?'#8a64d8':'#8bca75';ctx.lineWidth=6;ctx.beginPath();ctx.arc(0,0,38,0,Math.PI*2);ctx.stroke();
-  ctx.fillStyle=currentLevel.theme==='den'?'#aa7cf0':'#e2d36f';ctx.shadowBlur=18;ctx.shadowColor=ctx.fillStyle;
+  ctx.strokeStyle=currentLevel.theme==='den'?'#8a64d8':levelWorld(currentLevel)===2?'#9ee8ff':'#8bca75';ctx.lineWidth=6;ctx.beginPath();ctx.arc(0,0,38,0,Math.PI*2);ctx.stroke();
+  ctx.fillStyle=currentLevel.theme==='den'?'#aa7cf0':levelWorld(currentLevel)===2?'#d9f8ff':'#e2d36f';ctx.shadowBlur=18;ctx.shadowColor=ctx.fillStyle;
   ctx.beginPath();ctx.moveTo(0,-28);ctx.lineTo(18,0);ctx.lineTo(0,28);ctx.lineTo(-18,0);ctx.closePath();ctx.fill();ctx.shadowBlur=0;ctx.restore();
 }
 function blockedByScenery(x,y){
   return (currentLevel.scenery||[]).some(s=>{
     if(!s.block)return false;
-    if(['river','water','cliff','wall'].includes(s.kind))return x>=s.x-(s.kind==='wall'?s.w/2:0)&&x<=s.x+(s.kind==='wall'?s.w/2:s.w)&&y>=s.y-(s.kind==='wall'?s.h/2:0)&&y<=s.y+(s.kind==='wall'?s.h/2:s.h);
+    if(['river','water','cliff','frozenLake','iceCliff'].includes(s.kind))return x>=s.x&&x<=s.x+s.w&&y>=s.y&&y<=s.y+s.h;
+    if(['wall','iceWall'].includes(s.kind))return x>=s.x-s.w/2&&x<=s.x+s.w/2&&y>=s.y-s.h/2&&y<=s.y+s.h/2;
     if(['corruption','cavePool'].includes(s.kind)){const dx=(x-s.x)/(s.rx||1),dy=(y-s.y)/(s.ry||1);return dx*dx+dy*dy<1}
-    if(s.kind==='hut')return Math.abs(x-s.x)<42&&Math.abs(y-s.y)<45;
+    if(s.kind==='hut'||s.kind==='snowHut')return Math.abs(x-s.x)<42&&Math.abs(y-s.y)<45;
     if(s.kind==='shrine')return Math.abs(x-s.x)<46&&Math.abs(y-s.y)<48;
     if(s.kind==='statue')return Math.abs(x-s.x)<28&&Math.abs(y-s.y)<38;
     if(s.kind==='boulder')return Math.hypot(x-s.x,y-s.y)<34;
-    if(s.kind==='stalagmite')return Math.hypot(x-s.x,y-s.y)<28;
+    if(s.kind==='stalagmite'||s.kind==='iceCrystal'||s.kind==='icePillar')return Math.hypot(x-s.x,y-s.y)<30;
     return false;
   });
 }
 function drawStageLabel(){
   ctx.save();ctx.globalAlpha=.92;ctx.fillStyle='#0e1812cc';roundedRect(18,18,205,48,10);ctx.fill();
   ctx.strokeStyle='#ffffff18';ctx.lineWidth=1;ctx.stroke();
-  ctx.fillStyle='#e9ce72';ctx.font='bold 13px Georgia,serif';ctx.fillText('1-'+currentLevel.id+'  '+currentLevel.name,31,39);
+  ctx.fillStyle=levelWorld(currentLevel)===2?'#c9f4ff':'#e9ce72';ctx.font='bold 13px Georgia,serif';ctx.fillText(levelCode(currentLevel)+'  '+currentLevel.name,31,39);
   ctx.fillStyle='#b9c6bd';ctx.font='10px sans-serif';ctx.fillText(currentLevel.theme.toUpperCase()+' • '+currentLevel.waves+' WAVES',31,55);ctx.restore();
 }
 function drawProjectileVisual(p){
