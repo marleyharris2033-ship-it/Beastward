@@ -706,3 +706,11 @@ radial-gradient(ellipse at 82% 57%,#193722 0 6%,transparent 7%);opacity:.75}
   .den-evo-line .den-evo-sprite,.den-evo-line img{width:58px!important;height:58px!important}
   .den-ascend-panel{align-items:stretch;flex-direction:column}
 }
+
+/* ===== Hollowmaw boss feedback v47 ===== */
+.progress-toast.boss{border-color:#a45bd2;background:linear-gradient(145deg,#332040,#181522);box-shadow:0 12px 38px #000b,0 0 24px #a45bd244}
+.progress-toast.boss b{color:#e5b6ff}
+.progress-toast.boss-danger{border-color:#d65a6d;background:linear-gradient(145deg,#432029,#211418);box-shadow:0 12px 38px #000b,0 0 25px #d65a6d44}
+.progress-toast.boss-danger b{color:#ff9bab}
+.progress-toast.boss-win{border-color:#7cd68c;background:linear-gradient(145deg,#21432b,#122219);box-shadow:0 12px 38px #000b,0 0 25px #75da8944}
+.progress-toast.boss-win b{color:#b8ffc4}
