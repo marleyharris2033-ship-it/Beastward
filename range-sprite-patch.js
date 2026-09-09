@@ -1,165 +1,40 @@
-// Beastward sprite/runtime patch: reliable drag placement + Safari-safe evolved art
+// Beastward sprite/runtime patch: reliable drag placement + Level 30 evolved art
 (() => {
   const custom = {
     shadepup:{sprite:'assets/pixel/shadepup.png?v=39',tower:'assets/pixel/shadepup.png?v=39'},
     scorchick:{sprite:'assets/pixel/scorchick.png?v=39',tower:'assets/pixel/scorchick.png?v=39'},
     voidling:{sprite:'assets/pixel/voidling.png?v=39',tower:'assets/pixel/voidling.png?v=39'}
   };
-
   Object.entries(custom).forEach(([id,art])=>{
     if(!beasts[id])return;
-    beasts[id].sprite=art.sprite;
-    beasts[id].towerSprite=art.tower;
-    const img=new Image();
-    img.onerror=()=>{img.src='assets/sprites/'+id+'.svg'};
-    img.src=art.tower;
-    spriteImgs[id]=img;
+    beasts[id].sprite=art.sprite; beasts[id].towerSprite=art.tower;
+    const img=new Image(); img.onerror=()=>{img.src='assets/sprites/'+id+'.svg'}; img.src=art.tower; spriteImgs[id]=img;
   });
 
-  // Stage 2 artwork lives in the polished 5x4 sprite sheet. CSS background
-  // cropping was unreliable on iOS Safari, so the UI now crops it through an
-  // inline SVG viewBox instead. This keeps the exact sheet artwork while
-  // avoiding Safari's blank background-image cells.
-  const stage2Art='assets/pixel/evolved/stage2_sheet.png?v=61';
+  // Level 30 / first evolution artwork: use the polished sheet directly.
+  const stage2Art='assets/pixel/evolved/stage2_sheet.png?v=57';
   const originalStageSpriteMarkup=stageSpriteMarkup;
   stageSpriteMarkup=function(id,stage=evolutionStage(id),extra='',unseen=false){
     if(stage!==2)return originalStageSpriteMarkup(id,stage,extra,unseen);
-    const b=beasts[id],name=nameForStage(id,stage),cell=stage2SheetCell(id);
-    const filter=unseen?'filter:brightness(0) saturate(0) contrast(1.2);opacity:.86;':'';
-    return `<span class="stage-sprite stage-2 type-${b.type.toLowerCase()} ${unseen?'unseen-sprite':''} ${extra}" aria-label="${unseen?'Undiscovered beast':name}">
-      <svg class="stage2-crop-svg" viewBox="${cell.sx} ${cell.sy} 128 128" preserveAspectRatio="xMidYMid meet" style="position:absolute;inset:0;width:100%;height:100%;overflow:hidden;${filter}">
-        <image href="${stage2Art}" x="0" y="0" width="640" height="512" preserveAspectRatio="none"></image>
-      </svg>
+    const b=beasts[id],name=nameForStage(id,2),cell=stage2SheetCell(id);
+    const left=-(cell.col*100),top=-(cell.row*100);
+    return `<span class="stage-sprite stage-2 type-${b.type.toLowerCase()} ${unseen?'unseen-sprite':''} ${extra}" aria-label="${unseen?'Undiscovered beast':name}" style="position:relative;display:inline-block;overflow:hidden;">
+      <img class="stage-form stage2-direct-crop" src="${stage2Art}" alt="${unseen?'Undiscovered beast':name}" style="position:absolute!important;width:500%!important;height:400%!important;max-width:none!important;max-height:none!important;left:${left}%!important;top:${top}%!important;object-fit:fill!important;transform:none!important;${unseen?'filter:brightness(0) saturate(0) contrast(1.2)!important;opacity:.86;':''}">
     </span>`;
   };
 
   let pointer=null,dragSpecies=null,dragPointerId=null,dragging=false,suppressClick=false;
-
-  const canvasPosFromClient=(clientX,clientY)=>{
-    const r=canvas.getBoundingClientRect();
-    return {
-      x:(clientX-r.left)*canvas.width/r.width,
-      y:(clientY-r.top)*canvas.height/r.height,
-      inside:clientX>=r.left&&clientX<=r.right&&clientY>=r.top&&clientY<=r.bottom
-    };
-  };
+  const canvasPosFromClient=(clientX,clientY)=>{const r=canvas.getBoundingClientRect();return{x:(clientX-r.left)*canvas.width/r.width,y:(clientY-r.top)*canvas.height/r.height,inside:clientX>=r.left&&clientX<=r.right&&clientY>=r.top&&clientY<=r.bottom}};
   const pointerPos=e=>canvasPosFromClient(e.clientX,e.clientY);
-
-  function placementValid(x,y,b){
-    return !!b&&gold>=b.cost&&distPath(x,y)>=55&&!blockedByScenery(x,y)&&!towers.some(t=>Math.hypot(t.x-x,t.y-y)<64);
-  }
-
-  function rangeRing(x,y,range,colour,valid=true){
-    ctx.save();
-    ctx.fillStyle=valid?colour:'#ff5959';
-    ctx.globalAlpha=.20;
-    ctx.beginPath();ctx.arc(x,y,range,0,Math.PI*2);ctx.fill();
-    ctx.globalAlpha=.92;
-    ctx.strokeStyle=valid?colour:'#ff6b6b';
-    ctx.lineWidth=3;ctx.setLineDash([10,7]);
-    ctx.beginPath();ctx.arc(x,y,range,0,Math.PI*2);ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.globalAlpha=.42;ctx.lineWidth=1;
-    ctx.beginPath();ctx.arc(x,y,Math.max(18,range-8),0,Math.PI*2);ctx.stroke();
-    ctx.restore();
-  }
-
-  function beginDrag(e,el,id){
-    if(gold<beasts[id].cost)return;
-    e.preventDefault();
-    dragSpecies=id;
-    dragPointerId=e.pointerId;
-    dragging=true;
-    suppressClick=true;
-    selectedSpecies=null;
-    selectedTower=null;
-    renderSelectedTower();
-    pointer=pointerPos(e);
-    document.querySelectorAll('.tower-choice').forEach(x=>x.classList.toggle('dragging',x===el));
-    try{el.setPointerCapture(e.pointerId)}catch(_){}
-  }
-
-  function placeDraggedBeast(id,pos){
-    const b=beasts[id];
-    if(!pos.inside||!placementValid(pos.x,pos.y,b))return false;
-    const placed={x:pos.x,y:pos.y,b:battleStats(id),cool:0,baseCost:b.cost,spent:b.cost,powerTier:0,specialTier:0,skillTier:0,targetMode:'first'};
-    towers.push(placed);
-    if(running)waveParticipants.add(id);
-    gold-=b.cost;
-    selectedTower=null;
-    selectedSpecies=null;
-    pointer=null;
-    document.querySelectorAll('.tower-choice').forEach(x=>x.classList.remove('selected','dragging'));
-    ui();renderSelectedTower();
-    return true;
-  }
-
-  function installDragHandlers(){
-    document.querySelectorAll('.tower-choice').forEach(el=>{
-      if(el.dataset.dragReady)return;
-      el.dataset.dragReady='1';
-      const id=save.unlocked.find(id=>el.textContent.includes(nameFor(id)))||save.unlocked[[...el.parentNode.children].indexOf(el)];
-      if(!id)return;
-      el.onclick=e=>{
-        if(suppressClick){e.preventDefault();e.stopPropagation();suppressClick=false}
-      };
-      el.addEventListener('pointerdown',e=>beginDrag(e,el,id),{passive:false});
-    });
-  }
-
-  const originalChoices=choices;
-  choices=function(){originalChoices();installDragHandlers()};
-  choices();
-
-  document.addEventListener('pointermove',e=>{
-    if(!dragging||e.pointerId!==dragPointerId)return;
-    e.preventDefault();
-    pointer=pointerPos(e);
-  },{passive:false});
-
-  document.addEventListener('pointerup',e=>{
-    if(!dragging||e.pointerId!==dragPointerId)return;
-    e.preventDefault();
-    const pos=pointerPos(e),id=dragSpecies;
-    placeDraggedBeast(id,pos);
-    dragging=false;dragSpecies=null;dragPointerId=null;pointer=null;
-    document.querySelectorAll('.tower-choice').forEach(x=>x.classList.remove('dragging'));
-    setTimeout(()=>{suppressClick=false},0);
-  },{passive:false});
-
-  document.addEventListener('pointercancel',e=>{
-    if(e.pointerId!==dragPointerId)return;
-    dragging=false;dragSpecies=null;dragPointerId=null;pointer=null;
-    document.querySelectorAll('.tower-choice').forEach(x=>x.classList.remove('dragging'));
-  });
-
-  canvas.addEventListener('pointermove',e=>{if(!dragging)pointer=pointerPos(e)});
-  canvas.addEventListener('pointerleave',()=>{if(!dragging)pointer=null});
-
-  const baseDraw=draw;
-  draw=function(){
-    baseDraw();
-    if(selectedTower){
-      rangeRing(selectedTower.x,selectedTower.y,selectedTower.b.range,selectedTower.b.color||'#ffe17b',true);
-    }
-    if(dragging&&dragSpecies&&pointer){
-      const b=battleStats(dragSpecies);
-      const valid=pointer.inside&&placementValid(pointer.x,pointer.y,beasts[dragSpecies]);
-      rangeRing(pointer.x,pointer.y,b.range,b.color||'#ffe17b',valid);
-      const stage=evolutionStage(dragSpecies);
-      ctx.save();
-      ctx.globalAlpha=valid?.92:.62;
-      if(stage===2&&stage2SheetImg.complete&&stage2SheetImg.naturalWidth){
-        const cell=stage2SheetCell(dragSpecies),size=78;
-        ctx.drawImage(stage2SheetImg,cell.sx,cell.sy,128,128,pointer.x-size/2,pointer.y-size/2,size,size);
-      }else{
-        const img=stage===3?(evolutionSpriteImgs[dragSpecies]?.[3]||spriteImgs[dragSpecies]):spriteImgs[dragSpecies];
-        if(img&&img.complete){
-          const size=stage===3?82:74;
-          ctx.drawImage(img,pointer.x-size/2,pointer.y-size/2,size,size);
-        }
-      }
-      ctx.restore();
-    }
-  };
+  function placementValid(x,y,b){return !!b&&gold>=b.cost&&distPath(x,y)>=55&&!blockedByScenery(x,y)&&!towers.some(t=>Math.hypot(t.x-x,t.y-y)<64)}
+  function rangeRing(x,y,range,colour,valid=true){ctx.save();ctx.fillStyle=valid?colour:'#ff5959';ctx.globalAlpha=.20;ctx.beginPath();ctx.arc(x,y,range,0,Math.PI*2);ctx.fill();ctx.globalAlpha=.92;ctx.strokeStyle=valid?colour:'#ff6b6b';ctx.lineWidth=3;ctx.setLineDash([10,7]);ctx.beginPath();ctx.arc(x,y,range,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=.42;ctx.lineWidth=1;ctx.beginPath();ctx.arc(x,y,Math.max(18,range-8),0,Math.PI*2);ctx.stroke();ctx.restore()}
+  function beginDrag(e,el,id){if(gold<beasts[id].cost)return;e.preventDefault();dragSpecies=id;dragPointerId=e.pointerId;dragging=true;suppressClick=true;selectedSpecies=null;selectedTower=null;renderSelectedTower();pointer=pointerPos(e);document.querySelectorAll('.tower-choice').forEach(x=>x.classList.toggle('dragging',x===el));try{el.setPointerCapture(e.pointerId)}catch(_){}}
+  function placeDraggedBeast(id,pos){const b=beasts[id];if(!pos.inside||!placementValid(pos.x,pos.y,b))return false;const placed={x:pos.x,y:pos.y,b:battleStats(id),cool:0,baseCost:b.cost,spent:b.cost,powerTier:0,specialTier:0,skillTier:0,targetMode:'first'};towers.push(placed);if(running)waveParticipants.add(id);gold-=b.cost;selectedTower=null;selectedSpecies=null;pointer=null;document.querySelectorAll('.tower-choice').forEach(x=>x.classList.remove('selected','dragging'));ui();renderSelectedTower();return true}
+  function installDragHandlers(){document.querySelectorAll('.tower-choice').forEach(el=>{if(el.dataset.dragReady)return;el.dataset.dragReady='1';const id=save.unlocked.find(id=>el.textContent.includes(nameFor(id)))||save.unlocked[[...el.parentNode.children].indexOf(el)];if(!id)return;el.onclick=e=>{if(suppressClick){e.preventDefault();e.stopPropagation();suppressClick=false}};el.addEventListener('pointerdown',e=>beginDrag(e,el,id),{passive:false})})}
+  const originalChoices=choices;choices=function(){originalChoices();installDragHandlers()};choices();
+  document.addEventListener('pointermove',e=>{if(!dragging||e.pointerId!==dragPointerId)return;e.preventDefault();pointer=pointerPos(e)},{passive:false});
+  document.addEventListener('pointerup',e=>{if(!dragging||e.pointerId!==dragPointerId)return;e.preventDefault();const pos=pointerPos(e),id=dragSpecies;placeDraggedBeast(id,pos);dragging=false;dragSpecies=null;dragPointerId=null;pointer=null;document.querySelectorAll('.tower-choice').forEach(x=>x.classList.remove('dragging'));setTimeout(()=>{suppressClick=false},0)},{passive:false});
+  document.addEventListener('pointercancel',e=>{if(e.pointerId!==dragPointerId)return;dragging=false;dragSpecies=null;dragPointerId=null;pointer=null;document.querySelectorAll('.tower-choice').forEach(x=>x.classList.remove('dragging'))});
+  canvas.addEventListener('pointermove',e=>{if(!dragging)pointer=pointerPos(e)});canvas.addEventListener('pointerleave',()=>{if(!dragging)pointer=null});
+  const baseDraw=draw;draw=function(){baseDraw();if(selectedTower)rangeRing(selectedTower.x,selectedTower.y,selectedTower.b.range,selectedTower.b.color||'#ffe17b',true);if(dragging&&dragSpecies&&pointer){const b=battleStats(dragSpecies),valid=pointer.inside&&placementValid(pointer.x,pointer.y,beasts[dragSpecies]);rangeRing(pointer.x,pointer.y,b.range,b.color||'#ffe17b',valid);const stage=evolutionStage(dragSpecies);ctx.save();ctx.globalAlpha=valid?.92:.62;if(stage===2&&stage2SheetImg.complete&&stage2SheetImg.naturalWidth){const cell=stage2SheetCell(dragSpecies),size=78;ctx.drawImage(stage2SheetImg,cell.sx,cell.sy,128,128,pointer.x-size/2,pointer.y-size/2,size,size)}else{const img=stage===3?(evolutionSpriteImgs[dragSpecies]?.[3]||spriteImgs[dragSpecies]):spriteImgs[dragSpecies];if(img&&img.complete){const size=stage===3?82:74;ctx.drawImage(img,pointer.x-size/2,pointer.y-size/2,size,size)}}ctx.restore()}};
 })();
