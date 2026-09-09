@@ -505,9 +505,15 @@ function recalcTower(t){
  if(id==='mosshell'&&k>=2)skillDamage*=1.08;
  t.b={...base,damage:base.damage*powerDamage*skillDamage,range:base.range*powerRange*skillRange,rate:base.rate*specialRate*skillRate};
 }
+function combatRangeBase(id){
+  // The visible combat range is driven directly by the beast's displayed Range rating.
+  // Rating 4 = 128px, 5 = 140px ... 10 = 200px before level/ascension bonuses.
+  const rating=beastRatings[id]?.range||6;
+  return 80+rating*12;
+}
 function battleStats(id){
   const b=beasts[id];
-  return {...b,damage:b.damage*levelMultiplier(id),range:b.range*rangeMultiplier(id),rate:b.rate*(1-ascension(id)*.03)};
+  return {...b,damage:b.damage*levelMultiplier(id),range:combatRangeBase(id)*rangeMultiplier(id),rate:b.rate*(1-ascension(id)*.03)};
 }
 function choices(){
   const w=$('#towerChoices');w.innerHTML='';
@@ -524,7 +530,7 @@ function renderSelectedTower(){
   if(!selectedTower||!towers.includes(selectedTower)){selectedTower=null;p.classList.add('hidden');return}
   p.classList.remove('hidden');
   $('#selectedTowerName').textContent=nameFor(selectedTower.b.id);
-  $('#selectedTowerStats').innerHTML=`Level ${progress(selectedTower.b.id).level} • ★${ascension(selectedTower.b.id)} • Sell ${Math.floor(selectedTower.spent*.8)} gold`+statBars(selectedTower.b.id);
+  $('#selectedTowerStats').innerHTML=`Level ${progress(selectedTower.b.id).level} • ★${ascension(selectedTower.b.id)} • Range ${Math.round(selectedTower.b.range)} • Sell ${Math.floor(selectedTower.spent*.8)} gold`+statBars(selectedTower.b.id);
   renderUpgradeButtons();
 }
 function renderUpgradeButtons(){
