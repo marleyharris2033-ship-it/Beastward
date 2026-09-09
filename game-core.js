@@ -131,7 +131,15 @@ function ascension(id){return save.ascensions[id]||0}
 function copies(id){return save.beastCopies[id]||0}
 function ascensionNeed(id){return [2,5,10][ascension(id)]||null}
 function levelMultiplier(id){const l=progress(id).level,a=ascension(id);return (1+(l-1)*.03+(l>=15?.15:0)+(l>=30?.2:0))*(1+a*.08)}
-function rangeMultiplier(id){return (1+(progress(id).level-1)*.005)*(1+ascension(id)*.02)}
+function rangeMultiplier(id){
+  // Range grows gently across levels so evolution never makes the battlefield trivial.
+  // Lv30 adds ~4.4%, each Ascension adds 1%, and evolution adds a modest 4% / 8%.
+  const level=progress(id).level,stage=evolutionStage(id);
+  const levelGrowth=1+(level-1)*.0015;
+  const ascensionGrowth=1+ascension(id)*.01;
+  const evolutionGrowth=stage===3?1.08:stage===2?1.04:1;
+  return levelGrowth*ascensionGrowth*evolutionGrowth;
+}
 function persist(){if(!activeSlot)return;save.lastPlayed=Date.now();localStorage.setItem('beastward-save-'+activeSlot,JSON.stringify(save));localStorage.setItem('beastward-active-slot',String(activeSlot));updateHub()}
 function updateHub(){
   if($('#essenceTotal'))$('#essenceTotal').textContent=save.essence;
@@ -503,17 +511,20 @@ function recalcTower(t){
  if(id==='drizzlet'&&k>=2)skillRate*=.90;
  if(id==='zapmoth'&&k>=2)skillRate*=.90;
  if(id==='mosshell'&&k>=2)skillDamage*=1.08;
- t.b={...base,damage:base.damage*powerDamage*skillDamage,range:base.range*powerRange*skillRange,rate:base.rate*specialRate*skillRate};
+ t.b={...base,damage:base.damage*powerDamage*skillDamage,range:clampCombatRange(base.range*powerRange*skillRange),rate:base.rate*specialRate*skillRate};
 }
 function combatRangeBase(id){
-  // The visible combat range is driven directly by the beast's displayed Range rating.
-  // Rating 4 = 128px, 5 = 140px ... 10 = 200px before level/ascension bonuses.
-  const rating=beastRatings[id]?.range||6;
-  return 80+rating*12;
+  // Displayed stats scale from /10 to /20 to /30 as beasts evolve, but combat
+  // range uses the stat's PERCENTAGE of its stage cap rather than the raw number.
+  // Example: 6/10, 12/20 and 18/30 all represent the same core range identity.
+  const stats=stageStats(id);
+  const ratio=Math.max(.35,Math.min(1,stats.range/stats.cap));
+  return 115+ratio*85; // balanced base spectrum: ~145px to 200px
 }
+function clampCombatRange(value){return Math.max(135,Math.min(260,value))}
 function battleStats(id){
   const b=beasts[id];
-  return {...b,damage:b.damage*levelMultiplier(id),range:combatRangeBase(id)*rangeMultiplier(id),rate:b.rate*(1-ascension(id)*.03)};
+  return {...b,damage:b.damage*levelMultiplier(id),range:clampCombatRange(combatRangeBase(id)*rangeMultiplier(id)),rate:b.rate*(1-ascension(id)*.03)};
 }
 function choices(){
   const w=$('#towerChoices');w.innerHTML='';
