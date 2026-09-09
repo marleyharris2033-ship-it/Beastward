@@ -461,16 +461,49 @@ const upgradeDefs={
   {name:'Primal Surge',desc:'Unlocks a powerful type-specific effect',mult:1.5}
  ]
 };
+const beastSkills={
+ embercub:{name:'Flameheart',desc:['Burn damage +25%','Burn lasts longer and splashes','Inferno: burning targets erupt'],mult:[.55,.9,1.45]},
+ sprigpaw:{name:'Verdant Snare',desc:['Root chance +15%','Roots last longer','Wild Growth: roots spread nearby'],mult:[.5,.85,1.4]},
+ bubblit:{name:'Tidal Pulse',desc:['Slow strength increased','Slow lasts longer','Riptide: hits splash strong slow'],mult:[.5,.85,1.4]},
+ sparkit:{name:'Overcharge',desc:['Chain +1 target','Chain damage +20%','Supercell: chains can stun'],mult:[.55,.9,1.45]},
+ pebblum:{name:'Seismic Slam',desc:['Stun lasts longer','Hits splash nearby','Earthshatter: huge area stagger'],mult:[.6,.95,1.5]},
+ gustwing:{name:'Tailwind',desc:['Wind pierces +1 target','+12% range','Cyclone: pierces a wide group'],mult:[.5,.9,1.45]},
+ toxip:{name:'Virulent Venom',desc:['Poison damage +30%','Poison lasts longer','Plague Cloud: poison spreads'],mult:[.55,.9,1.45]},
+ frostkit:{name:'Deep Freeze',desc:['Freeze chance +12%','Freeze lasts longer','Absolute Zero: freezes nearby enemies'],mult:[.6,.95,1.5]},
+ shadepup:{name:'Night Hunt',desc:['Critical chance +12%','Critical damage increased','Execution: brutal low-health crits'],mult:[.6,.95,1.55]},
+ lumpling:{name:'Radiant Nova',desc:['Splash radius +20%','Splash damage +25%','Sunburst: massive radiant explosion'],mult:[.6,.95,1.5]},
+ voltwing:{name:'Storm Relay',desc:['Chain +1 target','Chain damage +25%','Thunderweb: farther chains can stun'],mult:[.65,1,1.55]},
+ scorchick:{name:'Ember Rush',desc:['+10% attack speed','Burn damage +25%','Firestorm: rapid hits explode'],mult:[.45,.8,1.35]},
+ mosshell:{name:'Ancient Shell',desc:['Stagger lasts longer','+20% boss damage','Quake Shell: attacks stagger an area'],mult:[.55,.9,1.45]},
+ drizzlet:{name:'Flash Flood',desc:['Slow strength increased','+10% attack speed','Downpour: splash slow nearby'],mult:[.45,.8,1.35]},
+ zapmoth:{name:'Static Swarm',desc:['Chain +1 target','+10% attack speed','Arc Swarm: rapid crowd chaining'],mult:[.5,.85,1.4]},
+ cindrake:{name:'Meteor Core',desc:['Meteor splash +25%','Burning splash +30%','Cataclysm: enormous blast'],mult:[.7,1.1,1.7]},
+ sporeling:{name:'Spore Colony',desc:['Poison duration +30%','Burst spreads farther','Bloom: infected enemies spread poison'],mult:[.65,1.05,1.65]},
+ drakeling:{name:'Skybreaker',desc:['Wind pierces +1 target','+15% range','Tempest Lance: tears through groups'],mult:[.65,1.05,1.65]},
+ voidling:{name:'Rift Hunger',desc:['Critical chance +15%','Crits splash void damage','Singularity: crits tear nearby enemies'],mult:[.7,1.1,1.7]}
+};
 function upgradeCost(t,path){
- const tier=t[path+'Tier']||0,def=upgradeDefs[path][tier];
+ const tier=t[path+'Tier']||0;
+ if(path==='skill'){
+   const skill=beastSkills[t.b.id],mult=skill?.mult?.[tier];
+   return mult?Math.ceil(t.baseCost*mult/5)*5:null;
+ }
+ const def=upgradeDefs[path][tier];
  return def?Math.ceil(t.baseCost*def.mult/5)*5:null;
 }
 function recalcTower(t){
- const base=battleStats(t.b.id),p=t.powerTier||0,s=t.specialTier||0;
+ const base=battleStats(t.b.id),p=t.powerTier||0,s=t.specialTier||0,k=t.skillTier||0,id=t.b.id;
  const powerDamage=[1,1.2,1.32,1.782][p]||1;
  const powerRange=[1,1,1.18,1.18][p]||1;
  const specialRate=[1,.88,.88,.88][s]||1;
- t.b={...base,damage:base.damage*powerDamage,range:base.range*powerRange,rate:base.rate*specialRate};
+ let skillDamage=1,skillRange=1,skillRate=1;
+ if(id==='gustwing'&&k>=2)skillRange*=1.12;
+ if(id==='drakeling'&&k>=2)skillRange*=1.15;
+ if(id==='scorchick'&&k>=1)skillRate*=k>=2?.82:.90;
+ if(id==='drizzlet'&&k>=2)skillRate*=.90;
+ if(id==='zapmoth'&&k>=2)skillRate*=.90;
+ if(id==='mosshell'&&k>=2)skillDamage*=1.08;
+ t.b={...base,damage:base.damage*powerDamage*skillDamage,range:base.range*powerRange*skillRange,rate:base.rate*specialRate*skillRate};
 }
 function battleStats(id){
   const b=beasts[id];
@@ -504,18 +537,28 @@ function renderUpgradeButtons(){
    const locked=tier===2&&otherTier>=3,cost=upgradeCost(selectedTower,path),def=upgradeDefs[path][tier];
    btn.disabled=locked||gold<cost;
    btn.textContent=locked?'TIER III LOCKED':`Tier ${tier+1} • ${def.name} • ${cost}g`;
-   desc.textContent=locked?'The other path has already claimed Tier III.':def.desc;
+   desc.textContent=locked?'The other core path already claimed Tier III.':def.desc;
  });
+ const skill=beastSkills[selectedTower.b.id],tier=selectedTower.skillTier||0,btn=$('#skillUpgradeBtn'),desc=$('#skillUpgradeDesc'),title=$('#skillPathName');
+ if(title)title.textContent=skill?.name||'Beast Talent';
+ if(btn&&desc&&skill){
+   if(tier>=3){btn.textContent='MAX TIER';btn.disabled=true;desc.textContent='Unique talent fully mastered.'}
+   else{const cost=upgradeCost(selectedTower,'skill');btn.disabled=gold<cost;btn.textContent=`Tier ${tier+1} • ${cost}g`;desc.textContent=skill.desc[tier]}
+ }
 }
 function buyTowerUpgrade(path){
  if(!selectedTower)return;
- const tier=selectedTower[path+'Tier']||0,other=path==='power'?'special':'power',otherTier=selectedTower[other+'Tier']||0;
- if(tier>=3||(tier===2&&otherTier>=3))return;
+ const tier=selectedTower[path+'Tier']||0;
+ if(path!=='skill'){
+   const other=path==='power'?'special':'power',otherTier=selectedTower[other+'Tier']||0;
+   if(tier>=3||(tier===2&&otherTier>=3))return;
+ }else if(tier>=3)return;
  const cost=upgradeCost(selectedTower,path);if(gold<cost)return;
  gold-=cost;selectedTower[path+'Tier']=tier+1;selectedTower.spent+=cost;recalcTower(selectedTower);ui();renderSelectedTower();
 }
 $('#powerUpgradeBtn').onclick=()=>buyTowerUpgrade('power');
 $('#specialUpgradeBtn').onclick=()=>buyTowerUpgrade('special');
+$('#skillUpgradeBtn').onclick=()=>buyTowerUpgrade('skill');
 function reset(){
   towers=[];enemies=[];projectiles=[];effects=[];selectedSpecies=null;selectedTower=null;gold=400;lives=20;wave=0;running=false;queue=[];speed=1;waveParticipants=new Set();
   document.querySelectorAll('.speed-choice').forEach(b=>b.classList.toggle('active',Number(b.dataset.speed)===1));$('#waveXpNotice').textContent='';ui();choices();renderSelectedTower();
@@ -548,9 +591,10 @@ canvas.addEventListener('pointerdown',e=>{
   if(!selectedSpecies)return;
   const b=beasts[selectedSpecies];
   if(gold<b.cost||distPath(x,y)<55||blockedByScenery(x,y)||towers.some(t=>Math.hypot(t.x-x,t.y-y)<64))return;
-  towers.push({x,y,b:battleStats(selectedSpecies),cool:0,baseCost:b.cost,spent:b.cost,powerTier:0,specialTier:0});
+  const placed={x,y,b:battleStats(selectedSpecies),cool:0,baseCost:b.cost,spent:b.cost,powerTier:0,specialTier:0,skillTier:0};
+  towers.push(placed);
   if(running)waveParticipants.add(selectedSpecies);
-  gold-=b.cost;ui();
+  gold-=b.cost;selectedTower=placed;selectedSpecies=null;document.querySelectorAll('.tower-choice').forEach(x=>x.classList.remove('selected'));ui();renderSelectedTower();
 });
 function distPath(x,y){
   let best=1e9;
@@ -575,7 +619,7 @@ function attack(t,dt){
   t.cool-=dt;if(t.cool>0)return;
   const target=enemies.filter(e=>Math.hypot(e.x-t.x,e.y-t.y)<=t.b.range).sort((a,b)=>b.seg-a.seg)[0];
   if(!target)return;
-  t.cool=t.b.rate;projectiles.push({x:t.x,y:t.y,target,damage:t.b.damage,type:t.b.type,color:t.b.color,beastId:t.b.id,speed:t.b.type==='Rock'?300:t.b.type==='Wind'?520:420,fromX:t.x,fromY:t.y,spin:0,powerTier:t.powerTier||0,specialTier:t.specialTier||0});
+  t.cool=t.b.rate;projectiles.push({x:t.x,y:t.y,target,damage:t.b.damage,type:t.b.type,color:t.b.color,beastId:t.b.id,speed:t.b.type==='Rock'?300:t.b.type==='Wind'?520:420,fromX:t.x,fromY:t.y,spin:0,powerTier:t.powerTier||0,specialTier:t.specialTier||0,skillTier:t.skillTier||0});
 }
 function addXP(ids,amount){
   const levelUps=[];
@@ -599,6 +643,31 @@ function completeWave(){
   setTimeout(()=>{if($('#waveXpNotice'))$('#waveXpNotice').textContent=''},1800);
 }
 function fx(kind,x,y,color='#fff',extra={}){effects.push({kind,x,y,color,life:1,maxLife:1,...extra})}
+function applyBeastTalent(p,t){
+ const k=p.skillTier||0;if(!k||!t)return;
+ const near=(r)=>enemies.filter(e=>e!==t&&Math.hypot(e.x-t.x,e.y-t.y)<r);
+ switch(p.beastId){
+  case 'embercub': t.burn=Math.max(t.burn||0,2.4+k*.5);t.burnDps=Math.max(t.burnDps||0,p.damage*(.08+.07*k));if(k>=3)near(70).forEach(e=>e.hp-=p.damage*.32);break;
+  case 'sprigpaw': if(Math.random()<.12+.15*k)t.root=Math.max(t.root||0,.35+.22*k);if(k>=3)near(65).forEach(e=>e.root=Math.max(e.root||0,.35));break;
+  case 'bubblit': t.slow=Math.max(t.slow||0,1.4+.35*k);t.slowFactor=Math.min(t.slowFactor||1,.62-.05*k);if(k>=3)near(60).forEach(e=>{e.slow=Math.max(e.slow||0,1.4);e.slowFactor=Math.min(e.slowFactor||1,.5)});break;
+  case 'sparkit': near(90+10*k).slice(0,k).forEach(e=>{e.hp-=p.damage*(.3+.08*k);if(k>=3&&Math.random()<.25)e.stun=Math.max(e.stun||0,.25)});break;
+  case 'pebblum': t.stun=Math.max(t.stun||0,.18+.18*k);if(k>=2)near(62).forEach(e=>e.hp-=p.damage*.25);if(k>=3)near(62).forEach(e=>e.stun=Math.max(e.stun||0,.3));break;
+  case 'gustwing': near(115).slice(0,k).forEach(e=>e.hp-=p.damage*(.28+.08*k));break;
+  case 'toxip': t.poison=Math.max(t.poison||0,3+k*.5);t.poisonDps=Math.max(t.poisonDps||0,p.damage*(.12+.08*k));if(k>=3)near(70).forEach(e=>{e.poison=Math.max(e.poison||0,2.8);e.poisonDps=Math.max(e.poisonDps||0,p.damage*.2)});break;
+  case 'frostkit': if(Math.random()<.1+.12*k)t.stun=Math.max(t.stun||0,.35+.18*k);if(k>=3)near(60).forEach(e=>{e.slow=Math.max(e.slow||0,2);e.slowFactor=Math.min(e.slowFactor||1,.42)});break;
+  case 'shadepup': if(Math.random()<.08+.12*k){const bonus=p.damage*(.45+.25*k);t.hp-=bonus;fx('crit',t.x,t.y,'#b777ff')}break;
+  case 'lumpling': near(64+8*k).forEach(e=>e.hp-=p.damage*(.12+.11*k));if(k>=3)fx('light',t.x,t.y,'#fff4a6',{size:96});break;
+  case 'voltwing': near(110+10*k).slice(0,1+k).forEach(e=>{e.hp-=p.damage*(.35+.08*k);if(k>=3&&Math.random()<.2)e.stun=Math.max(e.stun||0,.25)});break;
+  case 'scorchick': t.burn=Math.max(t.burn||0,2+k*.4);t.burnDps=Math.max(t.burnDps||0,p.damage*(.1+.07*k));if(k>=3&&Math.random()<.35)near(52).forEach(e=>e.hp-=p.damage*.28);break;
+  case 'mosshell': t.stun=Math.max(t.stun||0,.22+.16*k);if(t.boss)t.hp-=p.damage*(.08*k);if(k>=3)near(62).forEach(e=>e.stun=Math.max(e.stun||0,.28));break;
+  case 'drizzlet': t.slow=Math.max(t.slow||0,1.7+.3*k);t.slowFactor=Math.min(t.slowFactor||1,.55-.04*k);if(k>=3)near(58).forEach(e=>{e.slow=Math.max(e.slow||0,1.5);e.slowFactor=Math.min(e.slowFactor||1,.48)});break;
+  case 'zapmoth': near(95+8*k).slice(0,1+k).forEach(e=>e.hp-=p.damage*(.26+.08*k));break;
+  case 'cindrake': near(72+10*k).forEach(e=>e.hp-=p.damage*(.15+.1*k));if(k>=3)fx('burst',t.x,t.y,'#ff7a32',{size:85});break;
+  case 'sporeling': t.poison=Math.max(t.poison||0,3.5+k*.5);t.poisonDps=Math.max(t.poisonDps||0,p.damage*(.14+.07*k));if(k>=2)near(65+8*k).forEach(e=>{e.poison=Math.max(e.poison||0,2.5);e.poisonDps=Math.max(e.poisonDps||0,p.damage*.16)});break;
+  case 'drakeling': near(125).slice(0,k+1).forEach(e=>e.hp-=p.damage*(.3+.09*k));break;
+  case 'voidling': if(Math.random()<.12+.09*k){t.hp-=p.damage*(.35+.22*k);if(k>=2)near(65).forEach(e=>e.hp-=p.damage*(.12+.08*k));fx('crit',t.x,t.y,'#d06cff')}break;
+ }
+}
 function hitProjectile(p){
   const mastery=p.specialTier>=2,primal=p.specialTier>=3,apex=p.powerTier>=3,t=p.target;
   let damage=p.damage;
@@ -670,6 +739,7 @@ function hitProjectile(p){
     enemies.filter(e=>e!==t&&Math.hypot(e.x-t.x,e.y-t.y)<radius).forEach(e=>e.hp-=p.damage*ratio);
     fx('light',t.x,t.y,'#fff4a6',{size:primal?90:66});
   }
+  applyBeastTalent(p,t);
   if(apex)fx('apex',t.x,t.y,p.color,{size:58});
 }
 function update(dt){
