@@ -836,3 +836,22 @@ radial-gradient(ellipse at 82% 57%,#193722 0 6%,transparent 7%);opacity:.75}
 @media(max-width:700px){
   .exit-confirm-actions{grid-template-columns:1fr}
 }
+
+/* ===== World 2: Frostfall Expanse v56 ===== */
+.campaign-world-switch{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 13px}
+.campaign-world-btn{min-height:42px;border:1px solid #506558;border-radius:10px;background:#15241b;color:#9eaea4;font-weight:900;letter-spacing:.06em}
+.campaign-world-btn.active{border-color:#d0b45d;background:linear-gradient(#355a3d,#1c3827);color:#ffe79a;box-shadow:0 0 0 2px #d0b45d22}
+.campaign-world-btn:disabled{opacity:.4}
+.campaign-map.snow-map{border-color:#79aabd;background:
+  radial-gradient(circle at 18% 20%,#ffffff4d 0 2px,transparent 3px),
+  radial-gradient(circle at 72% 32%,#ffffff3d 0 2px,transparent 3px),
+  linear-gradient(160deg,#d7e7ed,#a9c5d0 48%,#718f9e);
+}
+.snow-map .map-route-line{background:#dff5fb!important;box-shadow:0 0 16px #dff7ff99}
+.map-node.snow-node.unlocked{border-color:#8ec8da;background:linear-gradient(#dcecf1,#aecbd5);color:#17303a;box-shadow:0 9px 22px #244b5d44}
+.map-node.snow-node.unlocked .map-node-copy b{color:#16323d}
+.map-node.snow-node.unlocked .map-node-copy small{color:#4d6974}
+.map-node.snow-node .map-marker{background:#dff7ff;color:#315d6c;border-color:#7bb5c8}
+.map-node.snow-node.completed{border-color:#70d3e8;box-shadow:0 0 0 3px #baf4ff66,0 9px 22px #244b5d44}
+.map-node.snow-node.boss-node{border-color:#6b9fc8;background:linear-gradient(#bfd9e6,#879fb5)}
+@media(max-width:760px){.campaign-world-switch{grid-template-columns:1fr}.campaign-world-btn{min-height:39px}}
