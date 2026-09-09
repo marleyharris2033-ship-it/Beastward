@@ -28,7 +28,7 @@ const starters=['embercub','sprigpaw','bubblit'];
 const commonPool=['sparkit','pebblum','gustwing','toxip','scorchick','mosshell','drizzlet','zapmoth'];
 const rarePool=['frostkit','shadepup','lumpling','voltwing'];
 const epicPool=['cindrake','sporeling','drakeling','voidling'];
-const commonCost=100,rareCost=300,epicCost=750;
+const commonCost=100,rareCost=500,epicCost=1000;
 const beastRatings={
 embercub:{power:7,speed:8,range:6,special:7},
 sprigpaw:{power:5,speed:6,range:6,special:9},
@@ -1229,14 +1229,17 @@ function finish(win){
   $('#resultModal').classList.remove('hidden');
   $('#resultTitle').textContent=win?'Victory!':'The Core Has Fallen';
   if(win){
-    const hard=battleMode==='hard',reward=Math.round(currentLevel.reward*(hard?1.75:1));
+    const hard=battleMode==='hard';
+    const completed=hard?save.hardCompletedLevels:save.completedLevels;
+    const replay=completed.includes(currentLevel.id);
+    const baseReward=Math.round(currentLevel.reward*(hard?1.75:1));
+    const reward=Math.max(1,Math.round(baseReward*(replay?.5:1)));
     const bossEgg=!hard&&currentLevel.boss&&battleReport.bossDefeated&&!save.bossEggRewards.includes(currentLevel.id);
     save.essence+=reward;
-    const completed=hard?save.hardCompletedLevels:save.completedLevels;
-    if(!completed.includes(currentLevel.id))completed.push(currentLevel.id);
+    if(!replay)completed.push(currentLevel.id);
     if(bossEgg){save.bossEggRewards.push(currentLevel.id);pendingBossEggReward=rollRewardEgg(commonPool)}
     save.wardenLevel=Math.max(save.wardenLevel,1+Math.ceil(currentLevel.id/2));persist();
-    const unlockText=currentLevel.id<10?(hard?'Hard 1-'+(currentLevel.id+1)+' unlocked.':'Level 1-'+(currentLevel.id+1)+' unlocked.'):(hard?'Verdant Valley Hard Mode complete!':'Verdant Valley complete! Hard Mode unlocked!');
+    const unlockText=replay?'Replay reward • 50% Essence.':currentLevel.id<10?(hard?'Hard 1-'+(currentLevel.id+1)+' unlocked.':'Level 1-'+(currentLevel.id+1)+' unlocked.'):(hard?'Verdant Valley Hard Mode complete!':'Verdant Valley complete! Hard Mode unlocked!');
     $('#resultText').textContent=`${hard?'HARD • ':''}${currentLevel.name} defended. You earned ${reward} Essence. ${unlockText}${bossEgg?' Boss reward: Common Egg earned!':''}`;
   }else $('#resultText').textContent=currentLevel.boss&&!battleReport.bossDefeated?'Hollowmaw was not defeated. Rebuild your defence and face the boss again.':'Strengthen your defence and try again.';
 
