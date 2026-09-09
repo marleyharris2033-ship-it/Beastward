@@ -69,6 +69,7 @@
     towers.push(placed);
     if(running)waveParticipants.add(id);
     gold-=b.cost;
+    if(window.gameFeedback)window.gameFeedback('place');
 
     // Do not leave the placed beast selected: range disappears immediately.
     selectedTower=null;
