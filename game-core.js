@@ -842,10 +842,14 @@ function waveEnemyMix(w){
   if(w===9)return ['brute','hound','wisp','shellback','glimmer'];
   return ['brute','hound','wisp','thornling','shellback','glimmer','raider'];
 }
+function waveEnemyCount(w){
+  const base=4+w*2+Math.floor((currentLevel.id-1)*.5);
+  return Math.ceil(base*1.5);
+}
 function waveComposition(w){
-  if(w===10&&currentLevel.boss)return {hollowmaw:1,hound:3,brute:2,glimmer:2};
-  const n=4+w*2+Math.floor((currentLevel.id-1)*.5),mix=waveEnemyMix(Math.min(10,w)),counts={};
+  const n=waveEnemyCount(w),mix=waveEnemyMix(Math.min(10,w)),counts={};
   for(let i=0;i<n;i++){const id=mix[i%mix.length];counts[id]=(counts[id]||0)+1}
+  if(w===10&&currentLevel.boss)counts.hollowmaw=1;
   return counts;
 }
 function wavePreviewText(w){
@@ -865,16 +869,29 @@ $('#startWaveBtn').onclick=()=>{
   const waveHp=(48+wave*16+wave*wave*.7)*currentLevel.hp*difficulty;
   const waveSpeed=(42+wave*1.6)*currentLevel.speed*(battleMode==='hard'?1.12:1);
   const spacing=Math.max(390,690-currentLevel.id*18);
+  const n=waveEnemyCount(wave),mix=waveEnemyMix(wave);
 
   if(wave===10&&currentLevel.boss){
     const bossHp=6400*currentLevel.hp*difficulty;
-    queue.push({delay:900,hp:bossHp,speed:20*currentLevel.speed,reward:500,boss:true,type:'hollowmaw'});
-    const adds=[['hound',3600],['glimmer',4400],['brute',5400],['hound',6500],['glimmer',7600],['brute',9000],['hound',10400]];
-    adds.forEach(([id,delay])=>{const type=enemyTypes[id];queue.push({delay,hp:waveHp*type.hp,speed:waveSpeed*type.speed,reward:Math.max(8,Math.round((16+wave)*type.reward)),type:id})});
+    const bossSpacing=Math.max(360,spacing*.78);
+
+    // The finale now starts with normal pressure, then Hollowmaw enters while
+    // the full 1.5x-sized enemy wave continues streaming in around it.
+    for(let i=0;i<n;i++){
+      const id=mix[i%mix.length],type=enemyTypes[id];
+      const delay=i*bossSpacing;
+      queue.push({
+        delay,
+        hp:waveHp*type.hp,
+        speed:waveSpeed*type.speed,
+        reward:Math.max(8,Math.round((16+wave)*type.reward)),
+        type:id
+      });
+    }
+    queue.push({delay:bossSpacing*5,hp:bossHp,speed:20*currentLevel.speed*(battleMode==='hard'?1.08:1),reward:500,boss:true,type:'hollowmaw'});
     queue.sort((a,b)=>a.delay-b.delay);
-    showProgressToast('HOLLOWMAW APPROACHES','Boss Wave • Defeat Hollowmaw before it reaches the Beast Core.','boss');
+    showProgressToast('HOLLOWMAW APPROACHES',`Boss Wave • Hollowmaw enters alongside ${n} normal enemies. Hold the line.`,'boss');
   }else{
-    const n=4+wave*2+Math.floor((currentLevel.id-1)*.5),mix=waveEnemyMix(wave);
     for(let i=0;i<n;i++){
       const id=mix[i%mix.length],type=enemyTypes[id];
       queue.push({delay:i*(id==='wisp'?spacing*.62:spacing),hp:waveHp*type.hp,speed:waveSpeed*type.speed,reward:Math.max(5,Math.round((13+wave+Math.floor(currentLevel.id/2))*type.reward)),type:id});
