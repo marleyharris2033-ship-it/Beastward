@@ -258,12 +258,14 @@ const bestiaryLore=[
  {title:'Beastwardens',text:'Protectors who bond with beasts, train them through battle and guide them through evolution.'},
  {title:'Evolution',text:'Every beast can evolve at Level 15 and again at Level 30, gaining greater strength as its bond with the Warden deepens.'}
 ];
-const bestiaryEnemies=[
- {name:'Forest Raider',kind:'Common',text:'A quick invader that travels the Keeper\'s Path in groups.'},
- {name:'Stone Brute',kind:'Heavy',text:'Slow and durable. Best answered with high-power beasts.'},
- {name:'Ruin Hound',kind:'Fast',text:'A swift enemy that punishes gaps in your defence.'},
- {name:'Hollowmaw',kind:'Boss',text:'A corrupted alpha beast whose roar can overwhelm inexperienced Wardens.'}
-];
+const enemyTypes={
+ raider:{id:'raider',name:'Forest Raider',kind:'Common',hp:1,speed:1,reward:1,size:18,sprite:'assets/enemies/forest_raider.svg',text:'The standard Verdant Valley invader. Balanced health and speed.'},
+ hound:{id:'hound',name:'Ruin Hound',kind:'Fast',hp:.62,speed:1.55,reward:.85,size:17,sprite:'assets/enemies/ruin_hound.svg',text:'A fast hunter with low health. It punishes defences with poor coverage.'},
+ brute:{id:'brute',name:'Stone Brute',kind:'Heavy',hp:2.15,speed:.68,reward:1.75,size:23,sprite:'assets/enemies/stone_brute.svg',text:'Slow, heavily armoured and difficult to bring down before it reaches the Core.'},
+ wisp:{id:'wisp',name:'Grove Wisp',kind:'Swarm',hp:.44,speed:1.18,reward:.55,size:15,sprite:'assets/enemies/wisp_swarm.svg',text:'Fragile spirits that arrive in dense groups and overwhelm slow attackers.'},
+ hollowmaw:{id:'hollowmaw',name:'Hollowmaw',kind:'Boss',hp:1,speed:1,reward:1,size:34,sprite:'assets/enemies/hollowmaw.svg',text:'A corrupted alpha beast with enormous health. Five lives are lost if it reaches the Core.'}
+};
+const bestiaryEnemies=Object.values(enemyTypes);
 let bestiaryTab='beasts',bestiaryType='All',bestiarySelected=null;
 function beastLore(id){
  const notes={
@@ -307,8 +309,8 @@ function renderBestiary(){
    detail.innerHTML=`<div class="best-hero"><div class="best-portrait">${stageSpriteMarkup(b.id,evolutionStage(b.id),'portrait-sprite')}</div><div class="best-detail-title"><h3>${nameFor(b.id)}</h3><div class="best-pills"><span class="best-pill">${b.type}</span><span class="best-pill">${b.role}</span><span class="best-pill">Level ${p.level}/30</span><span class="best-pill">Ascension ${ascension(b.id)}/3</span><span class="best-pill">${unlocked?'Collected':'Not collected'}</span></div><p><b>${lore[0]}</b><br>${lore[1]}</p></div></div>${statBars(b.id)}<div class="best-section"><b>Evolution line</b><div class="evo-line"><div class="evo">${stageSpriteMarkup(b.id,1,'evo-sprite')}<small>Lv 1</small><b>${b.name}</b></div><div class="evo">${stageSpriteMarkup(b.id,2,'evo-sprite')}<small>Lv 15</small><b>${b.evo20}</b></div><div class="evo">${stageSpriteMarkup(b.id,3,'evo-sprite')}<small>Lv 30</small><b>${b.evo30}</b></div></div></div>`;
  }else if(bestiaryTab==='enemies'){
    filters.innerHTML='';list.innerHTML='';
-   bestiaryEnemies.forEach((e,i)=>{const row=document.createElement('button');row.className='best-row'+(bestiarySelected===i?' active':'');row.innerHTML=`<div style="font-size:36px">☠️</div><div><h4>${e.name}</h4><small>${e.kind}</small></div><span class="tag">Enemy</span>`;row.onclick=()=>{bestiarySelected=i;renderBestiary()};list.appendChild(row)});
-   if(typeof bestiarySelected!=='number')bestiarySelected=0;const e=bestiaryEnemies[bestiarySelected]||bestiaryEnemies[0];detail.innerHTML=`<div class="lore-card"><h3>${e.name}</h3><div class="best-pills"><span class="best-pill">${e.kind}</span><span class="best-pill">Enemy</span></div><p>${e.text}</p></div><div class="best-section"><b>Warden advice</b><p>Use the beast types and stats in your collection to cover weaknesses in speed, durability and crowd size.</p></div>`;
+   bestiaryEnemies.forEach((e,i)=>{const row=document.createElement('button');row.className='best-row'+(bestiarySelected===i?' active':'');row.innerHTML=`<img src="${e.sprite}" alt="${e.name}"><div><h4>${e.name}</h4><small>${e.kind}</small></div><span class="tag">Enemy</span>`;row.onclick=()=>{bestiarySelected=i;renderBestiary()};list.appendChild(row)});
+   if(typeof bestiarySelected!=='number')bestiarySelected=0;const e=bestiaryEnemies[bestiarySelected]||bestiaryEnemies[0];detail.innerHTML=`<div class="best-hero"><div class="best-portrait"><img src="${e.sprite}" alt="${e.name}"></div><div class="best-detail-title"><h3>${e.name}</h3><div class="best-pills"><span class="best-pill">${e.kind}</span><span class="best-pill">Enemy</span></div><p>${e.text}</p></div></div><div class="best-section"><b>Warden advice</b><p>${e.kind==='Fast'?'Use slows, freezes and good path coverage.':e.kind==='Heavy'?'High damage, poison and boss-style single-target builds work well.':e.kind==='Swarm'?'Splash, chain lightning and rapid attackers are ideal.':e.kind==='Boss'?'Use upgraded beasts and combine damage with control effects.':'A balanced defence handles these reliably.'}</p></div>`;
  }else{
    filters.innerHTML='';list.innerHTML='<div class="lore-list">'+bestiaryLore.map(x=>`<div class="lore-card"><h3>${x.title}</h3><p>${x.text}</p></div>`).join('')+'</div>';detail.innerHTML='<div class="lore-card"><h3>Beastward</h3><p>The world is bound by living magic. Stronger beasts make a brighter tomorrow.</p></div>';
  }
@@ -578,20 +580,45 @@ $('#specialUpgradeBtn').onclick=()=>buyTowerUpgrade('special');
 $('#skillUpgradeBtn').onclick=()=>buyTowerUpgrade('skill');
 function reset(){
   towers=[];enemies=[];projectiles=[];effects=[];selectedSpecies=null;selectedTower=null;gold=400;lives=20;wave=0;running=false;queue=[];speed=1;waveParticipants=new Set();
-  document.querySelectorAll('.speed-choice').forEach(b=>b.classList.toggle('active',Number(b.dataset.speed)===1));$('#waveXpNotice').textContent='';ui();choices();renderSelectedTower();
+  document.querySelectorAll('.speed-choice').forEach(b=>b.classList.toggle('active',Number(b.dataset.speed)===1));$('#waveXpNotice').textContent='';ui();choices();renderSelectedTower();updateNextWavePreview();
 }
 $('#exitLevelBtn').onclick=()=>show('campaignScreen');
 function setSpeed(next){speed=next;document.querySelectorAll('.speed-choice').forEach(b=>b.classList.toggle('active',Number(b.dataset.speed)===speed))}
 document.querySelectorAll('.speed-choice').forEach(b=>b.onclick=()=>setSpeed(Number(b.dataset.speed)));
+function waveEnemyMix(w){
+  if(w<=2)return ['raider'];
+  if(w===3)return ['raider','hound'];
+  if(w===4)return ['raider','wisp'];
+  if(w===5)return ['brute','raider'];
+  if(w===6)return ['wisp','hound','raider'];
+  if(w===7)return ['brute','hound','raider'];
+  if(w===8)return ['wisp','brute','hound'];
+  if(w===9)return ['brute','hound','wisp','raider'];
+  return ['brute','hound','wisp','raider'];
+}
+function wavePreviewText(w){
+  const mix=waveEnemyMix(Math.min(10,w));
+  return mix.map(id=>enemyTypes[id].name).join(' • ');
+}
+function updateNextWavePreview(){
+  const el=$('#nextWaveInfo');
+  if(!el)return;
+  if(wave>=10){el.textContent='Final wave';return}
+  el.textContent='Next: '+wavePreviewText(wave+1);
+}
 $('#startWaveBtn').onclick=()=>{
   if(running||wave>=10)return;
   wave++;running=true;waveParticipants=new Set(towers.map(t=>t.b.id));
-  const n=4+wave*2+Math.floor((currentLevel.id-1)*.5);queue=[];
+  const n=4+wave*2+Math.floor((currentLevel.id-1)*.5),mix=waveEnemyMix(wave);queue=[];
   const waveHp=(48+wave*16+wave*wave*.7)*currentLevel.hp;
   const waveSpeed=(42+wave*1.6)*currentLevel.speed;
-  for(let i=0;i<n;i++)queue.push({delay:i*Math.max(430,720-currentLevel.id*20),hp:waveHp,speed:waveSpeed,reward:13+wave+Math.floor(currentLevel.id/2)});
-  if(wave===10&&(currentLevel.boss||currentLevel.id===10))queue.push({delay:n*600+600,hp:900*currentLevel.hp,speed:28*currentLevel.speed,reward:180+currentLevel.id*10,boss:true});
-  ui();
+  const spacing=Math.max(390,690-currentLevel.id*18);
+  for(let i=0;i<n;i++){
+    const id=mix[i%mix.length],type=enemyTypes[id];
+    queue.push({delay:i*(id==='wisp'?spacing*.62:spacing),hp:waveHp*type.hp,speed:waveSpeed*type.speed,reward:Math.max(5,Math.round((13+wave+Math.floor(currentLevel.id/2))*type.reward)),type:id});
+  }
+  if(wave===10&&(currentLevel.boss||currentLevel.id===10))queue.push({delay:n*spacing+700,hp:900*currentLevel.hp,speed:28*currentLevel.speed,reward:180+currentLevel.id*10,boss:true,type:'hollowmaw'});
+  ui();updateNextWavePreview();
 };
 
 $('#sellTowerBtn').onclick=()=>{
@@ -621,7 +648,12 @@ function distPath(x,y){
   }
   return best;
 }
-function spawn(s){enemies.push({x:path[0].x,y:path[0].y,seg:0,hp:s.hp,max:s.hp,speed:s.speed,reward:s.reward,boss:!!s.boss,slow:0,slowFactor:.62,root:0,stun:0,burn:0,burnDps:0,poison:0,poisonDps:0})}
+const enemyImgs={};
+Object.values(enemyTypes).forEach(type=>{const img=new Image();img.src=type.sprite;enemyImgs[type.id]=img});
+function spawn(s){
+  const type=enemyTypes[s.type]||enemyTypes.raider;
+  enemies.push({x:path[0].x,y:path[0].y,seg:0,hp:s.hp,max:s.hp,speed:s.speed,reward:s.reward,boss:!!s.boss,type:type.id,size:type.size,slow:0,slowFactor:.62,root:0,stun:0,burn:0,burnDps:0,poison:0,poisonDps:0})
+}
 function move(e,dt){
   const target=path[e.seg+1];if(!target)return false;
   e.slow=Math.max(0,e.slow-dt);e.root=Math.max(0,(e.root||0)-dt);e.stun=Math.max(0,(e.stun||0)-dt);
@@ -998,9 +1030,13 @@ function draw(){
   });
 
   enemies.forEach(e=>{
-    ctx.fillStyle=e.boss?'#6d2738':'#49382b';ctx.beginPath();ctx.arc(e.x,e.y,e.boss?24:16,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#171717';ctx.fillRect(e.x-22,e.y-(e.boss?34:26),44,6);
-    ctx.fillStyle='#d95252';ctx.fillRect(e.x-22,e.y-(e.boss?34:26),44*(e.hp/e.max),6)
+    const img=enemyImgs[e.type]||enemyImgs.raider,size=e.size||18,drawSize=size*2.45;
+    ctx.save();ctx.globalAlpha=.25;ctx.fillStyle='#07110c';ctx.beginPath();ctx.ellipse(e.x,e.y+size*.72,size*.85,size*.28,0,0,Math.PI*2);ctx.fill();ctx.restore();
+    if(img&&img.complete)ctx.drawImage(img,e.x-drawSize/2,e.y-drawSize/2,drawSize,drawSize);
+    else{ctx.fillStyle=e.boss?'#6d2738':'#49382b';ctx.beginPath();ctx.arc(e.x,e.y,size,0,Math.PI*2);ctx.fill()}
+    const barW=e.boss?70:44,barY=e.y-size-13;
+    ctx.fillStyle='#171717';ctx.fillRect(e.x-barW/2,barY,barW,6);
+    ctx.fillStyle=e.boss?'#b84a68':'#d95252';ctx.fillRect(e.x-barW/2,barY,barW*(Math.max(0,e.hp)/e.max),6);
   });
   projectiles.forEach(p=>{p.spin=(p.spin||0)+.2;ctx.save();ctx.translate(p.x,p.y);if(p.type==='Fire'){ctx.shadowBlur=16;ctx.shadowColor='#ff6a2b';ctx.fillStyle='#ff9d3d';ctx.beginPath();ctx.arc(0,0,8,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffe27a';ctx.beginPath();ctx.arc(-2,-2,4,0,Math.PI*2);ctx.fill()}else if(p.type==='Nature'){ctx.strokeStyle='#77d66a';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-10,6);ctx.lineTo(0,-8);ctx.lineTo(10,6);ctx.stroke()}else if(p.type==='Water'){ctx.fillStyle='#68cfff';ctx.beginPath();ctx.ellipse(0,0,9,6,p.spin,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#d8f6ff';ctx.stroke()}else if(p.type==='Electric'){ctx.strokeStyle='#fff36c';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-9,-5);ctx.lineTo(-2,1);ctx.lineTo(1,-5);ctx.lineTo(8,5);ctx.stroke()}else if(p.type==='Rock'){ctx.rotate(p.spin);ctx.fillStyle='#9a8b7d';ctx.fillRect(-8,-8,16,16);ctx.strokeStyle='#e0d2c2';ctx.strokeRect(-8,-8,16,16)}else if(p.type==='Wind'){ctx.strokeStyle='#d8ffe7';ctx.lineWidth=4;ctx.beginPath();ctx.arc(0,0,10,-1.1,1.1);ctx.stroke()}else if(p.type==='Poison'){ctx.fillStyle='#d66ae6';ctx.beginPath();ctx.arc(0,0,8,0,Math.PI*2);ctx.fill();ctx.fillStyle='#a7ff83';ctx.beginPath();ctx.arc(3,-3,2,0,Math.PI*2);ctx.fill()}else if(p.type==='Ice'){ctx.rotate(p.spin);ctx.strokeStyle='#d9fbff';ctx.lineWidth=3;for(let a=0;a<3;a++){ctx.rotate(Math.PI/3);ctx.beginPath();ctx.moveTo(-9,0);ctx.lineTo(9,0);ctx.stroke()}}else if(p.type==='Dark'){ctx.rotate(-.6);ctx.fillStyle='#7f67bb';ctx.beginPath();ctx.moveTo(-12,0);ctx.quadraticCurveTo(0,-8,12,0);ctx.quadraticCurveTo(0,5,-12,0);ctx.fill()}else if(p.type==='Light'){ctx.shadowBlur=18;ctx.shadowColor='#fff5a8';ctx.fillStyle='#fff6b3';ctx.beginPath();ctx.arc(0,0,8,0,Math.PI*2);ctx.fill()}else{ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(0,0,5,0,Math.PI*2);ctx.fill()}ctx.restore()});
   effects.forEach(e=>{const a=Math.max(0,e.life/e.maxLife);ctx.save();ctx.globalAlpha=a;if(e.kind==='burst'||e.kind==='splash'||e.kind==='freeze'||e.kind==='poison'||e.kind==='dust'||e.kind==='wind'||e.kind==='light'||e.kind==='zap'||e.kind==='apex'){ctx.strokeStyle=e.color;ctx.lineWidth=e.kind==='freeze'?4:3;ctx.beginPath();ctx.arc(e.x,e.y,(e.size||40)*(1-a+.25),0,Math.PI*2);ctx.stroke()}if(e.kind==='roots'){ctx.strokeStyle=e.color;ctx.lineWidth=4;for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(e.x,e.y+12);ctx.quadraticCurveTo(e.x+(i-2)*9,e.y-8,e.x+(i-2)*12,e.y-22);ctx.stroke()}}if(e.kind==='particle'){ctx.fillStyle=e.color;ctx.beginPath();ctx.arc(e.x,e.y,(e.size||4)*a,0,Math.PI*2);ctx.fill()}if(e.kind==='lightning'){ctx.strokeStyle=e.color;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(e.x,e.y);let mx=(e.x+e.x2)/2,my=(e.y+e.y2)/2;ctx.lineTo(mx+8,my-8);ctx.lineTo(mx-5,my+5);ctx.lineTo(e.x2,e.y2);ctx.stroke()}if(e.kind==='crit'){ctx.fillStyle=e.color;ctx.font='bold 18px sans-serif';ctx.fillText('CRIT!',e.x-22,e.y-24*(1-a)-18)}ctx.restore()});
