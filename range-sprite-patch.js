@@ -1,18 +1,9 @@
-// Beastward v22: improved custom sprites + placement/selection range preview
+// Beastward v25: drag-and-drop beast placement + clearer range preview
 (() => {
   const custom = {
-    shadepup: {
-      sprite: 'assets/pixel/shadepup.png',
-      tower: 'assets/pixel/shadepup_tower.png'
-    },
-    scorchick: {
-      sprite: 'assets/pixel/scorchick.png',
-      tower: 'assets/pixel/scorchick_tower.png'
-    },
-    voidling: {
-      sprite: 'assets/pixel/voidling.png',
-      tower: 'assets/pixel/voidling_tower.png'
-    }
+    shadepup:{sprite:'assets/pixel/shadepup.png',tower:'assets/pixel/shadepup_tower.png'},
+    scorchick:{sprite:'assets/pixel/scorchick.png',tower:'assets/pixel/scorchick_tower.png'},
+    voidling:{sprite:'assets/pixel/voidling.png',tower:'assets/pixel/voidling_tower.png'}
   };
 
   Object.entries(custom).forEach(([id, art]) => {
@@ -25,72 +16,135 @@
     spriteImgs[id] = img;
   });
 
-  // Refresh any already-rendered menus so the improved art appears immediately.
-  try { renderCollection(); } catch (_) {}
-  try { renderBestiary(); } catch (_) {}
-  try { choices(); } catch (_) {}
+  let pointer=null,dragSpecies=null,dragPointerId=null,dragging=false,suppressClick=false;
 
-  let pointer = null;
-  const pointerPos = e => {
-    const r = canvas.getBoundingClientRect();
+  const canvasPosFromClient=(clientX,clientY)=>{
+    const r=canvas.getBoundingClientRect();
     return {
-      x: (e.clientX - r.left) * canvas.width / r.width,
-      y: (e.clientY - r.top) * canvas.height / r.height
+      x:(clientX-r.left)*canvas.width/r.width,
+      y:(clientY-r.top)*canvas.height/r.height,
+      inside:clientX>=r.left&&clientX<=r.right&&clientY>=r.top&&clientY<=r.bottom
     };
   };
-  canvas.addEventListener('pointermove', e => { pointer = pointerPos(e); });
-  canvas.addEventListener('pointerleave', () => { pointer = null; });
-  canvas.addEventListener('pointercancel', () => { pointer = null; });
+  const pointerPos=e=>canvasPosFromClient(e.clientX,e.clientY);
 
-  function placementValid(x, y, b) {
-    return !!b && gold >= b.cost && distPath(x, y) >= 55 && !blockedByScenery(x, y) && !towers.some(t => Math.hypot(t.x - x, t.y - y) < 64);
+  function placementValid(x,y,b){
+    return !!b&&gold>=b.cost&&distPath(x,y)>=55&&!blockedByScenery(x,y)&&!towers.some(t=>Math.hypot(t.x-x,t.y-y)<64);
   }
 
-  function rangeRing(x, y, range, colour, valid = true) {
+  function rangeRing(x,y,range,colour,valid=true){
     ctx.save();
-    ctx.fillStyle = valid ? colour : '#ff5959';
-    ctx.globalAlpha = valid ? .07 : .10;
-    ctx.beginPath();
-    ctx.arc(x, y, range, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.globalAlpha = .62;
-    ctx.strokeStyle = valid ? colour : '#ff6b6b';
-    ctx.lineWidth = 2;
-    ctx.setLineDash([9, 7]);
-    ctx.beginPath();
-    ctx.arc(x, y, range, 0, Math.PI * 2);
-    ctx.stroke();
+    ctx.fillStyle=valid?colour:'#ff5959';
+    ctx.globalAlpha=valid?.20:.20;
+    ctx.beginPath();ctx.arc(x,y,range,0,Math.PI*2);ctx.fill();
+
+    ctx.globalAlpha=.92;
+    ctx.strokeStyle=valid?colour:'#ff6b6b';
+    ctx.lineWidth=3;
+    ctx.setLineDash([10,7]);
+    ctx.beginPath();ctx.arc(x,y,range,0,Math.PI*2);ctx.stroke();
     ctx.setLineDash([]);
+
+    ctx.globalAlpha=.42;
+    ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(x,y,Math.max(18,range-8),0,Math.PI*2);ctx.stroke();
     ctx.restore();
   }
 
-  const baseDraw = draw;
-  draw = function () {
+  function placeDraggedBeast(id,pos){
+    const b=beasts[id];
+    if(!pos.inside||!placementValid(pos.x,pos.y,b))return false;
+    const placed={x:pos.x,y:pos.y,b:battleStats(id),cool:0,baseCost:b.cost,spent:b.cost,powerTier:0,specialTier:0,skillTier:0};
+    towers.push(placed);
+    if(running)waveParticipants.add(id);
+    gold-=b.cost;
+    selectedTower=placed;
+    selectedSpecies=null;
+    document.querySelectorAll('.tower-choice').forEach(x=>x.classList.remove('selected','dragging'));
+    ui();renderSelectedTower();
+    return true;
+  }
+
+  function beginDrag(e,el,id){
+    if(gold<beasts[id].cost)return;
+    e.preventDefault();
+    dragSpecies=id;
+    dragPointerId=e.pointerId;
+    dragging=true;
+    suppressClick=true;
+    selectedSpecies=null;
+    selectedTower=null;
+    renderSelectedTower();
+    pointer=pointerPos(e);
+    document.querySelectorAll('.tower-choice').forEach(x=>x.classList.toggle('dragging',x===el));
+    try{el.setPointerCapture(e.pointerId)}catch(_){}
+  }
+
+  function installDragHandlers(){
+    document.querySelectorAll('.tower-choice').forEach(el=>{
+      if(el.dataset.dragReady)return;
+      el.dataset.dragReady='1';
+      const id=save.unlocked.find(id=>el.textContent.includes(nameFor(id)))||save.unlocked[[...el.parentNode.children].indexOf(el)];
+      if(!id)return;
+      el.onclick=e=>{
+        if(suppressClick){e.preventDefault();e.stopPropagation();suppressClick=false}
+      };
+      el.addEventListener('pointerdown',e=>beginDrag(e,el,id));
+    });
+  }
+
+  const originalChoices=choices;
+  choices=function(){
+    originalChoices();
+    installDragHandlers();
+  };
+  choices();
+
+  document.addEventListener('pointermove',e=>{
+    if(!dragging||e.pointerId!==dragPointerId)return;
+    e.preventDefault();
+    pointer=pointerPos(e);
+  },{passive:false});
+
+  document.addEventListener('pointerup',e=>{
+    if(!dragging||e.pointerId!==dragPointerId)return;
+    e.preventDefault();
+    const pos=pointerPos(e),id=dragSpecies;
+    placeDraggedBeast(id,pos);
+    dragging=false;dragSpecies=null;dragPointerId=null;pointer=null;
+    document.querySelectorAll('.tower-choice').forEach(x=>x.classList.remove('dragging'));
+    setTimeout(()=>{suppressClick=false},0);
+  },{passive:false});
+
+  document.addEventListener('pointercancel',e=>{
+    if(e.pointerId!==dragPointerId)return;
+    dragging=false;dragSpecies=null;dragPointerId=null;pointer=null;
+    document.querySelectorAll('.tower-choice').forEach(x=>x.classList.remove('dragging'));
+  });
+
+  // Keep click-to-inspect on already placed beasts, but dragging from the list is now the placement method.
+  canvas.addEventListener('pointermove',e=>{if(!dragging)pointer=pointerPos(e)});
+  canvas.addEventListener('pointerleave',()=>{if(!dragging)pointer=null});
+
+  const baseDraw=draw;
+  draw=function(){
     baseDraw();
 
-    // Selecting a placed beast shows its true upgraded range.
-    if (selectedTower) {
-      rangeRing(selectedTower.x, selectedTower.y, selectedTower.b.range, selectedTower.b.color || '#ffe17b', true);
+    if(selectedTower){
+      rangeRing(selectedTower.x,selectedTower.y,selectedTower.b.range,selectedTower.b.color||'#ffe17b',true);
     }
 
-    // Desktop / pointer preview follows the cursor before placement.
-    if (selectedSpecies && pointer) {
-      const b = battleStats(selectedSpecies);
-      rangeRing(pointer.x, pointer.y, b.range, b.color || '#ffe17b', placementValid(pointer.x, pointer.y, beasts[selectedSpecies]));
-      const img = spriteImgs[selectedSpecies];
-      if (img && img.complete) {
+    if(dragging&&dragSpecies&&pointer){
+      const b=battleStats(dragSpecies);
+      const valid=pointer.inside&&placementValid(pointer.x,pointer.y,beasts[dragSpecies]);
+      rangeRing(pointer.x,pointer.y,b.range,b.color||'#ffe17b',valid);
+      const img=spriteImgs[dragSpecies];
+      if(img&&img.complete){
         ctx.save();
-        ctx.globalAlpha = .72;
-        ctx.drawImage(img, pointer.x - 30, pointer.y - 30, 60, 60);
+        ctx.globalAlpha=valid?.90:.60;
+        ctx.drawImage(img,pointer.x-37,pointer.y-37,74,74);
         ctx.restore();
       }
     }
   };
-
-  // On touch devices there is no hover. First selecting a beast and touching the
-  // battlefield gives an immediate range indication at the touch point.
-  canvas.addEventListener('pointerdown', e => {
-    if (!selectedSpecies) return;
-    pointer = pointerPos(e);
-  }, { capture: true });
 })();
