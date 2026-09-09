@@ -561,3 +561,19 @@ radial-gradient(ellipse at 82% 57%,#193722 0 6%,transparent 7%);opacity:.75}
 .targeting-box select{min-width:135px;padding:8px 10px;border-radius:9px;border:1px solid #73806a;background:#17281e;color:#f1eee2;font-weight:800}
 .next-wave-strip{flex-wrap:wrap}
 .next-wave-strip #nextWaveInfo{font-weight:700;line-height:1.3}
+
+/* ===== Battle report + progression feedback v37 ===== */
+.result-report-card{width:min(540px,calc(100vw - 28px));max-height:86svh;overflow:auto}
+.battle-summary{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:16px 0;text-align:left}
+.summary-stat,.summary-xp{padding:11px;border:1px solid #4d6552;border-radius:12px;background:#101f17}
+.summary-stat small,.summary-xp>small{display:block;font-size:9px;letter-spacing:.12em;color:#9faea4}
+.summary-stat b{display:block;margin-top:4px;color:#f0d778;font-size:20px}
+.summary-stat em{display:block;color:#b9c9bd;font-size:10px;font-style:normal}
+.summary-stat.standout{grid-column:1/-1;border-color:#9d8240;background:linear-gradient(145deg,#253a29,#17251c)}
+.summary-xp{grid-column:1/-1;display:grid;gap:5px}
+.summary-xp>span{display:flex;justify-content:space-between;gap:10px;padding-top:5px;border-top:1px solid #ffffff0c}
+.summary-xp>span b{color:#e7e2cb}.summary-xp>span em{color:#7fd895;font-style:normal;font-weight:900}
+.progress-toast{position:fixed;z-index:1500;top:max(78px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:min(430px,calc(100vw - 28px));padding:12px 15px;border-radius:14px;border:1px solid #c5a64d;background:linear-gradient(145deg,#223b2a,#122219);box-shadow:0 12px 35px #000a;text-align:center;pointer-events:none;animation:toastIn .22s ease-out}
+.progress-toast.hidden{display:none}.progress-toast b{display:block;color:#f3d86f;letter-spacing:.13em;font-size:11px}.progress-toast span{display:block;margin-top:4px;color:#e8eee8;font-size:12px}
+.progress-toast.evolution{border-color:#b177d6;background:linear-gradient(145deg,#302746,#182331)}.progress-toast.evolution b{color:#e2b5ff}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,-10px)}to{opacity:1;transform:translate(-50%,0)}}
