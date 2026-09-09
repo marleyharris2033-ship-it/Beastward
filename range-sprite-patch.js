@@ -16,6 +16,53 @@
     spriteImgs[id]=img;
   });
 
+  // Stage 2 used to rely on one CSS/canvas sprite sheet. Mobile Safari could
+  // leave those cells blank, so each first evolution now loads directly from
+  // its own SVG. The original sheet remains only as a legacy fallback source.
+  const stage2IndividualImgs={};
+  stage2SpeciesOrder.forEach(id=>{
+    const img=new Image();
+    img.onerror=()=>{img.src=beasts[id].sprite};
+    img.src='assets/pixel/evolved/'+id+'_2.svg?v=58';
+    stage2IndividualImgs[id]=img;
+    evolutionSpriteImgs[id]=evolutionSpriteImgs[id]||{};
+    evolutionSpriteImgs[id][2]=img;
+  });
+
+  const originalSpritePathForStage=spritePathForStage;
+  spritePathForStage=function(id,stage=1){
+    if(stage===2)return 'assets/pixel/evolved/'+id+'_2.svg?v=58';
+    return originalSpritePathForStage(id,stage);
+  };
+  currentSprite=function(id){return spritePathForStage(id,evolutionStage(id))};
+
+  const originalStageSpriteMarkup=stageSpriteMarkup;
+  stageSpriteMarkup=function(id,stage=evolutionStage(id),extra='',unseen=false){
+    if(stage!==2)return originalStageSpriteMarkup(id,stage,extra,unseen);
+    const b=beasts[id],name=nameForStage(id,stage),src=spritePathForStage(id,2);
+    return `<span class="stage-sprite stage-2 type-${b.type.toLowerCase()} ${unseen?'unseen-sprite':''} ${extra}" aria-label="${unseen?'Undiscovered beast':name}">
+      <img class="stage-form stage2-direct-form" src="${src}" alt="${unseen?'Undiscovered beast':name}">
+    </span>`;
+  };
+
+  // game-core still draws Stage 2 towers by cropping stage2SheetImg. Intercept
+  // just those crop calls and substitute the matching direct evolution image.
+  // This fixes battle towers and drag previews without disturbing other canvas art.
+  const nativeDrawImage=CanvasRenderingContext2D.prototype.drawImage;
+  CanvasRenderingContext2D.prototype.drawImage=function(image,...args){
+    if(image===stage2SheetImg&&args.length===8){
+      const sx=args[0],sy=args[1];
+      const col=Math.max(0,Math.round(sx/128));
+      const row=Math.max(0,Math.round(sy/128));
+      const id=stage2SpeciesOrder[row*5+col];
+      const replacement=id&&stage2IndividualImgs[id];
+      if(replacement&&replacement.complete&&replacement.naturalWidth){
+        return nativeDrawImage.call(this,replacement,args[4],args[5],args[6],args[7]);
+      }
+    }
+    return nativeDrawImage.call(this,image,...args);
+  };
+
   let pointer=null,dragSpecies=null,dragPointerId=null,dragging=false,suppressClick=false;
 
   const canvasPosFromClient=(clientX,clientY)=>{
@@ -137,9 +184,9 @@
       const stage=evolutionStage(dragSpecies);
       ctx.save();
       ctx.globalAlpha=valid?.92:.62;
-      if(stage===2&&stage2SheetImg.complete&&stage2SheetImg.naturalWidth){
-        const cell=stage2SheetCell(dragSpecies),size=78;
-        ctx.drawImage(stage2SheetImg,cell.sx,cell.sy,128,128,pointer.x-size/2,pointer.y-size/2,size,size);
+      if(stage===2){
+        const img=stage2IndividualImgs[dragSpecies];
+        if(img&&img.complete&&img.naturalWidth){const size=78;ctx.drawImage(img,pointer.x-size/2,pointer.y-size/2,size,size)}
       }else{
         const img=stage===3?(evolutionSpriteImgs[dragSpecies]?.[3]||spriteImgs[dragSpecies]):spriteImgs[dragSpecies];
         if(img&&img.complete){
