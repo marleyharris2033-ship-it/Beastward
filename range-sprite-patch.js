@@ -1,4 +1,4 @@
-// Beastward v25: drag-and-drop beast placement + clearer range preview
+// Beastward v29: cleaner drag placement, auto-hide range, touch-friendly scrolling
 (() => {
   const custom = {
     shadepup:{sprite:'assets/pixel/shadepup.png',tower:'assets/pixel/shadepup_tower.png'},
@@ -6,17 +6,18 @@
     voidling:{sprite:'assets/pixel/voidling.png',tower:'assets/pixel/voidling_tower.png'}
   };
 
-  Object.entries(custom).forEach(([id, art]) => {
-    if (!beasts[id]) return;
-    beasts[id].sprite = art.sprite;
-    beasts[id].towerSprite = art.tower;
-    const img = new Image();
-    img.onerror = () => { img.src = 'assets/sprites/' + id + '.svg'; };
-    img.src = art.tower;
-    spriteImgs[id] = img;
+  Object.entries(custom).forEach(([id,art])=>{
+    if(!beasts[id])return;
+    beasts[id].sprite=art.sprite;
+    beasts[id].towerSprite=art.tower;
+    const img=new Image();
+    img.onerror=()=>{img.src='assets/sprites/'+id+'.svg'};
+    img.src=art.tower;
+    spriteImgs[id]=img;
   });
 
   let pointer=null,dragSpecies=null,dragPointerId=null,dragging=false,suppressClick=false;
+  let pending=null,longPressTimer=null;
 
   const canvasPosFromClient=(clientX,clientY)=>{
     const r=canvas.getBoundingClientRect();
@@ -35,39 +36,26 @@
   function rangeRing(x,y,range,colour,valid=true){
     ctx.save();
     ctx.fillStyle=valid?colour:'#ff5959';
-    ctx.globalAlpha=valid?.20:.20;
+    ctx.globalAlpha=.20;
     ctx.beginPath();ctx.arc(x,y,range,0,Math.PI*2);ctx.fill();
-
     ctx.globalAlpha=.92;
     ctx.strokeStyle=valid?colour:'#ff6b6b';
-    ctx.lineWidth=3;
-    ctx.setLineDash([10,7]);
+    ctx.lineWidth=3;ctx.setLineDash([10,7]);
     ctx.beginPath();ctx.arc(x,y,range,0,Math.PI*2);ctx.stroke();
     ctx.setLineDash([]);
-
-    ctx.globalAlpha=.42;
-    ctx.lineWidth=1;
+    ctx.globalAlpha=.42;ctx.lineWidth=1;
     ctx.beginPath();ctx.arc(x,y,Math.max(18,range-8),0,Math.PI*2);ctx.stroke();
     ctx.restore();
   }
 
-  function placeDraggedBeast(id,pos){
-    const b=beasts[id];
-    if(!pos.inside||!placementValid(pos.x,pos.y,b))return false;
-    const placed={x:pos.x,y:pos.y,b:battleStats(id),cool:0,baseCost:b.cost,spent:b.cost,powerTier:0,specialTier:0,skillTier:0};
-    towers.push(placed);
-    if(running)waveParticipants.add(id);
-    gold-=b.cost;
-    selectedTower=placed;
-    selectedSpecies=null;
-    document.querySelectorAll('.tower-choice').forEach(x=>x.classList.remove('selected','dragging'));
-    ui();renderSelectedTower();
-    return true;
+  function clearPending(){
+    if(longPressTimer){clearTimeout(longPressTimer);longPressTimer=null}
+    pending=null;
   }
 
-  function beginDrag(e,el,id){
+  function startDrag(e,el,id){
     if(gold<beasts[id].cost)return;
-    e.preventDefault();
+    clearPending();
     dragSpecies=id;
     dragPointerId=e.pointerId;
     dragging=true;
@@ -80,16 +68,50 @@
     try{el.setPointerCapture(e.pointerId)}catch(_){}
   }
 
+  function placeDraggedBeast(id,pos){
+    const b=beasts[id];
+    if(!pos.inside||!placementValid(pos.x,pos.y,b))return false;
+    const placed={x:pos.x,y:pos.y,b:battleStats(id),cool:0,baseCost:b.cost,spent:b.cost,powerTier:0,specialTier:0,skillTier:0};
+    towers.push(placed);
+    if(running)waveParticipants.add(id);
+    gold-=b.cost;
+
+    // Placement range disappears immediately. Tap the placed beast later to inspect it.
+    selectedTower=null;
+    selectedSpecies=null;
+    pointer=null;
+    document.querySelectorAll('.tower-choice').forEach(x=>x.classList.remove('selected','dragging'));
+    ui();renderSelectedTower();
+    return true;
+  }
+
   function installDragHandlers(){
     document.querySelectorAll('.tower-choice').forEach(el=>{
       if(el.dataset.dragReady)return;
       el.dataset.dragReady='1';
       const id=save.unlocked.find(id=>el.textContent.includes(nameFor(id)))||save.unlocked[[...el.parentNode.children].indexOf(el)];
       if(!id)return;
+
       el.onclick=e=>{
         if(suppressClick){e.preventDefault();e.stopPropagation();suppressClick=false}
       };
-      el.addEventListener('pointerdown',e=>beginDrag(e,el,id));
+
+      el.addEventListener('pointerdown',e=>{
+        if(gold<beasts[id].cost)return;
+        // Mouse/stylus feels best with immediate drag. Touch uses a short hold so swiping
+        // the beast list remains a normal scroll gesture.
+        if(e.pointerType==='mouse'||e.pointerType==='pen'){
+          e.preventDefault();
+          startDrag(e,el,id);
+          return;
+        }
+        clearPending();
+        pending={id,el,pointerId:e.pointerId,startX:e.clientX,startY:e.clientY,lastEvent:e};
+        longPressTimer=setTimeout(()=>{
+          if(!pending||pending.pointerId!==e.pointerId)return;
+          startDrag(pending.lastEvent,pending.el,pending.id);
+        },180);
+      },{passive:false});
     });
   }
 
@@ -101,12 +123,20 @@
   choices();
 
   document.addEventListener('pointermove',e=>{
+    if(pending&&e.pointerId===pending.pointerId&&!dragging){
+      pending.lastEvent=e;
+      const dx=e.clientX-pending.startX,dy=e.clientY-pending.startY;
+      // A normal swipe cancels the long-press and lets the list scroll freely.
+      if(Math.hypot(dx,dy)>9)clearPending();
+      return;
+    }
     if(!dragging||e.pointerId!==dragPointerId)return;
     e.preventDefault();
     pointer=pointerPos(e);
   },{passive:false});
 
   document.addEventListener('pointerup',e=>{
+    if(pending&&e.pointerId===pending.pointerId){clearPending();return}
     if(!dragging||e.pointerId!==dragPointerId)return;
     e.preventDefault();
     const pos=pointerPos(e),id=dragSpecies;
@@ -117,12 +147,12 @@
   },{passive:false});
 
   document.addEventListener('pointercancel',e=>{
+    if(pending&&e.pointerId===pending.pointerId)clearPending();
     if(e.pointerId!==dragPointerId)return;
     dragging=false;dragSpecies=null;dragPointerId=null;pointer=null;
     document.querySelectorAll('.tower-choice').forEach(x=>x.classList.remove('dragging'));
   });
 
-  // Keep click-to-inspect on already placed beasts, but dragging from the list is now the placement method.
   canvas.addEventListener('pointermove',e=>{if(!dragging)pointer=pointerPos(e)});
   canvas.addEventListener('pointerleave',()=>{if(!dragging)pointer=null});
 
@@ -130,10 +160,12 @@
   draw=function(){
     baseDraw();
 
+    // Range is shown while actively inspecting an already placed beast.
     if(selectedTower){
       rangeRing(selectedTower.x,selectedTower.y,selectedTower.b.range,selectedTower.b.color||'#ffe17b',true);
     }
 
+    // While dragging, show the exact final combat range before placement.
     if(dragging&&dragSpecies&&pointer){
       const b=battleStats(dragSpecies);
       const valid=pointer.inside&&placementValid(pointer.x,pointer.y,beasts[dragSpecies]);
