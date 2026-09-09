@@ -54,8 +54,8 @@ function evolutionStage(id){
   const l=progress(id).level;
   return l>=30?3:l>=15?2:1;
 }
-function stageStats(id){
-  const base=beastRatings[id],stage=evolutionStage(id),cap=stage*10;
+function stageStatsAt(id,stage){
+  const base=beastRatings[id],cap=stage*10;
   return {
     stage,cap,
     power:Math.min(cap,base.power*stage),
@@ -64,6 +64,7 @@ function stageStats(id){
     special:Math.min(cap,base.special*stage)
   };
 }
+function stageStats(id){return stageStatsAt(id,evolutionStage(id))}
 function statBars(id){
   const s=stageStats(id);
   return `<div class="stat-grid">
@@ -74,28 +75,32 @@ function statBars(id){
   </div>`;
 }
 
-function overlayPathForStage(id,stage=1){
-  return stage>1?`assets/pixel/evolved/${id}_${stage}.svg`:null;
+function nameForStage(id,stage){
+  const b=beasts[id];
+  return stage===3?b.evo30:stage===2?b.evo20:b.name;
 }
-function currentSprite(id){return beasts[id].sprite}
-function stageSpriteMarkup(id,stage=evolutionStage(id),extra=''){
-  const b=beasts[id],overlay=overlayPathForStage(id,stage);
-  return `<span class="stage-sprite stage-${stage} type-${b.type.toLowerCase()} ${extra}">
-    <img class="stage-base" src="${b.sprite}" alt="${nameFor(id)}">
-    ${overlay?`<img class="stage-overlay" src="${overlay}" alt="">`:''}
+function spritePathForStage(id,stage=1){
+  return stage>1?`assets/pixel/evolved/${id}_${stage}.svg?v=48`:beasts[id].sprite;
+}
+function currentSprite(id){return spritePathForStage(id,evolutionStage(id))}
+function stageSpriteMarkup(id,stage=evolutionStage(id),extra='',unseen=false){
+  const b=beasts[id],src=spritePathForStage(id,stage),name=nameForStage(id,stage);
+  return `<span class="stage-sprite stage-${stage} type-${b.type.toLowerCase()} ${unseen?'unseen-sprite':''} ${extra}">
+    <img class="stage-form" src="${src}" alt="${unseen?'Undiscovered beast':name}">
   </span>`;
 }
-const spriteImgs={},evolutionOverlayImgs={};
+const spriteImgs={},evolutionSpriteImgs={};
 Object.values(beasts).forEach(b=>{
   const base=new Image();
   base.onerror=()=>{if(!base.dataset.fallback){base.dataset.fallback='1';base.src='assets/sprites/'+b.id+'.svg'}};
   base.src=b.sprite;
   spriteImgs[b.id]=base;
-  evolutionOverlayImgs[b.id]={};
+  evolutionSpriteImgs[b.id]={};
   [2,3].forEach(stage=>{
-    const overlay=new Image();
-    overlay.src=overlayPathForStage(b.id,stage);
-    evolutionOverlayImgs[b.id][stage]=overlay;
+    const form=new Image();
+    form.onerror=()=>{form.src=b.sprite};
+    form.src=spritePathForStage(b.id,stage);
+    evolutionSpriteImgs[b.id][stage]=form;
   });
 });
 document.addEventListener('error',e=>{
@@ -103,18 +108,26 @@ document.addEventListener('error',e=>{
   if(!img||img.tagName!=='IMG'||img.dataset.spriteFallback)return;
   const src=img.src||'',file=src.split('/').pop()||'';
   if(src.includes('/assets/pixel/evolved/')){
-    img.style.display='none';
+    const match=src.match(/\/evolved\/([a-z]+)_[23]\.svg/);
+    if(match&&beasts[match[1]]){img.dataset.spriteFallback='1';img.src=beasts[match[1]].sprite}
     return;
   }
   if(src.includes('/assets/pixel/')){
-    const id=file.replace('_tower.png','').replace('.png','');
+    const id=file.split('?')[0].replace('_tower.png','').replace('.png','');
     img.dataset.spriteFallback='1';
     img.src='assets/sprites/'+id+'.svg';
   }
 },true);
 
-function blankSave(){return {starter:null,essence:0,wardenLevel:1,unlocked:[],freeCommonClaimed:false,beastProgress:{},beastCopies:{},ascensions:{},completedLevels:[],bossEggRewards:[],lastLoadout:[],createdAt:Date.now(),lastPlayed:Date.now()}}
-function normaliseSave(s){s=s||blankSave();s.unlocked=s.unlocked||[];s.beastProgress=s.beastProgress||{};s.beastCopies=s.beastCopies||{};s.ascensions=s.ascensions||{};s.completedLevels=s.completedLevels||[];s.bossEggRewards=s.bossEggRewards||[];s.lastLoadout=(s.lastLoadout||[]).filter(id=>s.unlocked.includes(id)).slice(0,4);if(s.freeCommonClaimed===undefined)s.freeCommonClaimed=false;if(!s.wardenLevel)s.wardenLevel=1;if(s.essence===undefined)s.essence=0;return s}
+function blankSave(){return {starter:null,essence:0,wardenLevel:1,unlocked:[],freeCommonClaimed:false,beastProgress:{},beastCopies:{},ascensions:{},completedLevels:[],bossEggRewards:[],seenBeastStages:[],lastLoadout:[],createdAt:Date.now(),lastPlayed:Date.now()}}
+function normaliseSave(s){
+  s=s||blankSave();s.unlocked=s.unlocked||[];s.beastProgress=s.beastProgress||{};s.beastCopies=s.beastCopies||{};s.ascensions=s.ascensions||{};s.completedLevels=s.completedLevels||[];s.bossEggRewards=s.bossEggRewards||[];s.seenBeastStages=s.seenBeastStages||[];
+  s.unlocked.forEach(id=>{
+    const level=s.beastProgress[id]?.level||1;
+    [1,...(level>=15?[2]:[]),...(level>=30?[3]:[])].forEach(stage=>{const key=id+':'+stage;if(!s.seenBeastStages.includes(key))s.seenBeastStages.push(key)});
+  });
+  s.lastLoadout=(s.lastLoadout||[]).filter(id=>s.unlocked.includes(id)).slice(0,4);if(s.freeCommonClaimed===undefined)s.freeCommonClaimed=false;if(!s.wardenLevel)s.wardenLevel=1;if(s.essence===undefined)s.essence=0;return s
+}
 const legacy=localStorage.getItem('beastward-save');
 if(legacy&&!localStorage.getItem('beastward-save-1')&&!localStorage.getItem('beastward-save-2')&&!localStorage.getItem('beastward-save-3')){
   localStorage.setItem('beastward-save-1',legacy);
@@ -125,7 +138,11 @@ let pendingSaveTarget='hub';
 
 function xpNeeded(level){return 60+(level-1)*15}
 function progress(id){return save.beastProgress[id]||(save.beastProgress[id]={level:1,xp:0})}
-function addBeast(id){if(!save.unlocked.includes(id))save.unlocked.push(id);progress(id)}
+function beastStageKey(id,stage){return id+':'+stage}
+function stageSeen(id,stage){return (save.seenBeastStages||[]).includes(beastStageKey(id,stage))}
+function markStageSeen(id,stage){save.seenBeastStages=save.seenBeastStages||[];const key=beastStageKey(id,stage);if(!save.seenBeastStages.includes(key))save.seenBeastStages.push(key)}
+function syncSeenStages(id){const l=progress(id).level;markStageSeen(id,1);if(l>=15)markStageSeen(id,2);if(l>=30)markStageSeen(id,3)}
+function addBeast(id){if(!save.unlocked.includes(id))save.unlocked.push(id);progress(id);markStageSeen(id,1)}
 function nameFor(id){const b=beasts[id],l=progress(id).level;return l>=30?b.evo30:l>=15?b.evo20:b.name}
 function ascension(id){return save.ascensions[id]||0}
 function copies(id){return save.beastCopies[id]||0}
@@ -351,11 +368,73 @@ function beastLore(id){
  };
  return notes[id]||['Wild Beast','A mysterious Beastward creature.'];
 }
+function bestiaryBeastEntries(){
+  const result=[];
+  Object.values(beasts).forEach((b,speciesIndex)=>{
+    [1,2,3].forEach(stage=>result.push({
+      id:b.id,stage,key:beastStageKey(b.id,stage),number:speciesIndex*3+stage,
+      name:nameForStage(b.id,stage),type:b.type,role:b.role,seen:stageSeen(b.id,stage)
+    }));
+  });
+  return result;
+}
+function bestiaryStageDescription(id,stage){
+  const b=beasts[id],base=beastLore(id);
+  if(stage===1)return base[1];
+  if(stage===2)return `${b.evo20} is ${b.name}'s first evolved form, reached at Level 15. Its ${b.type.toLowerCase()} abilities become more developed and its silhouette changes significantly.`;
+  return `${b.evo30} is the fully evolved form of ${b.name}, reached at Level 30. It represents the strongest known expression of this beast's ${b.type.toLowerCase()} bond.`;
+}
 function renderBestiary(){
  const list=$('#bestiaryList'),detail=$('#bestiaryDetail'),filters=$('#bestiaryFilters'),search=$('#bestiarySearch');
- const bp=$('#bestiaryProgress');if(bp)bp.textContent=`${save.unlocked.length} / ${Object.keys(beasts).length} discovered`;
+ const seenCount=(save.seenBeastStages||[]).length,totalEntries=Object.keys(beasts).length*3;
+ const bp=$('#bestiaryProgress');if(bp)bp.textContent=`${seenCount} / ${totalEntries} entries logged`;
  if(!list||!detail)return;
  document.querySelectorAll('.bestiary-tab').forEach(b=>b.classList.toggle('active',b.dataset.btab===bestiaryTab));
+ filters.innerHTML='';
+ if(bestiaryTab==='beasts'){
+   ['All',...new Set(Object.values(beasts).map(b=>b.type))].forEach(type=>{const btn=document.createElement('button');btn.className='best-filter'+(type===bestiaryType?' active':'');btn.textContent=type;btn.onclick=()=>{bestiaryType=type;bestiarySelected=null;renderBestiary()};filters.appendChild(btn)});
+   const q=(search.value||'').toLowerCase();
+   const arr=bestiaryBeastEntries().filter(entry=>(bestiaryType==='All'||entry.type===bestiaryType)&&(!q||(entry.seen&&(entry.name+' '+entry.type+' '+entry.role).toLowerCase().includes(q))));
+   if(bestiarySelected&&!arr.some(entry=>entry.key===bestiarySelected))bestiarySelected=null;
+   const layout=document.querySelector('.bestiary-layout');
+   list.innerHTML='';
+   arr.forEach(entry=>{
+     const row=document.createElement('button');
+     row.className='best-row bestiary-entry'+(entry.key===bestiarySelected?' active':'')+(entry.seen?' seen':' unseen');
+     row.innerHTML=`${stageSpriteMarkup(entry.id,entry.stage,'row-sprite',!entry.seen)}<div><h4>${entry.seen?entry.name:'???'}</h4><small>#${String(entry.number).padStart(3,'0')} • ${entry.seen?entry.type+' • '+(entry.stage===1?'Base Form':entry.stage===2?'Evolution I':'Evolution II'):'Not yet encountered'}</small></div><span class="tag">${entry.seen?entry.role:'???'}</span>`;
+     row.onclick=()=>{
+       bestiarySelected=bestiarySelected===entry.key?null:entry.key;
+       renderBestiary();
+       if(bestiarySelected&&window.innerWidth<=760)setTimeout(()=>detail.scrollIntoView({behavior:'smooth',block:'start'}),40);
+     };
+     list.appendChild(row);
+   });
+   if(!bestiarySelected){
+     detail.innerHTML='';
+     detail.classList.add('hidden');
+     if(layout)layout.classList.add('no-selection');
+     return;
+   }
+   const entry=arr.find(x=>x.key===bestiarySelected);
+   if(!entry){bestiarySelected=null;renderBestiary();return}
+   detail.classList.remove('hidden');if(layout)layout.classList.remove('no-selection');
+   if(!entry.seen){
+     detail.innerHTML=`<button class="best-detail-close" type="button" aria-label="Close entry">×</button><div class="best-hero undiscovered-entry"><div class="best-portrait silhouette-portrait">${stageSpriteMarkup(entry.id,entry.stage,'portrait-sprite',true)}</div><div class="best-detail-title"><span class="dex-number">#${String(entry.number).padStart(3,'0')}</span><h3>Undiscovered</h3><div class="best-pills"><span class="best-pill">No data recorded</span></div><p>This Beastiary entry is still unknown. Hatch and train its species to encounter this form and permanently add it to the log.</p></div></div>`;
+   }else{
+     const b=beasts[entry.id],stats=stageStatsAt(entry.id,entry.stage),requirement=entry.stage===1?'Base form':entry.stage===2?'Evolves at Level 15':'Evolves at Level 30';
+     const prev=entry.stage===1?null:nameForStage(entry.id,entry.stage-1);
+     detail.innerHTML=`<button class="best-detail-close" type="button" aria-label="Close entry">×</button><div class="best-hero"><div class="best-portrait">${stageSpriteMarkup(entry.id,entry.stage,'portrait-sprite')}</div><div class="best-detail-title"><span class="dex-number">#${String(entry.number).padStart(3,'0')}</span><h3>${entry.name}</h3><div class="best-pills"><span class="best-pill">${b.type}</span><span class="best-pill">${b.role}</span><span class="best-pill">${requirement}</span><span class="best-pill">Logged</span></div><p>${bestiaryStageDescription(entry.id,entry.stage)}</p></div></div><div class="stat-grid dex-stat-grid"><div><span>Power</span><b>${stats.power}/${stats.cap}</b></div><div><span>Speed</span><b>${stats.speed}/${stats.cap}</b></div><div><span>Range</span><b>${stats.range}/${stats.cap}</b></div><div><span>Special</span><b>${stats.special}/${stats.cap}</b></div></div><div class="best-section"><b>Evolution record</b><p>${entry.stage===1?`${entry.name} is the first known form of this species.`:`${entry.name} evolves from ${prev}.`}</p></div>`;
+   }
+   const close=detail.querySelector('.best-detail-close');if(close)close.onclick=()=>{bestiarySelected=null;renderBestiary()};
+ }else if(bestiaryTab==='enemies'){
+   filters.innerHTML='';list.innerHTML='';
+   bestiaryEnemies.forEach((e,i)=>{const row=document.createElement('button');row.className='best-row'+(bestiarySelected===i?' active':'');row.innerHTML=`<img src="${e.sprite}" alt="${e.name}"><div><h4>${e.name}</h4><small>${e.kind}</small></div><span class="tag">Enemy</span>`;row.onclick=()=>{bestiarySelected=i;renderBestiary()};list.appendChild(row)});
+   if(typeof bestiarySelected!=='number')bestiarySelected=0;const e=bestiaryEnemies[bestiarySelected]||bestiaryEnemies[0];detail.classList.remove('hidden');detail.innerHTML=`<div class="best-hero"><div class="best-portrait"><img src="${e.sprite}" alt="${e.name}"></div><div class="best-detail-title"><h3>${e.name}</h3><div class="best-pills"><span class="best-pill">${e.kind}</span><span class="best-pill">Enemy</span></div><p>${e.text}</p></div></div><div class="best-section"><b>Warden advice</b><p>${e.kind==='Fast'?'Use slows, freezes and good path coverage.':e.kind==='Heavy'?'High damage, poison and boss-style single-target builds work well.':e.kind==='Swarm'?'Splash, chain lightning and rapid attackers are ideal.':e.kind==='Boss'?'Use upgraded beasts and combine damage with control effects.':'A balanced defence handles these reliably.'}</p></div>`;
+ }else{
+   filters.innerHTML='';list.innerHTML='<div class="lore-list">'+bestiaryLore.map(x=>`<div class="lore-card"><h3>${x.title}</h3><p>${x.text}</p></div>`).join('')+'</div>';detail.classList.remove('hidden');detail.innerHTML='<div class="lore-card"><h3>Beastward</h3><p>The world is bound by living magic. Stronger beasts make a brighter tomorrow.</p></div>';
+ }
+}
+document.querySelectorAll('.bestiary-tab').forEach(b=>b.classList.toggle('active',b.dataset.btab===bestiaryTab));
  filters.innerHTML='';
  if(bestiaryTab==='beasts'){
    ['All',...new Set(Object.values(beasts).map(b=>b.type))].forEach(type=>{const btn=document.createElement('button');btn.className='best-filter'+(type===bestiaryType?' active':'');btn.textContent=type;btn.onclick=()=>{bestiaryType=type;bestiarySelected=null;renderBestiary()};filters.appendChild(btn)});
@@ -895,11 +974,12 @@ function attack(t,dt){
 function addXP(ids,amount){
   const levelUps=[];
   ids.forEach(id=>{
-    const p=progress(id);if(p.level>=30)return;
+    const p=progress(id);if(p.level>=30){syncSeenStages(id);return}
     p.xp+=amount;
     while(p.level<30&&p.xp>=xpNeeded(p.level)){
-      p.xp-=xpNeeded(p.level);p.level++;levelUps.push(nameFor(id)+' reached Level '+p.level);
+      p.xp-=xpNeeded(p.level);p.level++;syncSeenStages(id);levelUps.push(nameFor(id)+' reached Level '+p.level);
     }
+    syncSeenStages(id);
     if(p.level>=30)p.xp=0;
   });
   persist();
@@ -1474,9 +1554,8 @@ function draw(){
       ctx.moveTo(t.x-r,t.y+r-l);ctx.lineTo(t.x-r,t.y+r);ctx.lineTo(t.x-r+l,t.y+r);
       ctx.moveTo(t.x+r-l,t.y+r);ctx.lineTo(t.x+r,t.y+r);ctx.lineTo(t.x+r,t.y+r-l);ctx.stroke();
     }
-    const stage=evolutionStage(t.b.id),img=spriteImgs[t.b.id];
-    if(img&&img.complete)ctx.drawImage(img,t.x-39,t.y-39,78,78);
-    if(stage>1){const overlay=evolutionOverlayImgs[t.b.id]?.[stage];if(overlay&&overlay.complete)ctx.drawImage(overlay,t.x-42,t.y-42,84,84)}
+    const stage=evolutionStage(t.b.id),img=stage>1?(evolutionSpriteImgs[t.b.id]?.[stage]||spriteImgs[t.b.id]):spriteImgs[t.b.id];
+    if(img&&img.complete){const size=stage===3?88:stage===2?83:78;ctx.drawImage(img,t.x-size/2,t.y-size/2,size,size)}
   });
 
   enemies.forEach(e=>{
