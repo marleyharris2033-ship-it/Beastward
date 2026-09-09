@@ -380,25 +380,38 @@ radial-gradient(ellipse at 82% 57%,#193722 0 6%,transparent 7%);opacity:.75}
 @media(max-width:760px){.tower-panel{max-height:58svh;overflow:hidden}}
 
 /* ===== Drag-and-drop tower placement ===== */
-.tower-choice{touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab;transition:transform .12s ease,border-color .12s ease,opacity .12s ease}
+.tower-choice{touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;transition:transform .12s ease,border-color .12s ease,opacity .12s ease}
 .tower-choice:active,.tower-choice.dragging{cursor:grabbing;transform:scale(.97);border-color:#f0d05d;box-shadow:0 0 0 2px #f0d05d33,0 8px 18px #0007;opacity:.78}
 #gameCanvas{touch-action:none}
 
-/* ===== Clear beast-list scrolling ===== */
-#towerChoices{
-  max-height:min(48svh,520px);
-  overflow-y:auto;
-  overscroll-behavior:contain;
-  -webkit-overflow-scrolling:touch;
-  scrollbar-gutter:stable;
-  padding-right:5px;
+
+/* ===== Whole-screen battle scrollbar ===== */
+html{overflow-y:scroll}
+body{overflow-y:visible}
+.game-scroll-rail{
+  position:fixed;
+  top:76px;
+  right:max(5px,env(safe-area-inset-right));
+  bottom:18px;
+  width:16px;
+  z-index:999;
+  border-radius:12px;
+  background:#08110dcc;
+  border:1px solid #516557;
+  box-shadow:0 2px 12px #0008;
+  touch-action:none;
 }
-#towerChoices::-webkit-scrollbar{width:10px}
-#towerChoices::-webkit-scrollbar-track{background:#0d1812;border-radius:10px}
-#towerChoices::-webkit-scrollbar-thumb{background:#667b68;border:2px solid #0d1812;border-radius:10px}
-#towerChoices::-webkit-scrollbar-thumb:hover{background:#8ea28f}
-#towerChoices{scrollbar-width:auto;scrollbar-color:#667b68 #0d1812}
-@media(max-width:760px){
-  #towerChoices{max-height:34svh;padding-right:8px}
-  .tower-choice{touch-action:pan-y}
+.game-scroll-rail.hidden{display:none}
+.game-scroll-thumb{
+  position:absolute;
+  left:2px;
+  top:0;
+  width:10px;
+  min-height:44px;
+  border-radius:10px;
+  background:linear-gradient(#b8c9b8,#6f866f);
+  border:1px solid #dce8d8;
+  box-shadow:0 1px 5px #0008;
+  touch-action:none;
 }
+@media(min-width:901px){.game-scroll-rail{right:7px}}
