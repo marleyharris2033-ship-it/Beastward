@@ -855,3 +855,21 @@ radial-gradient(ellipse at 82% 57%,#193722 0 6%,transparent 7%);opacity:.75}
 .map-node.snow-node.completed{border-color:#70d3e8;box-shadow:0 0 0 3px #baf4ff66,0 9px 22px #244b5d44}
 .map-node.snow-node.boss-node{border-color:#6b9fc8;background:linear-gradient(#bfd9e6,#879fb5)}
 @media(max-width:760px){.campaign-world-switch{grid-template-columns:1fr}.campaign-world-btn{min-height:39px}}
+
+/* ===== Polished first evolutions v57 ===== */
+.stage2-sheet-form{
+  position:absolute;
+  inset:0;
+  display:block;
+  width:100%;
+  height:100%;
+  background-image:url('assets/pixel/evolved/stage2_sheet.png?v=57');
+  background-repeat:no-repeat;
+  background-size:500% 400%;
+  filter:drop-shadow(0 4px 4px #0008);
+}
+.stage-sprite.stage-2 .stage2-sheet-form{transform:scale(1.04)}
+.stage-sprite.unseen-sprite .stage2-sheet-form{
+  filter:brightness(0) saturate(0) contrast(1.2)!important;
+  opacity:.86;
+}
