@@ -381,97 +381,91 @@ function bestiaryBeastEntries(){
 function bestiaryStageDescription(id,stage){
   const b=beasts[id],base=beastLore(id);
   if(stage===1)return base[1];
-  if(stage===2)return `${b.evo20} is ${b.name}'s first evolved form, reached at Level 15. Its ${b.type.toLowerCase()} abilities become more developed and its silhouette changes significantly.`;
-  return `${b.evo30} is the fully evolved form of ${b.name}, reached at Level 30. It represents the strongest known expression of this beast's ${b.type.toLowerCase()} bond.`;
+  if(stage===2)return `${b.evo20} is ${b.name}'s first evolved form, reached at Level 15. Its ${b.type.toLowerCase()} abilities become more developed and its body changes into a stronger form.`;
+  return `${b.evo30} is the fully evolved form of ${b.name}, reached at Level 30. It is the strongest known expression of this beast's ${b.type.toLowerCase()} bond.`;
 }
 function renderBestiary(){
- const list=$('#bestiaryList'),detail=$('#bestiaryDetail'),filters=$('#bestiaryFilters'),search=$('#bestiarySearch');
- const seenCount=(save.seenBeastStages||[]).length,totalEntries=Object.keys(beasts).length*3;
- const bp=$('#bestiaryProgress');if(bp)bp.textContent=`${seenCount} / ${totalEntries} entries logged`;
- if(!list||!detail)return;
- document.querySelectorAll('.bestiary-tab').forEach(b=>b.classList.toggle('active',b.dataset.btab===bestiaryTab));
- filters.innerHTML='';
- if(bestiaryTab==='beasts'){
-   ['All',...new Set(Object.values(beasts).map(b=>b.type))].forEach(type=>{const btn=document.createElement('button');btn.className='best-filter'+(type===bestiaryType?' active':'');btn.textContent=type;btn.onclick=()=>{bestiaryType=type;bestiarySelected=null;renderBestiary()};filters.appendChild(btn)});
-   const q=(search.value||'').toLowerCase();
-   const arr=bestiaryBeastEntries().filter(entry=>(bestiaryType==='All'||entry.type===bestiaryType)&&(!q||(entry.seen&&(entry.name+' '+entry.type+' '+entry.role).toLowerCase().includes(q))));
-   if(bestiarySelected&&!arr.some(entry=>entry.key===bestiarySelected))bestiarySelected=null;
-   const layout=document.querySelector('.bestiary-layout');
-   list.innerHTML='';
-   arr.forEach(entry=>{
-     const row=document.createElement('button');
-     row.className='best-row bestiary-entry'+(entry.key===bestiarySelected?' active':'')+(entry.seen?' seen':' unseen');
-     row.innerHTML=`${stageSpriteMarkup(entry.id,entry.stage,'row-sprite',!entry.seen)}<div><h4>${entry.seen?entry.name:'???'}</h4><small>#${String(entry.number).padStart(3,'0')} • ${entry.seen?entry.type+' • '+(entry.stage===1?'Base Form':entry.stage===2?'Evolution I':'Evolution II'):'Not yet encountered'}</small></div><span class="tag">${entry.seen?entry.role:'???'}</span>`;
-     row.onclick=()=>{
-       bestiarySelected=bestiarySelected===entry.key?null:entry.key;
-       renderBestiary();
-       if(bestiarySelected&&window.innerWidth<=760)setTimeout(()=>detail.scrollIntoView({behavior:'smooth',block:'start'}),40);
-     };
-     list.appendChild(row);
-   });
-   if(!bestiarySelected){
-     detail.innerHTML='';
-     detail.classList.add('hidden');
-     if(layout)layout.classList.add('no-selection');
-     return;
-   }
-   const entry=arr.find(x=>x.key===bestiarySelected);
-   if(!entry){bestiarySelected=null;renderBestiary();return}
-   detail.classList.remove('hidden');if(layout)layout.classList.remove('no-selection');
-   if(!entry.seen){
-     detail.innerHTML=`<button class="best-detail-close" type="button" aria-label="Close entry">×</button><div class="best-hero undiscovered-entry"><div class="best-portrait silhouette-portrait">${stageSpriteMarkup(entry.id,entry.stage,'portrait-sprite',true)}</div><div class="best-detail-title"><span class="dex-number">#${String(entry.number).padStart(3,'0')}</span><h3>Undiscovered</h3><div class="best-pills"><span class="best-pill">No data recorded</span></div><p>This Beastiary entry is still unknown. Hatch and train its species to encounter this form and permanently add it to the log.</p></div></div>`;
-   }else{
-     const b=beasts[entry.id],stats=stageStatsAt(entry.id,entry.stage),requirement=entry.stage===1?'Base form':entry.stage===2?'Evolves at Level 15':'Evolves at Level 30';
-     const prev=entry.stage===1?null:nameForStage(entry.id,entry.stage-1);
-     detail.innerHTML=`<button class="best-detail-close" type="button" aria-label="Close entry">×</button><div class="best-hero"><div class="best-portrait">${stageSpriteMarkup(entry.id,entry.stage,'portrait-sprite')}</div><div class="best-detail-title"><span class="dex-number">#${String(entry.number).padStart(3,'0')}</span><h3>${entry.name}</h3><div class="best-pills"><span class="best-pill">${b.type}</span><span class="best-pill">${b.role}</span><span class="best-pill">${requirement}</span><span class="best-pill">Logged</span></div><p>${bestiaryStageDescription(entry.id,entry.stage)}</p></div></div><div class="stat-grid dex-stat-grid"><div><span>Power</span><b>${stats.power}/${stats.cap}</b></div><div><span>Speed</span><b>${stats.speed}/${stats.cap}</b></div><div><span>Range</span><b>${stats.range}/${stats.cap}</b></div><div><span>Special</span><b>${stats.special}/${stats.cap}</b></div></div><div class="best-section"><b>Evolution record</b><p>${entry.stage===1?`${entry.name} is the first known form of this species.`:`${entry.name} evolves from ${prev}.`}</p></div>`;
-   }
-   const close=detail.querySelector('.best-detail-close');if(close)close.onclick=()=>{bestiarySelected=null;renderBestiary()};
- }else if(bestiaryTab==='enemies'){
-   filters.innerHTML='';list.innerHTML='';
-   bestiaryEnemies.forEach((e,i)=>{const row=document.createElement('button');row.className='best-row'+(bestiarySelected===i?' active':'');row.innerHTML=`<img src="${e.sprite}" alt="${e.name}"><div><h4>${e.name}</h4><small>${e.kind}</small></div><span class="tag">Enemy</span>`;row.onclick=()=>{bestiarySelected=i;renderBestiary()};list.appendChild(row)});
-   if(typeof bestiarySelected!=='number')bestiarySelected=0;const e=bestiaryEnemies[bestiarySelected]||bestiaryEnemies[0];detail.classList.remove('hidden');detail.innerHTML=`<div class="best-hero"><div class="best-portrait"><img src="${e.sprite}" alt="${e.name}"></div><div class="best-detail-title"><h3>${e.name}</h3><div class="best-pills"><span class="best-pill">${e.kind}</span><span class="best-pill">Enemy</span></div><p>${e.text}</p></div></div><div class="best-section"><b>Warden advice</b><p>${e.kind==='Fast'?'Use slows, freezes and good path coverage.':e.kind==='Heavy'?'High damage, poison and boss-style single-target builds work well.':e.kind==='Swarm'?'Splash, chain lightning and rapid attackers are ideal.':e.kind==='Boss'?'Use upgraded beasts and combine damage with control effects.':'A balanced defence handles these reliably.'}</p></div>`;
- }else{
-   filters.innerHTML='';list.innerHTML='<div class="lore-list">'+bestiaryLore.map(x=>`<div class="lore-card"><h3>${x.title}</h3><p>${x.text}</p></div>`).join('')+'</div>';detail.classList.remove('hidden');detail.innerHTML='<div class="lore-card"><h3>Beastward</h3><p>The world is bound by living magic. Stronger beasts make a brighter tomorrow.</p></div>';
- }
-}
-document.querySelectorAll('.bestiary-tab').forEach(b=>b.classList.toggle('active',b.dataset.btab===bestiaryTab));
- filters.innerHTML='';
- if(bestiaryTab==='beasts'){
-   ['All',...new Set(Object.values(beasts).map(b=>b.type))].forEach(type=>{const btn=document.createElement('button');btn.className='best-filter'+(type===bestiaryType?' active':'');btn.textContent=type;btn.onclick=()=>{bestiaryType=type;bestiarySelected=null;renderBestiary()};filters.appendChild(btn)});
-   const q=(search.value||'').toLowerCase();
-   const arr=Object.values(beasts).filter(b=>(bestiaryType==='All'||b.type===bestiaryType)&&(!q||(b.name+' '+b.type+' '+b.role+' '+b.evo20+' '+b.evo30).toLowerCase().includes(q)));
-   if(bestiarySelected&&!arr.some(b=>b.id===bestiarySelected))bestiarySelected=null;
-   const layout=document.querySelector('.bestiary-layout');
-   list.innerHTML='';
-   arr.forEach(b=>{
-     const row=document.createElement('button');row.className='best-row'+(b.id===bestiarySelected?' active':'');
-     const unlocked=save.unlocked.includes(b.id);
-     row.innerHTML=`${stageSpriteMarkup(b.id,evolutionStage(b.id),'row-sprite')}<div><h4>${nameFor(b.id)}</h4><small>${b.type} • Lv ${progress(b.id).level} • ${unlocked?'Collected':'Undiscovered'}</small></div><span class="tag">${b.role}</span>`;
-     row.onclick=()=>{
-       bestiarySelected=bestiarySelected===b.id?null:b.id;
-       renderBestiary();
-       if(bestiarySelected&&window.innerWidth<=760)setTimeout(()=>detail.scrollIntoView({behavior:'smooth',block:'start'}),40);
-     };
-     list.appendChild(row);
-   });
-   if(!bestiarySelected){
-     detail.innerHTML='';
-     detail.classList.add('hidden');
-     if(layout)layout.classList.add('no-selection');
-     return;
-   }
-   detail.classList.remove('hidden');
-   if(layout)layout.classList.remove('no-selection');
-   const b=beasts[bestiarySelected],lore=beastLore(b.id),p=progress(b.id),unlocked=save.unlocked.includes(b.id);
-   detail.innerHTML=`<button class="best-detail-close" type="button" aria-label="Close beast details">×</button><div class="best-hero"><div class="best-portrait">${stageSpriteMarkup(b.id,evolutionStage(b.id),'portrait-sprite')}</div><div class="best-detail-title"><h3>${nameFor(b.id)}</h3><div class="best-pills"><span class="best-pill">${b.type}</span><span class="best-pill">${b.role}</span><span class="best-pill">Level ${p.level}/30</span><span class="best-pill">Ascension ${ascension(b.id)}/3</span><span class="best-pill">${unlocked?'Collected':'Not collected'}</span></div><p><b>${lore[0]}</b><br>${lore[1]}</p></div></div>${statBars(b.id)}<div class="best-section"><b>Evolution line</b><div class="evo-line"><div class="evo">${stageSpriteMarkup(b.id,1,'evo-sprite')}<small>Lv 1</small><b>${b.name}</b></div><div class="evo">${stageSpriteMarkup(b.id,2,'evo-sprite')}<small>Lv 15</small><b>${b.evo20}</b></div><div class="evo">${stageSpriteMarkup(b.id,3,'evo-sprite')}<small>Lv 30</small><b>${b.evo30}</b></div></div></div>`;
-   const close=detail.querySelector('.best-detail-close');
-   if(close)close.onclick=()=>{bestiarySelected=null;renderBestiary()}; }else if(bestiaryTab==='enemies'){
-   filters.innerHTML='';list.innerHTML='';
-   bestiaryEnemies.forEach((e,i)=>{const row=document.createElement('button');row.className='best-row'+(bestiarySelected===i?' active':'');row.innerHTML=`<img src="${e.sprite}" alt="${e.name}"><div><h4>${e.name}</h4><small>${e.kind}</small></div><span class="tag">Enemy</span>`;row.onclick=()=>{bestiarySelected=i;renderBestiary()};list.appendChild(row)});
-   if(typeof bestiarySelected!=='number')bestiarySelected=0;const e=bestiaryEnemies[bestiarySelected]||bestiaryEnemies[0];detail.innerHTML=`<div class="best-hero"><div class="best-portrait"><img src="${e.sprite}" alt="${e.name}"></div><div class="best-detail-title"><h3>${e.name}</h3><div class="best-pills"><span class="best-pill">${e.kind}</span><span class="best-pill">Enemy</span></div><p>${e.text}</p></div></div><div class="best-section"><b>Warden advice</b><p>${e.kind==='Fast'?'Use slows, freezes and good path coverage.':e.kind==='Heavy'?'High damage, poison and boss-style single-target builds work well.':e.kind==='Swarm'?'Splash, chain lightning and rapid attackers are ideal.':e.kind==='Boss'?'Use upgraded beasts and combine damage with control effects.':'A balanced defence handles these reliably.'}</p></div>`;
- }else{
-   filters.innerHTML='';list.innerHTML='<div class="lore-list">'+bestiaryLore.map(x=>`<div class="lore-card"><h3>${x.title}</h3><p>${x.text}</p></div>`).join('')+'</div>';detail.innerHTML='<div class="lore-card"><h3>Beastward</h3><p>The world is bound by living magic. Stronger beasts make a brighter tomorrow.</p></div>';
- }
+  const list=$('#bestiaryList'),detail=$('#bestiaryDetail'),filters=$('#bestiaryFilters'),search=$('#bestiarySearch');
+  const seenCount=(save.seenBeastStages||[]).length,totalEntries=Object.keys(beasts).length*3;
+  const bp=$('#bestiaryProgress');if(bp)bp.textContent=`${seenCount} / ${totalEntries} entries logged`;
+  if(!list||!detail)return;
+  document.querySelectorAll('.bestiary-tab').forEach(b=>b.classList.toggle('active',b.dataset.btab===bestiaryTab));
+  filters.innerHTML='';
+
+  if(bestiaryTab==='beasts'){
+    ['All',...new Set(Object.values(beasts).map(b=>b.type))].forEach(type=>{
+      const btn=document.createElement('button');
+      btn.className='best-filter'+(type===bestiaryType?' active':'');
+      btn.textContent=type;
+      btn.onclick=()=>{bestiaryType=type;bestiarySelected=null;renderBestiary()};
+      filters.appendChild(btn);
+    });
+
+    const q=(search.value||'').toLowerCase();
+    const arr=bestiaryBeastEntries().filter(entry=>{
+      const typeMatch=bestiaryType==='All'||entry.type===bestiaryType;
+      const searchMatch=!q||(entry.seen&&(entry.name+' '+entry.type+' '+entry.role).toLowerCase().includes(q));
+      return typeMatch&&searchMatch;
+    });
+
+    if(bestiarySelected&&!arr.some(entry=>entry.key===bestiarySelected))bestiarySelected=null;
+    const layout=document.querySelector('.bestiary-layout');
+    list.innerHTML='';
+
+    arr.forEach(entry=>{
+      const row=document.createElement('button');
+      row.className='best-row bestiary-entry'+(entry.key===bestiarySelected?' active':'')+(entry.seen?' seen':' unseen');
+      row.innerHTML=`${stageSpriteMarkup(entry.id,entry.stage,'row-sprite',!entry.seen)}<div><h4>${entry.seen?entry.name:'???'}</h4><small>#${String(entry.number).padStart(3,'0')} • ${entry.seen?(entry.stage===1?'Base Form':entry.stage===2?'Evolution I':'Evolution II'):'Not yet encountered'}</small></div><span class="tag">${entry.seen?entry.type:'???'}</span>`;
+      row.onclick=()=>{
+        bestiarySelected=bestiarySelected===entry.key?null:entry.key;
+        renderBestiary();
+        if(bestiarySelected&&window.innerWidth<=760)setTimeout(()=>detail.scrollIntoView({behavior:'smooth',block:'start'}),40);
+      };
+      list.appendChild(row);
+    });
+
+    if(!bestiarySelected){
+      detail.innerHTML='';
+      detail.classList.add('hidden');
+      if(layout)layout.classList.add('no-selection');
+      return;
+    }
+
+    const entry=arr.find(x=>x.key===bestiarySelected);
+    if(!entry){bestiarySelected=null;renderBestiary();return}
+    detail.classList.remove('hidden');
+    if(layout)layout.classList.remove('no-selection');
+
+    if(!entry.seen){
+      detail.innerHTML=`<button class="best-detail-close" type="button" aria-label="Close entry">×</button><div class="best-hero undiscovered-entry"><div class="best-portrait silhouette-portrait">${stageSpriteMarkup(entry.id,entry.stage,'portrait-sprite',true)}</div><div class="best-detail-title"><span class="dex-number">#${String(entry.number).padStart(3,'0')}</span><h3>Undiscovered</h3><div class="best-pills"><span class="best-pill">No data recorded</span></div><p>This Beastiary entry has not been encountered yet. Hatch and train this species to reveal the form permanently.</p></div></div>`;
+    }else{
+      const b=beasts[entry.id],stats=stageStatsAt(entry.id,entry.stage);
+      const requirement=entry.stage===1?'Base form':entry.stage===2?'Evolves at Level 15':'Evolves at Level 30';
+      const prev=entry.stage===1?null:nameForStage(entry.id,entry.stage-1);
+      detail.innerHTML=`<button class="best-detail-close" type="button" aria-label="Close entry">×</button><div class="best-hero"><div class="best-portrait">${stageSpriteMarkup(entry.id,entry.stage,'portrait-sprite')}</div><div class="best-detail-title"><span class="dex-number">#${String(entry.number).padStart(3,'0')}</span><h3>${entry.name}</h3><div class="best-pills"><span class="best-pill">${b.type}</span><span class="best-pill">${b.role}</span><span class="best-pill">${requirement}</span><span class="best-pill">Logged</span></div><p>${bestiaryStageDescription(entry.id,entry.stage)}</p></div></div><div class="stat-grid dex-stat-grid"><div><span>Power</span><b>${stats.power}/${stats.cap}</b></div><div><span>Speed</span><b>${stats.speed}/${stats.cap}</b></div><div><span>Range</span><b>${stats.range}/${stats.cap}</b></div><div><span>Special</span><b>${stats.special}/${stats.cap}</b></div></div><div class="best-section"><b>Evolution record</b><p>${entry.stage===1?`${entry.name} is the first known form of this species.`:`${entry.name} evolves from ${prev}.`}</p></div>`;
+    }
+
+    const close=detail.querySelector('.best-detail-close');
+    if(close)close.onclick=()=>{bestiarySelected=null;renderBestiary()};
+  }else if(bestiaryTab==='enemies'){
+    filters.innerHTML='';list.innerHTML='';
+    bestiaryEnemies.forEach((e,i)=>{
+      const row=document.createElement('button');
+      row.className='best-row'+(bestiarySelected===i?' active':'');
+      row.innerHTML=`<img src="${e.sprite}" alt="${e.name}"><div><h4>${e.name}</h4><small>${e.kind}</small></div><span class="tag">Enemy</span>`;
+      row.onclick=()=>{bestiarySelected=i;renderBestiary()};
+      list.appendChild(row);
+    });
+    if(typeof bestiarySelected!=='number')bestiarySelected=0;
+    const e=bestiaryEnemies[bestiarySelected]||bestiaryEnemies[0];
+    detail.classList.remove('hidden');
+    detail.innerHTML=`<div class="best-hero"><div class="best-portrait"><img src="${e.sprite}" alt="${e.name}"></div><div class="best-detail-title"><h3>${e.name}</h3><div class="best-pills"><span class="best-pill">${e.kind}</span><span class="best-pill">Enemy</span></div><p>${e.text}</p></div></div><div class="best-section"><b>Warden advice</b><p>${e.kind==='Fast'?'Use slows, freezes and good path coverage.':e.kind==='Heavy'?'High damage, poison and boss-style single-target builds work well.':e.kind==='Swarm'?'Splash, chain lightning and rapid attackers are ideal.':e.kind==='Boss'?'Use upgraded beasts and combine damage with control effects.':'A balanced defence handles these reliably.'}</p></div>`;
+  }else{
+    filters.innerHTML='';
+    list.innerHTML='<div class="lore-list">'+bestiaryLore.map(x=>`<div class="lore-card"><h3>${x.title}</h3><p>${x.text}</p></div>`).join('')+'</div>';
+    detail.classList.remove('hidden');
+    detail.innerHTML='<div class="lore-card"><h3>Beastward</h3><p>The world is bound by living magic. Stronger beasts make a brighter tomorrow.</p></div>';
+  }
 }
 document.querySelectorAll('.bestiary-tab').forEach(btn=>btn.onclick=()=>{bestiaryTab=btn.dataset.btab;bestiarySelected=null;renderBestiary()});
 if($('#bestiarySearch'))$('#bestiarySearch').addEventListener('input',()=>{bestiarySelected=null;renderBestiary()});
