@@ -1,4 +1,4 @@
-// Beastward loader v30
+// Beastward loader v31
 (() => {
   const core=document.createElement('script');
   core.src='game-core.js?v=20260909-57';
@@ -7,7 +7,7 @@
     patch.src='range-sprite-patch.js?v=20260909-66';
     patch.onload=()=>{
       const synergy=document.createElement('script');
-      synergy.src='synergy-patch.js?v=20260909-67';
+      synergy.src='synergy-patch.js?v=20260909-68';
       document.head.appendChild(synergy);
     };
     document.head.appendChild(patch);
