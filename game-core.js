@@ -159,25 +159,80 @@ function renderStarters(){
     w.appendChild(el);
   });
 }
+let denSelected=null;
 function renderCollection(){
-  const w=$('#beastCollection');w.innerHTML='';
+  const w=$('#beastCollection');if(!w)return;
+  w.innerHTML='';
   const countEl=$('#denCollectedCount');if(countEl)countEl.textContent=save.unlocked.length;
   save.unlocked.forEach(id=>{
-    const b=beasts[id],p=progress(id),need=xpNeeded(p.level),a=ascension(id),needCopies=ascensionNeed(id),held=copies(id);
-    const ascendLabel=a>=3?'MAX ASCENSION':`Ascend to ★${a+1} • ${held}/${needCopies} copies`;
-    w.insertAdjacentHTML('beforeend',`<div class="beast-card">
-      <div class="beast-card-top"><div class="sprite-wrap">${stageSpriteMarkup(id)}</div><div class="ascension-stars">${'★'.repeat(a)}${'☆'.repeat(3-a)}</div></div>
-      <h3>${nameFor(id)}</h3><div class="beast-meta">${b.type} • ${b.role}</div>
-      <p>Level ${p.level}/30</p>
-      <div class="xpbar"><div style="width:${p.level>=30?100:Math.min(100,p.xp/need*100)}%"></div></div>
-      <div class="tiny">${p.level>=30?'MAX LEVEL':p.xp+' / '+need+' XP'} • Combat bonus +${Math.round((levelMultiplier(id)-1)*100)}%</div>
-      <div class="tiny">Lv15 ${b.evo20} • Lv30 ${b.evo30}</div>
-      ${statBars(id)}
-      <div class="ascend-box"><div><b>Ascension ${a}/3</b><small>${a>=3?'Fully ascended':'Duplicate copies are used here — not Essence.'}</small></div>
-      <button class="ascend-btn" data-ascend="${id}" ${a>=3||held<needCopies?'disabled':''}>${ascendLabel}</button></div>
-    </div>`);
+    const b=beasts[id],p=progress(id),a=ascension(id);
+    const card=document.createElement('button');
+    card.className='beast-pc-slot';
+    card.dataset.beast=id;
+    card.innerHTML=`
+      <div class="beast-pc-sprite">${stageSpriteMarkup(id,evolutionStage(id),'pc-sprite')}</div>
+      <b>${nameFor(id)}</b>
+      <span>Lv ${p.level}</span>
+      <small>${b.type} • ${'★'.repeat(a)}${'☆'.repeat(3-a)}</small>
+    `;
+    card.onclick=()=>openDenBeast(id);
+    w.appendChild(card);
   });
-  document.querySelectorAll('[data-ascend]').forEach(btn=>btn.onclick=()=>ascendBeast(btn.dataset.ascend));
+}
+function openDenBeast(id){
+  const modal=$('#denBeastModal'),body=$('#denBeastModalBody');
+  if(!modal||!body||!beasts[id])return;
+  denSelected=id;
+  const b=beasts[id],p=progress(id),need=xpNeeded(p.level),a=ascension(id),held=copies(id),needCopies=ascensionNeed(id);
+  const stats=stageStats(id),combat=battleStats(id);
+  const ascendLabel=a>=3?'MAX ASCENSION':`Ascend to ★${a+1} • ${held}/${needCopies} copies`;
+  const xpText=p.level>=30?'MAX LEVEL':`${p.xp} / ${need} XP`;
+  body.innerHTML=`
+    <div class="den-detail-head">
+      <div class="den-detail-portrait">${stageSpriteMarkup(id,evolutionStage(id),'den-detail-sprite')}</div>
+      <div class="den-detail-copy">
+        <span class="den-detail-kicker">BONDED BEAST</span>
+        <h2>${nameFor(id)}</h2>
+        <div class="den-detail-pills"><span>${b.type}</span><span>${b.role}</span><span>Level ${p.level}/30</span><span>Ascension ${a}/3</span></div>
+        <p>${beastLore(id)[1]}</p>
+      </div>
+    </div>
+    <div class="den-xp-wrap">
+      <div class="den-xp-row"><b>Beast XP</b><span>${xpText}</span></div>
+      <div class="xpbar den-xpbar"><div style="width:${p.level>=30?100:Math.min(100,p.xp/need*100)}%"></div></div>
+    </div>
+    <div class="den-stat-grid">
+      <div><small>POWER</small><b>${stats.power}/${stats.cap}</b></div>
+      <div><small>SPEED</small><b>${stats.speed}/${stats.cap}</b></div>
+      <div><small>RANGE</small><b>${stats.range}/${stats.cap}</b></div>
+      <div><small>SPECIAL</small><b>${stats.special}/${stats.cap}</b></div>
+    </div>
+    <div class="den-combat-grid">
+      <div><small>ATTACK</small><b>${Math.round(combat.damage)}</b></div>
+      <div><small>ATTACK RATE</small><b>${combat.rate.toFixed(2)}s</b></div>
+      <div><small>COMBAT RANGE</small><b>${Math.round(combat.range)}</b></div>
+      <div><small>COMBAT BONUS</small><b>+${Math.round((levelMultiplier(id)-1)*100)}%</b></div>
+    </div>
+    <div class="den-evolution-section">
+      <b>Evolution Line</b>
+      <div class="den-evo-line">
+        <div>${stageSpriteMarkup(id,1,'den-evo-sprite')}<small>Lv 1</small><b>${b.name}</b></div>
+        <div>${stageSpriteMarkup(id,2,'den-evo-sprite')}<small>Lv 15</small><b>${b.evo20}</b></div>
+        <div>${stageSpriteMarkup(id,3,'den-evo-sprite')}<small>Lv 30</small><b>${b.evo30}</b></div>
+      </div>
+    </div>
+    <div class="den-ascend-panel">
+      <div><b>Ascension ${a}/3</b><small>${a>=3?'Fully ascended':'Duplicate copies strengthen this beast.'}</small></div>
+      <button id="denAscendBtn" class="ascend-btn" ${a>=3||held<needCopies?'disabled':''}>${ascendLabel}</button>
+    </div>
+  `;
+  const ascendBtn=$('#denAscendBtn');
+  if(ascendBtn)ascendBtn.onclick=()=>{ascendBeast(id);openDenBeast(id)};
+  modal.classList.remove('hidden');
+}
+function closeDenBeast(){
+  denSelected=null;
+  const modal=$('#denBeastModal');if(modal)modal.classList.add('hidden');
 }
 function ascendBeast(id){
   const a=ascension(id),need=ascensionNeed(id);if(a>=3||copies(id)<need)return;
@@ -239,7 +294,9 @@ $('#titleSaveSlotsBtn').onclick=()=>openSaveSelect('hub');
 $('#titleSettingsBtn').onclick=()=>show('settingsScreen');
 $('#switchSaveBtn').onclick=()=>openSaveSelect('hub');
 $('#campaignBtn').onclick=()=>{renderCampaignMap();show('campaignScreen')};
-$('#beastsBtn').onclick=()=>{renderCollection();show('beastsScreen')};
+$('#beastsBtn').onclick=()=>{renderCollection();show('beastsScreen')}
+if($('#denBeastClose'))$('#denBeastClose').onclick=()=>closeDenBeast();
+if($('#denBeastModal'))$('#denBeastModal').addEventListener('pointerdown',e=>{if(e.target.classList.contains('den-beast-backdrop'))closeDenBeast()});;
 $('#hatcheryBtn').onclick=()=>show('hatcheryScreen');
 $('#bestiaryBtn').onclick=()=>{renderBestiary();show('bestiaryScreen')};
 $('#hubSettingsBtn').onclick=()=>show('settingsScreen');
