@@ -554,3 +554,10 @@ radial-gradient(ellipse at 82% 57%,#193722 0 6%,transparent 7%);opacity:.75}
   .map-node-copy>span{font-size:10px}
   .map-node-copy>small{font-size:9px}
 }
+
+/* ===== Battle strategy controls v36 ===== */
+.targeting-box{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0 4px;padding:10px 12px;border:1px solid #526a57;border-radius:12px;background:#0f1d16}
+.targeting-box label{font-size:10px;font-weight:900;letter-spacing:.12em;color:#d9c56f}
+.targeting-box select{min-width:135px;padding:8px 10px;border-radius:9px;border:1px solid #73806a;background:#17281e;color:#f1eee2;font-weight:800}
+.next-wave-strip{flex-wrap:wrap}
+.next-wave-strip #nextWaveInfo{font-weight:700;line-height:1.3}
