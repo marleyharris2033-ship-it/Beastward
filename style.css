@@ -789,3 +789,36 @@ radial-gradient(ellipse at 82% 57%,#193722 0 6%,transparent 7%);opacity:.75}
   .campaign-mode-bar>small{text-align:center}
   .battle-mode-badge{font-size:8px;padding:4px 6px}
 }
+
+/* ===== Upgrade popup spacing + Hard Mode 2x v50 ===== */
+#selectedTowerModal .tower-modal-close{
+  top:12px;
+  right:14px;
+  width:42px;
+  height:42px;
+}
+#selectedTowerModal .selected-tower-head{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:10px;
+  padding-right:58px;
+  padding-bottom:4px;
+}
+#selectedTowerModal .sell-btn.compact{
+  position:static;
+  justify-self:start;
+  min-width:128px;
+  margin-top:2px;
+}
+@media(max-width:700px){
+  #selectedTowerModal .tower-modal-close{
+    top:12px;
+    right:14px;
+  }
+  #selectedTowerModal .selected-tower-head{
+    padding-right:58px;
+  }
+  #selectedTowerModal .sell-btn.compact{
+    min-width:132px;
+  }
+}
