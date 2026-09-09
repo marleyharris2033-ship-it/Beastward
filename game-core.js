@@ -780,7 +780,7 @@ function renderCampaignMap(){
  const meta=worldMeta[campaignWorld],hard=campaignMode==='hard',completed=hard?save.hardCompletedLevels:save.completedLevels;
  const world1Btn=$('#campaignWorld1Btn'),world2Btn=$('#campaignWorld2Btn');
  if(world1Btn)world1Btn.classList.toggle('active',campaignWorld===1);
- if(world2Btn){world2Btn.disabled=!worldUnlocked(2);world2Btn.classList.toggle('active',campaignWorld===2);world2Btn.textContent=worldUnlocked(2)?'WORLD 2 • FROSTFALL':'WORLD 2 • LOCKED'}
+ if(world2Btn){world2Btn.disabled=!worldUnlocked(2);world2Btn.classList.toggle('active',campaignWorld===2);world2Btn.textContent=worldUnlocked(2)?'REGION 2 • FROSTFALL':'REGION 2 • LOCKED'}
  const title=$('#campaignWorldTitle'),sub=$('#campaignWorldSubtitle'),region=$('#campaignRegionLabel');
  if(title)title.textContent=meta.name;if(sub)sub.textContent=meta.subtitle;if(region)region.textContent=meta.label;
  const normalBtn=$('#campaignNormalBtn'),hardBtn=$('#campaignHardBtn'),hint=$('#campaignModeHint');
@@ -1428,19 +1428,19 @@ function update(dt){
   }
 }
 let pendingBossEggReward=null;
-function rollRewardEgg(pool){
+function rollRewardEgg(pool,tier='Common'){
   const id=pool[Math.floor(Math.random()*pool.length)],isNew=!save.unlocked.includes(id);
   if(isNew)addBeast(id);else save.beastCopies[id]=(save.beastCopies[id]||0)+1;
-  return {id,isNew};
+  return {id,isNew,tier};
 }
 function showBossEggReward(result){
   if(!result)return;
-  const {id,isNew}=result,b=beasts[id];
-  $('#eggResultTitle').textContent='Boss Reward • Common Egg';
+  const {id,isNew,tier='Common'}=result,b=beasts[id];
+  $('#eggResultTitle').textContent='Boss Reward • '+tier+' Egg';
   $('#eggResultSprite').src=b.sprite;
   $('#eggResultName').textContent=b.name;
   const a=ascension(id),need=ascensionNeed(id),held=copies(id);
-  $('#eggResultText').textContent=isNew?`${b.name} hatched from Hollowmaw's reward egg and joined your Beast Vault.`:`${b.name} duplicate hatched. You now have ${held}${a<3?'/'+need:''} copies towards the next Ascension.`;
+  $('#eggResultText').textContent=isNew?b.name+' hatched from the regional boss reward egg and joined your Beast Vault.':b.name+' duplicate hatched. You now have '+held+(a<3?'/'+need:'')+' copies towards the next Ascension.';
   $('#eggModal').classList.remove('hidden');
 }
 function finish(win){
@@ -1448,7 +1448,7 @@ function finish(win){
   $('#resultModal').classList.remove('hidden');
   $('#resultTitle').textContent=win?'Victory!':'The Core Has Fallen';
   if(win){
-    const hard=battleMode==='hard';
+    const hard=battleMode==='hard',region=levelWorld(currentLevel),local=localLevelNumber(currentLevel),meta=worldMeta[region];
     const completed=hard?save.hardCompletedLevels:save.completedLevels;
     const replay=completed.includes(currentLevel.id);
     const baseReward=Math.round(currentLevel.reward*(hard?1.75:1));
@@ -1456,11 +1456,21 @@ function finish(win){
     const bossEgg=!hard&&currentLevel.boss&&battleReport.bossDefeated&&!save.bossEggRewards.includes(currentLevel.id);
     save.essence+=reward;
     if(!replay)completed.push(currentLevel.id);
-    if(bossEgg){save.bossEggRewards.push(currentLevel.id);pendingBossEggReward=rollRewardEgg(commonPool)}
+    if(bossEgg){
+      save.bossEggRewards.push(currentLevel.id);
+      const rare=currentLevel.bossReward==='rare';
+      pendingBossEggReward=rollRewardEgg(rare?rarePool:commonPool,rare?'Rare':'Common');
+    }
     save.wardenLevel=Math.max(save.wardenLevel,1+Math.ceil(currentLevel.id/2));persist();
-    const unlockText=replay?'Replay reward • 50% Essence.':currentLevel.id<10?(hard?'Hard 1-'+(currentLevel.id+1)+' unlocked.':'Level 1-'+(currentLevel.id+1)+' unlocked.'):(hard?'Verdant Valley Hard Mode complete!':'Verdant Valley complete! Hard Mode unlocked!');
-    $('#resultText').textContent=`${hard?'HARD • ':''}${currentLevel.name} defended. You earned ${reward} Essence. ${unlockText}${bossEgg?' Boss reward: Common Egg earned!':''}`;
-  }else $('#resultText').textContent=currentLevel.boss&&!battleReport.bossDefeated?'Hollowmaw was not defeated. Rebuild your defence and face the boss again.':'Strengthen your defence and try again.';
+    let unlockText='Replay reward • 50% Essence.';
+    if(!replay){
+      if(local<10)unlockText=(hard?'Hard ':'')+region+'-'+(local+1)+' unlocked.';
+      else if(hard)unlockText=meta.name+' Hard Mode complete!';
+      else if(region===1)unlockText='Verdant Valley complete! Region 2 • Frostfall Expanse unlocked!';
+      else unlockText=meta.name+' complete! Hard Mode unlocked!';
+    }
+    $('#resultText').textContent=(hard?'HARD • ':'')+currentLevel.name+' defended. You earned '+reward+' Essence. '+unlockText+(bossEgg?' Boss reward: '+(currentLevel.bossReward==='rare'?'Rare':'Common')+' Egg earned!':'');
+  }else $('#resultText').textContent=currentLevel.boss&&!battleReport.bossDefeated?bossNameForLevel()+' was not defeated. Rebuild your defence and face the boss again.':'Strengthen your defence and try again.';
 
   const summary=$('#battleSummary');
   if(summary){
