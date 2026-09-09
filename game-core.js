@@ -604,7 +604,7 @@ const levels=[
 let currentLevel=levels[0],path=currentLevel.path;
 let campaignMode='normal',battleMode='normal',pendingMode='normal';
 function hardModeUnlocked(){return save.completedLevels.includes(10)}
-function modeDifficulty(mode=battleMode){return mode==='hard'?1.5:1}
+function modeDifficulty(mode=battleMode){return mode==='hard'?2:1}
 function levelUnlocked(id,mode=campaignMode){
   if(mode==='hard'){
     if(!hardModeUnlocked())return false;
@@ -625,9 +625,9 @@ function renderCampaignMap(){
  if(hardBtn){
    hardBtn.disabled=!hardModeUnlocked();
    hardBtn.classList.toggle('active',hard);
-   hardBtn.textContent=hardModeUnlocked()?'HARD • 1.5×':'HARD • LOCKED';
+   hardBtn.textContent=hardModeUnlocked()?'HARD • 2×':'HARD • LOCKED';
  }
- if(hint)hint.textContent=hard?'Enemies have 1.5× health. Hard Mode has its own stage progression.':hardModeUnlocked()?'Hard Mode unlocked — switch modes whenever you are ready.':'Defeat Hollowmaw on 1-10 to unlock Hard Mode.';
+ if(hint)hint.textContent=hard?'Enemies have 2× health and move 12% faster. Hard Mode has its own stage progression.':hardModeUnlocked()?'Hard Mode unlocked — switch modes whenever you are ready.':'Defeat Hollowmaw on 1-10 to unlock Hard Mode.';
  map.classList.toggle('hard-map',hard);
  map.innerHTML='<div class="map-route-line"></div><div class="map-start-label">'+(hard?'VERDANT VALLEY • HARD MODE':'VERDANT VALLEY')+'</div>';
  levels.forEach((lvl,i)=>{
@@ -646,7 +646,7 @@ let pendingLevelId=null,loadoutDraft=[],battleLoadout=[];
 function renderLoadoutPicker(){
   const grid=$('#loadoutGrid'),count=$('#loadoutCount'),start=$('#loadoutStartBtn'),title=$('#loadoutLevelName');
   if(!grid)return;
-  if(title&&pendingLevelId)title.textContent=(pendingMode==='hard'?'HARD • ':'')+'1-'+pendingLevelId+' • '+levels[pendingLevelId-1].name+(pendingMode==='hard'?' • 1.5× enemy health':'');
+  if(title&&pendingLevelId)title.textContent=(pendingMode==='hard'?'HARD • ':'')+'1-'+pendingLevelId+' • '+levels[pendingLevelId-1].name+(pendingMode==='hard'?' • 2× HP • +12% speed':'');
   grid.innerHTML='';
   save.unlocked.forEach(id=>{
     const b=beasts[id],selected=loadoutDraft.includes(id),card=document.createElement('button'),ss=stageStats(id);
@@ -678,7 +678,7 @@ if($('#loadoutModal'))$('#loadoutModal').addEventListener('pointerdown',e=>{if(e
 let towers=[],enemies=[],projectiles=[],effects=[],selectedSpecies=null,selectedTower=null,gold=400,lives=20,wave=0,running=false,last=0,queue=[],speed=1,waveParticipants=new Set();
 let battleReport={kills:0,damageByBeast:{},xpByBeast:{},wavesCleared:0,bossDefeated:false};
 
-function ui(){$('#gold').textContent=Math.floor(gold);$('#lives').textContent=lives;$('#wave').textContent=wave;const badge=$('#battleModeBadge');if(badge){badge.textContent=battleMode==='hard'?'HARD • 1.5× HP':'NORMAL';badge.classList.toggle('hard',battleMode==='hard')}if(selectedTower)renderUpgradeButtons()}
+function ui(){$('#gold').textContent=Math.floor(gold);$('#lives').textContent=lives;$('#wave').textContent=wave;const badge=$('#battleModeBadge');if(badge){badge.textContent=battleMode==='hard'?'HARD • 2× HP':'NORMAL';badge.classList.toggle('hard',battleMode==='hard')}if(selectedTower)renderUpgradeButtons()}
 const upgradeDefs={
  power:[
   {name:'Sharpened Instinct',desc:'+20% damage',mult:.65},
@@ -856,14 +856,14 @@ function updateNextWavePreview(){
   const el=$('#nextWaveInfo');
   if(!el)return;
   if(wave>=10){el.textContent='Final wave complete';return}
-  el.textContent='Next: '+wavePreviewText(wave+1)+(battleMode==='hard'?' • HARD 1.5× HP':'');
+  el.textContent='Next: '+wavePreviewText(wave+1)+(battleMode==='hard'?' • HARD 2× HP • +12% speed':'');
 }
 $('#startWaveBtn').onclick=()=>{
   if(running||wave>=10)return;
   wave++;running=true;waveParticipants=new Set(towers.map(t=>t.b.id));queue=[];
   const difficulty=modeDifficulty();
   const waveHp=(48+wave*16+wave*wave*.7)*currentLevel.hp*difficulty;
-  const waveSpeed=(42+wave*1.6)*currentLevel.speed;
+  const waveSpeed=(42+wave*1.6)*currentLevel.speed*(battleMode==='hard'?1.12:1);
   const spacing=Math.max(390,690-currentLevel.id*18);
 
   if(wave===10&&currentLevel.boss){
@@ -1212,7 +1212,7 @@ function finish(win){
   $('#resultModal').classList.remove('hidden');
   $('#resultTitle').textContent=win?'Victory!':'The Core Has Fallen';
   if(win){
-    const hard=battleMode==='hard',reward=Math.round(currentLevel.reward*(hard?1.5:1));
+    const hard=battleMode==='hard',reward=Math.round(currentLevel.reward*(hard?1.75:1));
     const bossEgg=!hard&&currentLevel.boss&&battleReport.bossDefeated&&!save.bossEggRewards.includes(currentLevel.id);
     save.essence+=reward;
     const completed=hard?save.hardCompletedLevels:save.completedLevels;
