@@ -1,9 +1,9 @@
-// Beastward v30: reliable drag placement + auto-hide range + whole-screen scrollbar
+// Beastward sprite/runtime patch: reliable drag placement + clean Safari-safe fallback art
 (() => {
   const custom = {
-    shadepup:{sprite:'assets/pixel/shadepup.png',tower:'assets/pixel/shadepup_tower.png'},
-    scorchick:{sprite:'assets/pixel/scorchick.png',tower:'assets/pixel/scorchick_tower.png'},
-    voidling:{sprite:'assets/pixel/voidling.png',tower:'assets/pixel/voidling_tower.png'}
+    shadepup:{sprite:'assets/sprites/shadepup.svg',tower:'assets/sprites/shadepup.svg'},
+    scorchick:{sprite:'assets/sprites/scorchick.svg',tower:'assets/sprites/scorchick.svg'},
+    voidling:{sprite:'assets/sprites/voidling.svg',tower:'assets/sprites/voidling.svg'}
   };
 
   Object.entries(custom).forEach(([id,art])=>{
