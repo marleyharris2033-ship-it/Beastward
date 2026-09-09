@@ -463,12 +463,14 @@ const upgradeDefs={
  power:[
   {name:'Sharpened Instinct',desc:'+20% damage',mult:.65},
   {name:'Hunter Reach',desc:'+18% range and +10% damage',mult:1.0},
-  {name:'Apex Force',desc:'+35% damage and empowered projectiles',mult:1.6}
+  {name:'Apex Force',desc:'+35% damage and empowered projectiles',mult:1.6},
+  {name:'Mythic Instinct',desc:'Massive final buff: huge damage and extra reach',mult:3.0}
  ],
  special:[
   {name:'Quickened Spirit',desc:'12% faster attacks',mult:.55},
   {name:'Elemental Mastery',desc:'Stronger elemental status effects',mult:.9},
-  {name:'Primal Surge',desc:'Unlocks a powerful type-specific effect',mult:1.5}
+  {name:'Primal Surge',desc:'Unlocks a powerful type-specific effect',mult:1.5},
+  {name:'Ancestral Awakening',desc:'Massive final buff: far faster attacks and empowered elemental effects',mult:2.8}
  ]
 };
 const beastSkills={
@@ -490,7 +492,7 @@ const beastSkills={
  cindrake:{name:'Meteor Core',desc:['Meteor splash +25%','Burning splash +30%','Cataclysm: enormous blast'],mult:[.7,1.1,1.7]},
  sporeling:{name:'Spore Colony',desc:['Poison duration +30%','Burst spreads farther','Bloom: infected enemies spread poison'],mult:[.65,1.05,1.65]},
  drakeling:{name:'Skybreaker',desc:['Wind pierces +1 target','+15% range','Tempest Lance: tears through groups'],mult:[.65,1.05,1.65]},
- voidling:{name:'Rift Hunger',desc:['Critical chance +15%','Crits splash void damage','Singularity: crits tear nearby enemies'],mult:[.7,1.1,1.7]}
+ voidling:{name:'Rift Hunger',desc:['Critical chance +15%','Crits splash void damage','Singularity: crits tear nearby enemies','Event Horizon: huge crit bursts with wide void splash'],mult:[.7,1.1,1.7,3.06]}
 };
 function upgradeCost(t,path){
  const tier=t[path+'Tier']||0;
@@ -503,9 +505,9 @@ function upgradeCost(t,path){
 }
 function recalcTower(t){
  const base=battleStats(t.b.id),p=t.powerTier||0,s=t.specialTier||0,k=t.skillTier||0,id=t.b.id;
- const powerDamage=[1,1.2,1.32,1.782][p]||1;
- const powerRange=[1,1,1.18,1.18][p]||1;
- const specialRate=[1,.88,.88,.88][s]||1;
+ const powerDamage=[1,1.2,1.32,1.782,2.85][p]||1;
+ const powerRange=[1,1,1.18,1.18,1.36][p]||1;
+ const specialRate=[1,.88,.88,.88,.68][s]||1;
  let skillDamage=1,skillRange=1,skillRate=1;
  if(id==='gustwing'&&k>=2)skillRange*=1.12;
  if(id==='drakeling'&&k>=2)skillRange*=1.15;
@@ -513,6 +515,7 @@ function recalcTower(t){
  if(id==='drizzlet'&&k>=2)skillRate*=.90;
  if(id==='zapmoth'&&k>=2)skillRate*=.90;
  if(id==='mosshell'&&k>=2)skillDamage*=1.08;
+ if(k>=4){skillDamage*=1.35;skillRate*=.82;skillRange*=1.08}
  t.b={...base,damage:base.damage*powerDamage*skillDamage,range:clampCombatRange(base.range*powerRange*skillRange),rate:base.rate*specialRate*skillRate};
 }
 function combatRangeBase(id){
@@ -564,16 +567,16 @@ function renderUpgradeButtons(){
    const tier=selectedTower[path+'Tier']||0,other=path==='power'?'special':'power',otherTier=selectedTower[other+'Tier']||0;
    const btn=$('#'+path+'UpgradeBtn'),desc=$('#'+path+'UpgradeDesc');
    if(!btn||!desc)return;
-   if(tier>=3){btn.textContent='MAX TIER';btn.disabled=true;desc.textContent='Tier III complete.';return}
-   const locked=tier===2&&otherTier>=3,cost=upgradeCost(selectedTower,path),def=upgradeDefs[path][tier];
+   if(tier>=4){btn.textContent='MAX TIER';btn.disabled=true;desc.textContent='Tier IV complete.';return}
+   const locked=tier===3&&otherTier>=4,cost=upgradeCost(selectedTower,path),def=upgradeDefs[path][tier];
    btn.disabled=locked||gold<cost;
-   btn.textContent=locked?'TIER III LOCKED':`Tier ${tier+1} • ${def.name} • ${cost}g`;
-   desc.textContent=locked?'The other core path already claimed Tier III.':def.desc;
+   btn.textContent=locked?'TIER IV LOCKED':`Tier ${tier+1} • ${def.name} • ${cost}g`;
+   desc.textContent=locked?'The other core path already claimed Tier IV.':def.desc;
  });
  const skill=beastSkills[selectedTower.b.id],tier=selectedTower.skillTier||0,btn=$('#skillUpgradeBtn'),desc=$('#skillUpgradeDesc'),title=$('#skillPathName');
  if(title)title.textContent=skill?.name||'Beast Talent';
  if(btn&&desc&&skill){
-   if(tier>=3){btn.textContent='MAX TIER';btn.disabled=true;desc.textContent='Unique talent fully mastered.'}
+   if(tier>=4){btn.textContent='MAX TIER';btn.disabled=true;desc.textContent='Unique talent fully mastered at Tier IV.'}
    else{const cost=upgradeCost(selectedTower,'skill');btn.disabled=gold<cost;btn.textContent=`Tier ${tier+1} • ${cost}g`;desc.textContent=skill.desc[tier]}
  }
 }
@@ -582,8 +585,8 @@ function buyTowerUpgrade(path){
  const tier=selectedTower[path+'Tier']||0;
  if(path!=='skill'){
    const other=path==='power'?'special':'power',otherTier=selectedTower[other+'Tier']||0;
-   if(tier>=3||(tier===2&&otherTier>=3))return;
- }else if(tier>=3)return;
+   if(tier>=4||(tier===3&&otherTier>=4))return;
+ }else if(tier>=4)return;
  const cost=upgradeCost(selectedTower,path);if(gold<cost)return;
  gold-=cost;selectedTower[path+'Tier']=tier+1;selectedTower.spent+=cost;recalcTower(selectedTower);ui();renderSelectedTower();
 }
@@ -736,8 +739,10 @@ function applyBeastTalent(p,t){
  }
 }
 function hitProjectile(p){
-  const mastery=p.specialTier>=2,primal=p.specialTier>=3,apex=p.powerTier>=3,t=p.target;
+  const mastery=p.specialTier>=2,primal=p.specialTier>=3,awakened=p.specialTier>=4,apex=p.powerTier>=3,mythic=p.powerTier>=4,t=p.target;
   let damage=p.damage;
+  if(awakened)damage*=1.35;
+  if(mythic)damage*=1.18;
   let critChance=0,critMult=2;
   if(p.type==='Dark'){
     critChance=(p.beastId==='voidling'?.35:.28)+(mastery?.10:0)+(primal?.17:0);
@@ -807,7 +812,8 @@ function hitProjectile(p){
     fx('light',t.x,t.y,'#fff4a6',{size:primal?90:66});
   }
   applyBeastTalent(p,t);
-  if(apex)fx('apex',t.x,t.y,p.color,{size:58});
+  if(awakened){t.slow=Math.max(t.slow||0,.35);fx('apex',t.x,t.y,p.color,{size:74})}
+  if(apex)fx('apex',t.x,t.y,p.color,{size:mythic?82:58});
 }
 function update(dt){
   if(running&&queue.length){queue.forEach(s=>s.delay-=dt*1000);while(queue[0]&&queue[0].delay<=0)spawn(queue.shift())}
