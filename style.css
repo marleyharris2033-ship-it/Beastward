@@ -371,3 +371,10 @@ radial-gradient(ellipse at 82% 57%,#193722 0 6%,transparent 7%);opacity:.75}
 .evo-line .evo:nth-child(2) .evo-sprite{width:70px;height:70px}
 .evo-line .evo:nth-child(3) .evo-sprite{width:76px;height:76px}
 .evo-line .evo .evo-sprite img{width:100%;height:100%;position:absolute}
+
+/* ===== Unique beast talent path ===== */
+.upgrade-path.talent-path{border-color:#8a6aaa;background:linear-gradient(145deg,#2b2440,#17182a);box-shadow:inset 0 0 18px #8d5fd111}
+.upgrade-path.talent-path .path-icon{background:#3a2b55;border-color:#b38add;color:#e7caff}
+.upgrade-btn.talent{border-color:#a97ad0;background:linear-gradient(#5b3d78,#34254d);color:#f0d7ff}
+.upgrade-btn.talent:not(:disabled){box-shadow:0 0 12px #9f69c322}
+@media(max-width:760px){.tower-panel{max-height:52svh;overflow:auto}}
