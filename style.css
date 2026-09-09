@@ -768,3 +768,24 @@ radial-gradient(ellipse at 82% 57%,#193722 0 6%,transparent 7%);opacity:.75}
   .best-row.bestiary-entry .row-sprite{width:54px;height:54px}
   .best-row.bestiary-entry h4{font-size:16px}
 }
+
+/* ===== Verdant Valley Hard Mode v49 ===== */
+.campaign-mode-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0 16px;padding:10px 12px;border:1px solid #526454;border-radius:13px;background:#101d16}
+.campaign-mode-switch{display:flex;gap:7px}
+.campaign-mode-btn{padding:9px 15px;border-radius:9px;border:1px solid #617161;background:#18271e;color:#b9c4bc;font-weight:900;letter-spacing:.06em}
+.campaign-mode-btn.active{border-color:#d3b457;background:linear-gradient(#345b3d,#1e3b29);color:#ffe693;box-shadow:0 0 0 2px #d3b45722}
+.campaign-mode-btn:disabled{opacity:.42}
+.campaign-mode-bar>small{color:#9fafA4;text-align:right}
+.campaign-map.hard-map{border-color:#9d5567;background:radial-gradient(circle at 78% 18%,#c54a6222 0 12%,transparent 28%),radial-gradient(circle at 25% 72%,#9e466022 0 13%,transparent 30%),linear-gradient(145deg,#4b3038,#302229 45%,#19151a)}
+.hard-map .map-route-line{background:#8f5060!important;box-shadow:0 0 15px #cf637b44}
+.map-node.hard-node.unlocked{border-color:#c76679;background:linear-gradient(#54313b,#2e2026);box-shadow:0 0 0 3px #d85f7822,0 10px 22px #0005}
+.map-node.hard-node.completed{border-color:#dc8b9d}
+.map-node.hard-node .map-node-copy>span{color:#ff9db1}
+.battle-mode-badge{margin-left:auto;padding:4px 8px;border-radius:999px;border:1px solid #647468;background:#18271e;color:#d5ddd8;font-size:9px;letter-spacing:.08em}
+.battle-mode-badge.hard{border-color:#c85f73;background:#3a2028;color:#ffadbd;box-shadow:0 0 12px #c85f7333}
+@media(max-width:760px){
+  .campaign-mode-bar{align-items:stretch;flex-direction:column}
+  .campaign-mode-switch{display:grid;grid-template-columns:1fr 1fr}
+  .campaign-mode-bar>small{text-align:center}
+  .battle-mode-badge{font-size:8px;padding:4px 6px}
+}
