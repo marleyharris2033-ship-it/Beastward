@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#102019"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>Beastward</title><link rel="stylesheet" href="style.css?v=20260909-48"></head><body>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#102019"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>Beastward</title><link rel="stylesheet" href="style.css?v=20260909-49"></head><body>
 <div id="app">
 <section id="titleScreen" class="screen active">
   <div class="title-shell">
@@ -82,6 +82,13 @@
 <section id="campaignScreen" class="screen"><div class="panel wide themed-panel campaign-panel">
   <button class="back" data-back="hubScreen">← Sanctuary</button>
   <div class="campaign-heading"><div><div class="screen-crest mini">✦</div><h2 class="fantasy-heading">Verdant Valley</h2><p class="sub">The first region of Beastward.</p></div><div class="region-progress"><span>REGION I</span><b>Keeper's Path</b></div></div>
+  <div class="campaign-mode-bar">
+    <div class="campaign-mode-switch">
+      <button id="campaignNormalBtn" class="campaign-mode-btn active">NORMAL</button>
+      <button id="campaignHardBtn" class="campaign-mode-btn" disabled>HARD • LOCKED</button>
+    </div>
+    <small id="campaignModeHint">Defeat Hollowmaw on 1-10 to unlock Hard Mode.</small>
+  </div>
   <div class="campaign-map">
     <div class="map-path"></div>
     <button id="level1Btn" class="map-node unlocked" style="--x:18%;--y:72%"><span>1-1</span><b>Keeper's Path</b><small>10 waves</small></button>
@@ -111,7 +118,7 @@
     <button id="startWaveBtn" class="battle-action">START WAVE</button>
     <button id="exitLevelBtn" class="battle-exit">EXIT</button>
   </header>
-  <div class="next-wave-strip"><span>NEXT WAVE</span><div class="enemy-preview"><img src="assets/enemies/forest_raider.svg" alt=""><img src="assets/enemies/ruin_hound.svg" alt=""><img src="assets/enemies/stone_brute.svg" alt=""></div><small id="nextWaveInfo">Next: Forest Raider</small></div>
+  <div class="next-wave-strip"><span>NEXT WAVE</span><b id="battleModeBadge" class="battle-mode-badge">NORMAL</b><div class="enemy-preview"><img src="assets/enemies/forest_raider.svg" alt=""><img src="assets/enemies/ruin_hound.svg" alt=""><img src="assets/enemies/stone_brute.svg" alt=""></div><small id="nextWaveInfo">Next: Forest Raider</small></div>
   <div class="game-layout">
     <div class="battle-board"><canvas id="gameCanvas" width="1000" height="600"></canvas></div>
     <aside class="tower-panel">
@@ -163,4 +170,4 @@
 </div>
 <div id="progressToast" class="progress-toast hidden"><b id="progressToastTitle">BEAST LEVEL UP</b><span id="progressToastText"></span></div><div id="resultModal" class="modal hidden"><div class="modal-card result-report-card"><h2 id="resultTitle"></h2><p id="resultText"></p><div id="battleSummary" class="battle-summary"></div><button id="resultContinue" class="primary">Continue</button></div></div>
 <div id="eggModal" class="modal hidden"><div class="modal-card"><h2 id="eggResultTitle"></h2><img id="eggResultSprite" class="result-sprite"><h3 id="eggResultName"></h3><p id="eggResultText"></p><button id="eggResultContinue" class="primary">Continue</button></div></div>
-</div><script src="game.js?v=20260909-48"></script></body></html>
+</div><script src="game.js?v=20260909-49"></script></body></html>
