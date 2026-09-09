@@ -1,4 +1,4 @@
-// Beastward v29: cleaner drag placement, auto-hide range, touch-friendly scrolling
+// Beastward v30: reliable drag placement + auto-hide range + whole-screen scrollbar
 (() => {
   const custom = {
     shadepup:{sprite:'assets/pixel/shadepup.png',tower:'assets/pixel/shadepup_tower.png'},
@@ -17,7 +17,6 @@
   });
 
   let pointer=null,dragSpecies=null,dragPointerId=null,dragging=false,suppressClick=false;
-  let pending=null,longPressTimer=null;
 
   const canvasPosFromClient=(clientX,clientY)=>{
     const r=canvas.getBoundingClientRect();
@@ -48,14 +47,9 @@
     ctx.restore();
   }
 
-  function clearPending(){
-    if(longPressTimer){clearTimeout(longPressTimer);longPressTimer=null}
-    pending=null;
-  }
-
-  function startDrag(e,el,id){
+  function beginDrag(e,el,id){
     if(gold<beasts[id].cost)return;
-    clearPending();
+    e.preventDefault();
     dragSpecies=id;
     dragPointerId=e.pointerId;
     dragging=true;
@@ -76,7 +70,7 @@
     if(running)waveParticipants.add(id);
     gold-=b.cost;
 
-    // Placement range disappears immediately. Tap the placed beast later to inspect it.
+    // Do not leave the placed beast selected: range disappears immediately.
     selectedTower=null;
     selectedSpecies=null;
     pointer=null;
@@ -91,52 +85,24 @@
       el.dataset.dragReady='1';
       const id=save.unlocked.find(id=>el.textContent.includes(nameFor(id)))||save.unlocked[[...el.parentNode.children].indexOf(el)];
       if(!id)return;
-
       el.onclick=e=>{
         if(suppressClick){e.preventDefault();e.stopPropagation();suppressClick=false}
       };
-
-      el.addEventListener('pointerdown',e=>{
-        if(gold<beasts[id].cost)return;
-        // Mouse/stylus feels best with immediate drag. Touch uses a short hold so swiping
-        // the beast list remains a normal scroll gesture.
-        if(e.pointerType==='mouse'||e.pointerType==='pen'){
-          e.preventDefault();
-          startDrag(e,el,id);
-          return;
-        }
-        clearPending();
-        pending={id,el,pointerId:e.pointerId,startX:e.clientX,startY:e.clientY,lastEvent:e};
-        longPressTimer=setTimeout(()=>{
-          if(!pending||pending.pointerId!==e.pointerId)return;
-          startDrag(pending.lastEvent,pending.el,pending.id);
-        },180);
-      },{passive:false});
+      el.addEventListener('pointerdown',e=>beginDrag(e,el,id),{passive:false});
     });
   }
 
   const originalChoices=choices;
-  choices=function(){
-    originalChoices();
-    installDragHandlers();
-  };
+  choices=function(){originalChoices();installDragHandlers()};
   choices();
 
   document.addEventListener('pointermove',e=>{
-    if(pending&&e.pointerId===pending.pointerId&&!dragging){
-      pending.lastEvent=e;
-      const dx=e.clientX-pending.startX,dy=e.clientY-pending.startY;
-      // A normal swipe cancels the long-press and lets the list scroll freely.
-      if(Math.hypot(dx,dy)>9)clearPending();
-      return;
-    }
     if(!dragging||e.pointerId!==dragPointerId)return;
     e.preventDefault();
     pointer=pointerPos(e);
   },{passive:false});
 
   document.addEventListener('pointerup',e=>{
-    if(pending&&e.pointerId===pending.pointerId){clearPending();return}
     if(!dragging||e.pointerId!==dragPointerId)return;
     e.preventDefault();
     const pos=pointerPos(e),id=dragSpecies;
@@ -147,7 +113,6 @@
   },{passive:false});
 
   document.addEventListener('pointercancel',e=>{
-    if(pending&&e.pointerId===pending.pointerId)clearPending();
     if(e.pointerId!==dragPointerId)return;
     dragging=false;dragSpecies=null;dragPointerId=null;pointer=null;
     document.querySelectorAll('.tower-choice').forEach(x=>x.classList.remove('dragging'));
@@ -160,12 +125,11 @@
   draw=function(){
     baseDraw();
 
-    // Range is shown while actively inspecting an already placed beast.
+    // Range only appears while inspecting a beast or actively dragging one.
     if(selectedTower){
       rangeRing(selectedTower.x,selectedTower.y,selectedTower.b.range,selectedTower.b.color||'#ffe17b',true);
     }
 
-    // While dragging, show the exact final combat range before placement.
     if(dragging&&dragSpecies&&pointer){
       const b=battleStats(dragSpecies);
       const valid=pointer.inside&&placementValid(pointer.x,pointer.y,beasts[dragSpecies]);
@@ -179,4 +143,46 @@
       }
     }
   };
+
+  // Fixed whole-screen scrollbar for the game screen.
+  const rail=document.getElementById('gameScrollRail');
+  const thumb=document.getElementById('gameScrollThumb');
+  if(rail&&thumb){
+    let scrollDragging=false,scrollPointerId=null,startY=0,startScroll=0;
+    const maxScroll=()=>Math.max(0,document.documentElement.scrollHeight-window.innerHeight);
+    const updateThumb=()=>{
+      const total=document.documentElement.scrollHeight,view=window.innerHeight,max=Math.max(1,total-view);
+      const railH=rail.clientHeight||1;
+      const thumbH=Math.max(44,Math.min(railH,railH*(view/Math.max(total,view))));
+      const travel=Math.max(0,railH-thumbH);
+      const ratio=Math.max(0,Math.min(1,window.scrollY/max));
+      thumb.style.height=thumbH+'px';
+      thumb.style.transform='translateY('+(travel*ratio)+'px)';
+      rail.classList.toggle('hidden',maxScroll()<=2);
+    };
+    const max=maxScroll();
+    thumb.addEventListener('pointerdown',e=>{
+      e.preventDefault();scrollDragging=true;scrollPointerId=e.pointerId;startY=e.clientY;startScroll=window.scrollY;
+      try{thumb.setPointerCapture(e.pointerId)}catch(_){}
+    },{passive:false});
+    document.addEventListener('pointermove',e=>{
+      if(!scrollDragging||e.pointerId!==scrollPointerId)return;
+      e.preventDefault();
+      const railH=rail.clientHeight,thumbH=thumb.offsetHeight,travel=Math.max(1,railH-thumbH);
+      const scrollMax=maxScroll();
+      window.scrollTo(0,Math.max(0,Math.min(scrollMax,startScroll+(e.clientY-startY)*(scrollMax/travel))));
+    },{passive:false});
+    document.addEventListener('pointerup',e=>{
+      if(e.pointerId!==scrollPointerId)return;scrollDragging=false;scrollPointerId=null;
+    });
+    rail.addEventListener('pointerdown',e=>{
+      if(e.target===thumb)return;
+      const rect=rail.getBoundingClientRect(),railH=rail.clientHeight,thumbH=thumb.offsetHeight;
+      const ratio=Math.max(0,Math.min(1,(e.clientY-rect.top-thumbH/2)/Math.max(1,railH-thumbH)));
+      window.scrollTo({top:maxScroll()*ratio,behavior:'smooth'});
+    });
+    window.addEventListener('scroll',updateThumb,{passive:true});
+    window.addEventListener('resize',updateThumb);
+    setTimeout(updateThumb,80);
+  }
 })();
