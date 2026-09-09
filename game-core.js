@@ -360,7 +360,7 @@ const bestiaryLore=[
  {title:'The Beast Core',text:'Ancient living crystal that anchors a Sanctuary. If it falls, the surrounding wilds become vulnerable to corruption.'},
  {title:'Essence',text:'A concentrated form of wild energy earned by defending the Core. Wardens use Essence to hatch new beasts.'},
  {title:'Beastwardens',text:'Protectors who bond with beasts, train them through battle and guide them through evolution.'},
- {title:'Evolution',text:'Every beast can evolve at Level 15 and again at Level 30, gaining greater strength as its bond with the Warden deepens.'}
+ {title:'Evolution',text:'Every beast can evolve at Level 30 and again at Level 60, with a maximum Beast Level of 100.'}
 ];
 const enemyTypes={
  raider:{id:'raider',name:'Forest Raider',kind:'Common',hp:1,speed:1,reward:1,size:18,sprite:'assets/enemies/forest_raider.svg',text:'The standard Verdant Valley invader. Balanced health and speed.'},
