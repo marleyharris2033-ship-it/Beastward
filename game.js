@@ -1,4 +1,4 @@
-// Beastward loader v35
+// BeastBorn loader v36
 (() => {
   const core=document.createElement('script');
   core.src='game-core.js?v=20260909-57';
@@ -11,6 +11,11 @@
       synergy.onload=()=>{
         const progression=document.createElement('script');
         progression.src='progression-patch-v4.js?v=20260909-72';
+        progression.onload=()=>{
+          const brand=document.createElement('script');
+          brand.src='brand-patch.js?v=20260909-73';
+          document.head.appendChild(brand);
+        };
         document.head.appendChild(progression);
       };
       document.head.appendChild(synergy);
