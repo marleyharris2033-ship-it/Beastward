@@ -538,10 +538,22 @@ function choices(){
     w.appendChild(el);
   });
 }
+function closeTowerModal(){
+  const modal=$('#selectedTowerModal');
+  if(modal)modal.classList.add('hidden');
+  const p=$('#selectedTowerPanel');if(p)p.classList.add('hidden');
+  selectedTower=null;
+}
 function renderSelectedTower(){
-  const p=$('#selectedTowerPanel');
-  if(!selectedTower||!towers.includes(selectedTower)){selectedTower=null;p.classList.add('hidden');return}
-  p.classList.remove('hidden');
+  const p=$('#selectedTowerPanel'),modal=$('#selectedTowerModal');
+  if(!selectedTower||!towers.includes(selectedTower)){
+    selectedTower=null;
+    if(p)p.classList.add('hidden');
+    if(modal)modal.classList.add('hidden');
+    return;
+  }
+  if(p)p.classList.remove('hidden');
+  if(modal)modal.classList.remove('hidden');
   $('#selectedTowerName').textContent=nameFor(selectedTower.b.id);
   $('#selectedTowerStats').innerHTML=`Level ${progress(selectedTower.b.id).level} • ★${ascension(selectedTower.b.id)} • Range ${Math.round(selectedTower.b.range)} • Sell ${Math.floor(selectedTower.spent*.8)} gold`+statBars(selectedTower.b.id);
   renderUpgradeButtons();
@@ -578,6 +590,12 @@ function buyTowerUpgrade(path){
 $('#powerUpgradeBtn').onclick=()=>buyTowerUpgrade('power');
 $('#specialUpgradeBtn').onclick=()=>buyTowerUpgrade('special');
 $('#skillUpgradeBtn').onclick=()=>buyTowerUpgrade('skill');
+if($('#closeTowerModalBtn'))$('#closeTowerModalBtn').onclick=()=>closeTowerModal();
+if($('#selectedTowerModal')){
+  $('#selectedTowerModal').addEventListener('pointerdown',e=>{
+    if(e.target.classList.contains('tower-modal-backdrop'))closeTowerModal();
+  });
+}
 function reset(){
   towers=[];enemies=[];projectiles=[];effects=[];selectedSpecies=null;selectedTower=null;gold=400;lives=20;wave=0;running=false;queue=[];speed=1;waveParticipants=new Set();
   document.querySelectorAll('.speed-choice').forEach(b=>b.classList.toggle('active',Number(b.dataset.speed)===1));$('#waveXpNotice').textContent='';ui();choices();renderSelectedTower();updateNextWavePreview();
@@ -625,7 +643,7 @@ $('#sellTowerBtn').onclick=()=>{
   if(!selectedTower)return;
   const idx=towers.indexOf(selectedTower);if(idx<0)return;
   const refund=Math.floor(selectedTower.spent*.8);
-  gold+=refund;towers.splice(idx,1);selectedTower=null;renderSelectedTower();ui();
+  gold+=refund;towers.splice(idx,1);closeTowerModal();ui();
 };
 
 canvas.addEventListener('pointerdown',e=>{
