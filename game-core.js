@@ -52,7 +52,7 @@ voidling:{power:10,speed:8,range:8,special:10}
 };
 function evolutionStage(id){
   const l=progress(id).level;
-  return l>=30?3:l>=15?2:1;
+  return l>=SECOND_EVOLUTION_LEVEL?3:l>=FIRST_EVOLUTION_LEVEL?2:1;
 }
 function stageStatsAt(id,stage){
   const base=beastRatings[id],cap=stage*10;
@@ -119,12 +119,26 @@ document.addEventListener('error',e=>{
   }
 },true);
 
+const BEAST_LEVEL_CAP=100;
+const FIRST_EVOLUTION_LEVEL=30;
+const SECOND_EVOLUTION_LEVEL=60;
+
 function blankSave(){return {starter:null,essence:0,wardenLevel:1,unlocked:[],freeCommonClaimed:false,beastProgress:{},beastCopies:{},ascensions:{},completedLevels:[],hardCompletedLevels:[],bossEggRewards:[],seenBeastStages:[],lastLoadout:[],createdAt:Date.now(),lastPlayed:Date.now()}}
 function normaliseSave(s){
   s=s||blankSave();s.unlocked=s.unlocked||[];s.beastProgress=s.beastProgress||{};s.beastCopies=s.beastCopies||{};s.ascensions=s.ascensions||{};s.completedLevels=s.completedLevels||[];s.hardCompletedLevels=s.hardCompletedLevels||[];s.bossEggRewards=s.bossEggRewards||[];s.seenBeastStages=s.seenBeastStages||[];
   s.unlocked.forEach(id=>{
+    const p=s.beastProgress[id]||(s.beastProgress[id]={level:1,xp:0});
+    p.level=Math.max(1,Math.min(BEAST_LEVEL_CAP,p.level||1));
+    if(p.level>=BEAST_LEVEL_CAP)p.xp=0;
+  });
+  s.seenBeastStages=s.seenBeastStages.filter(key=>{
+    const cut=key.lastIndexOf(':'),id=key.slice(0,cut),stage=Number(key.slice(cut+1)),level=s.beastProgress[id]?.level||1;
+    if(!s.unlocked.includes(id))return false;
+    return stage===1||(stage===2&&level>=FIRST_EVOLUTION_LEVEL)||(stage===3&&level>=SECOND_EVOLUTION_LEVEL);
+  });
+  s.unlocked.forEach(id=>{
     const level=s.beastProgress[id]?.level||1;
-    [1,...(level>=15?[2]:[]),...(level>=30?[3]:[])].forEach(stage=>{const key=id+':'+stage;if(!s.seenBeastStages.includes(key))s.seenBeastStages.push(key)});
+    [1,...(level>=FIRST_EVOLUTION_LEVEL?[2]:[]),...(level>=SECOND_EVOLUTION_LEVEL?[3]:[])].forEach(stage=>{const key=id+':'+stage;if(!s.seenBeastStages.includes(key))s.seenBeastStages.push(key)});
   });
   s.lastLoadout=(s.lastLoadout||[]).filter(id=>s.unlocked.includes(id)).slice(0,4);if(s.freeCommonClaimed===undefined)s.freeCommonClaimed=false;if(!s.wardenLevel)s.wardenLevel=1;if(s.essence===undefined)s.essence=0;return s
 }
@@ -136,21 +150,35 @@ let activeSlot=Number(localStorage.getItem('beastward-active-slot')||'0');
 let save=activeSlot?normaliseSave(JSON.parse(localStorage.getItem('beastward-save-'+activeSlot)||'null')):blankSave();
 let pendingSaveTarget='hub';
 
-function xpNeeded(level){return 60+(level-1)*15}
+function xpNeeded(level){
+  // Designed around roughly ten regions of Verdant-Valley-sized XP.
+  // Early levels stay quick, then the curve settles so Lv30 / Lv60 / Lv100 remain meaningful milestones.
+  if(level<20)return 60+(level-1)*15;
+  if(level<30)return 330+(level-20)*2;
+  if(level<60)return 350+(level-30);
+  return 390+Math.floor((level-60)/5)*5;
+}
 function progress(id){return save.beastProgress[id]||(save.beastProgress[id]={level:1,xp:0})}
 function beastStageKey(id,stage){return id+':'+stage}
 function stageSeen(id,stage){return (save.seenBeastStages||[]).includes(beastStageKey(id,stage))}
 function markStageSeen(id,stage){save.seenBeastStages=save.seenBeastStages||[];const key=beastStageKey(id,stage);if(!save.seenBeastStages.includes(key))save.seenBeastStages.push(key)}
-function syncSeenStages(id){const l=progress(id).level;markStageSeen(id,1);if(l>=15)markStageSeen(id,2);if(l>=30)markStageSeen(id,3)}
+function syncSeenStages(id){const l=progress(id).level;markStageSeen(id,1);if(l>=FIRST_EVOLUTION_LEVEL)markStageSeen(id,2);if(l>=SECOND_EVOLUTION_LEVEL)markStageSeen(id,3)}
 function addBeast(id){if(!save.unlocked.includes(id))save.unlocked.push(id);progress(id);markStageSeen(id,1)}
-function nameFor(id){const b=beasts[id],l=progress(id).level;return l>=30?b.evo30:l>=15?b.evo20:b.name}
+function nameFor(id){const b=beasts[id],l=progress(id).level;return l>=SECOND_EVOLUTION_LEVEL?b.evo30:l>=FIRST_EVOLUTION_LEVEL?b.evo20:b.name}
 function ascension(id){return save.ascensions[id]||0}
 function copies(id){return save.beastCopies[id]||0}
 function ascensionNeed(id){return [2,5,10][ascension(id)]||null}
-function levelMultiplier(id){const l=progress(id).level,a=ascension(id);return (1+(l-1)*.03+(l>=15?.15:0)+(l>=30?.2:0))*(1+a*.08)}
+function levelMultiplier(id){
+  const l=progress(id).level,a=ascension(id);
+  const early=Math.min(l-1,29)*.038;
+  const mid=Math.max(0,Math.min(l-30,30))*.012;
+  const late=Math.max(0,l-60)*.01;
+  const evolutionBonus=(l>=FIRST_EVOLUTION_LEVEL?.15:0)+(l>=SECOND_EVOLUTION_LEVEL?.20:0);
+  return (1+early+mid+late+evolutionBonus)*(1+a*.08);
+}
 function rangeMultiplier(id){
   // Range grows gently across levels so evolution never makes the battlefield trivial.
-  // Lv30 adds ~4.4%, each Ascension adds 1%, and evolution adds a modest 4% / 8%.
+  // Levels add gentle range growth through Lv100; Ascension adds 1%, and evolutions add a modest 4% / 8%.
   const level=progress(id).level,stage=evolutionStage(id);
   const levelGrowth=1+(level-1)*.0015;
   const ascensionGrowth=1+ascension(id)*.01;
@@ -203,20 +231,20 @@ function openDenBeast(id){
   const b=beasts[id],p=progress(id),need=xpNeeded(p.level),a=ascension(id),held=copies(id),needCopies=ascensionNeed(id);
   const stats=stageStats(id),combat=battleStats(id);
   const ascendLabel=a>=3?'MAX ASCENSION':`Ascend to ★${a+1} • ${held}/${needCopies} copies`;
-  const xpText=p.level>=30?'MAX LEVEL':`${p.xp} / ${need} XP`;
+  const xpText=p.level>=BEAST_LEVEL_CAP?'MAX LEVEL':`${p.xp} / ${need} XP`;
   body.innerHTML=`
     <div class="den-detail-head">
       <div class="den-detail-portrait">${stageSpriteMarkup(id,evolutionStage(id),'den-detail-sprite')}</div>
       <div class="den-detail-copy">
         <span class="den-detail-kicker">BONDED BEAST</span>
         <h2>${nameFor(id)}</h2>
-        <div class="den-detail-pills"><span>${b.type}</span><span>${b.role}</span><span>Level ${p.level}/30</span><span>Ascension ${a}/3</span></div>
+        <div class="den-detail-pills"><span>${b.type}</span><span>${b.role}</span><span>Level ${p.level}/${BEAST_LEVEL_CAP}</span><span>Ascension ${a}/3</span></div>
         <p>${beastLore(id)[1]}</p>
       </div>
     </div>
     <div class="den-xp-wrap">
       <div class="den-xp-row"><b>Beast XP</b><span>${xpText}</span></div>
-      <div class="xpbar den-xpbar"><div style="width:${p.level>=30?100:Math.min(100,p.xp/need*100)}%"></div></div>
+      <div class="xpbar den-xpbar"><div style="width:${p.level>=BEAST_LEVEL_CAP?100:Math.min(100,p.xp/need*100)}%"></div></div>
     </div>
     <div class="den-stat-grid">
       <div><small>POWER</small><b>${stats.power}/${stats.cap}</b></div>
@@ -234,8 +262,8 @@ function openDenBeast(id){
       <b>Evolution Line</b>
       <div class="den-evo-line">
         <div>${stageSpriteMarkup(id,1,'den-evo-sprite')}<small>Lv 1</small><b>${b.name}</b></div>
-        <div>${stageSpriteMarkup(id,2,'den-evo-sprite')}<small>Lv 15</small><b>${b.evo20}</b></div>
-        <div>${stageSpriteMarkup(id,3,'den-evo-sprite')}<small>Lv 30</small><b>${b.evo30}</b></div>
+        <div>${stageSpriteMarkup(id,2,'den-evo-sprite')}<small>Lv ${FIRST_EVOLUTION_LEVEL}</small><b>${b.evo20}</b></div>
+        <div>${stageSpriteMarkup(id,3,'den-evo-sprite')}<small>Lv ${SECOND_EVOLUTION_LEVEL}</small><b>${b.evo30}</b></div>
       </div>
     </div>
     <div class="den-ascend-panel">
@@ -383,8 +411,8 @@ function bestiaryBeastEntries(){
 function bestiaryStageDescription(id,stage){
   const b=beasts[id],base=beastLore(id);
   if(stage===1)return base[1];
-  if(stage===2)return `${b.evo20} is ${b.name}'s first evolved form, reached at Level 15. Its ${b.type.toLowerCase()} abilities become more developed and its body changes into a stronger form.`;
-  return `${b.evo30} is the fully evolved form of ${b.name}, reached at Level 30. It is the strongest known expression of this beast's ${b.type.toLowerCase()} bond.`;
+  if(stage===2)return `${b.evo20} is ${b.name}'s first evolved form, reached at Level ${FIRST_EVOLUTION_LEVEL}. Its ${b.type.toLowerCase()} abilities become more developed and its body changes into a stronger form.`;
+  return `${b.evo30} is the fully evolved form of ${b.name}, reached at Level ${SECOND_EVOLUTION_LEVEL}. It is the strongest known expression of this beast's ${b.type.toLowerCase()} bond.`;
 }
 function renderBestiary(){
   const list=$('#bestiaryList'),detail=$('#bestiaryDetail'),filters=$('#bestiaryFilters'),search=$('#bestiarySearch');
@@ -442,7 +470,7 @@ function renderBestiary(){
       detail.innerHTML=`<button class="best-detail-close" type="button" aria-label="Close entry">×</button><div class="best-hero undiscovered-entry"><div class="best-portrait silhouette-portrait">${stageSpriteMarkup(entry.id,entry.stage,'portrait-sprite',true)}</div><div class="best-detail-title"><span class="dex-number">#${String(entry.number).padStart(3,'0')}</span><h3>Undiscovered</h3><div class="best-pills"><span class="best-pill">No data recorded</span></div><p>This Beastiary entry has not been encountered yet. Hatch and train this species to reveal the form permanently.</p></div></div>`;
     }else{
       const b=beasts[entry.id],stats=stageStatsAt(entry.id,entry.stage);
-      const requirement=entry.stage===1?'Base form':entry.stage===2?'Evolves at Level 15':'Evolves at Level 30';
+      const requirement=entry.stage===1?'Base form':entry.stage===2?`Evolves at Level ${FIRST_EVOLUTION_LEVEL}`:`Evolves at Level ${SECOND_EVOLUTION_LEVEL}`;
       const prev=entry.stage===1?null:nameForStage(entry.id,entry.stage-1);
       detail.innerHTML=`<button class="best-detail-close" type="button" aria-label="Close entry">×</button><div class="best-hero"><div class="best-portrait">${stageSpriteMarkup(entry.id,entry.stage,'portrait-sprite')}</div><div class="best-detail-title"><span class="dex-number">#${String(entry.number).padStart(3,'0')}</span><h3>${entry.name}</h3><div class="best-pills"><span class="best-pill">${b.type}</span><span class="best-pill">${b.role}</span><span class="best-pill">${requirement}</span><span class="best-pill">Logged</span></div><p>${bestiaryStageDescription(entry.id,entry.stage)}</p></div></div><div class="stat-grid dex-stat-grid"><div><span>Power</span><b>${stats.power}/${stats.cap}</b></div><div><span>Speed</span><b>${stats.speed}/${stats.cap}</b></div><div><span>Range</span><b>${stats.range}/${stats.cap}</b></div><div><span>Special</span><b>${stats.special}/${stats.cap}</b></div></div><div class="best-section"><b>Evolution record</b><p>${entry.stage===1?`${entry.name} is the first known form of this species.`:`${entry.name} evolves from ${prev}.`}</p></div>`;
     }
@@ -1044,13 +1072,13 @@ function attack(t,dt){
 function addXP(ids,amount){
   const levelUps=[];
   ids.forEach(id=>{
-    const p=progress(id);if(p.level>=30){syncSeenStages(id);return}
+    const p=progress(id);if(p.level>=BEAST_LEVEL_CAP){syncSeenStages(id);return}
     p.xp+=amount;
-    while(p.level<30&&p.xp>=xpNeeded(p.level)){
+    while(p.level<BEAST_LEVEL_CAP&&p.xp>=xpNeeded(p.level)){
       p.xp-=xpNeeded(p.level);p.level++;syncSeenStages(id);levelUps.push(nameFor(id)+' reached Level '+p.level);
     }
     syncSeenStages(id);
-    if(p.level>=30)p.xp=0;
+    if(p.level>=BEAST_LEVEL_CAP)p.xp=0;
   });
   persist();
   return levelUps;
@@ -1071,7 +1099,7 @@ function completeWave(){
   const ups=addXP(waveParticipants,amount);
   $('#waveXpNotice').textContent=`Wave ${wave} clear • +${amount} XP • +${bonus} gold`;
   if(ups.length){
-    const evolution=ups.find(x=>x.includes('Level 15')||x.includes('Level 30'));
+    const evolution=ups.find(x=>x.includes('Level '+FIRST_EVOLUTION_LEVEL)||x.includes('Level '+SECOND_EVOLUTION_LEVEL));
     showProgressToast(evolution?'EVOLUTION READY':'BEAST LEVEL UP',ups.join(' • '),evolution?'evolution':'levelup');
   }
   setTimeout(()=>{if($('#waveXpNotice'))$('#waveXpNotice').textContent=''},1800);
