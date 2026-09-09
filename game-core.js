@@ -119,9 +119,9 @@ document.addEventListener('error',e=>{
   }
 },true);
 
-function blankSave(){return {starter:null,essence:0,wardenLevel:1,unlocked:[],freeCommonClaimed:false,beastProgress:{},beastCopies:{},ascensions:{},completedLevels:[],bossEggRewards:[],seenBeastStages:[],lastLoadout:[],createdAt:Date.now(),lastPlayed:Date.now()}}
+function blankSave(){return {starter:null,essence:0,wardenLevel:1,unlocked:[],freeCommonClaimed:false,beastProgress:{},beastCopies:{},ascensions:{},completedLevels:[],hardCompletedLevels:[],bossEggRewards:[],seenBeastStages:[],lastLoadout:[],createdAt:Date.now(),lastPlayed:Date.now()}}
 function normaliseSave(s){
-  s=s||blankSave();s.unlocked=s.unlocked||[];s.beastProgress=s.beastProgress||{};s.beastCopies=s.beastCopies||{};s.ascensions=s.ascensions||{};s.completedLevels=s.completedLevels||[];s.bossEggRewards=s.bossEggRewards||[];s.seenBeastStages=s.seenBeastStages||[];
+  s=s||blankSave();s.unlocked=s.unlocked||[];s.beastProgress=s.beastProgress||{};s.beastCopies=s.beastCopies||{};s.ascensions=s.ascensions||{};s.completedLevels=s.completedLevels||[];s.hardCompletedLevels=s.hardCompletedLevels||[];s.bossEggRewards=s.bossEggRewards||[];s.seenBeastStages=s.seenBeastStages||[];
   s.unlocked.forEach(id=>{
     const level=s.beastProgress[id]?.level||1;
     [1,...(level>=15?[2]:[]),...(level>=30?[3]:[])].forEach(stage=>{const key=id+':'+stage;if(!s.seenBeastStages.includes(key))s.seenBeastStages.push(key)});
@@ -311,6 +311,8 @@ $('#titleSaveSlotsBtn').onclick=()=>openSaveSelect('hub');
 $('#titleSettingsBtn').onclick=()=>show('settingsScreen');
 $('#switchSaveBtn').onclick=()=>openSaveSelect('hub');
 $('#campaignBtn').onclick=()=>{renderCampaignMap();show('campaignScreen')};
+if($('#campaignNormalBtn'))$('#campaignNormalBtn').onclick=()=>setCampaignMode('normal');
+if($('#campaignHardBtn'))$('#campaignHardBtn').onclick=()=>setCampaignMode('hard');
 $('#beastsBtn').onclick=()=>{renderCollection();show('beastsScreen')}
 if($('#denBeastClose'))$('#denBeastClose').onclick=()=>closeDenBeast();
 if($('#denBeastModal'))$('#denBeastModal').addEventListener('pointerdown',e=>{if(e.target.classList.contains('den-beast-backdrop'))closeDenBeast()});;
@@ -600,18 +602,42 @@ const levels=[
 }
 ];
 let currentLevel=levels[0],path=currentLevel.path;
-function levelUnlocked(id){return id===1||save.completedLevels.includes(id-1)}
+let campaignMode='normal',battleMode='normal',pendingMode='normal';
+function hardModeUnlocked(){return save.completedLevels.includes(10)}
+function modeDifficulty(mode=battleMode){return mode==='hard'?1.5:1}
+function levelUnlocked(id,mode=campaignMode){
+  if(mode==='hard'){
+    if(!hardModeUnlocked())return false;
+    return id===1||save.hardCompletedLevels.includes(id-1);
+  }
+  return id===1||save.completedLevels.includes(id-1);
+}
+function setCampaignMode(mode){
+  if(mode==='hard'&&!hardModeUnlocked())return;
+  campaignMode=mode;
+  renderCampaignMap();
+}
 function renderCampaignMap(){
  const map=$('.campaign-map');if(!map)return;
- map.innerHTML='<div class="map-route-line"></div><div class="map-start-label">VERDANT VALLEY</div>';
+ const hard=campaignMode==='hard',completed=hard?save.hardCompletedLevels:save.completedLevels;
+ const normalBtn=$('#campaignNormalBtn'),hardBtn=$('#campaignHardBtn'),hint=$('#campaignModeHint');
+ if(normalBtn)normalBtn.classList.toggle('active',!hard);
+ if(hardBtn){
+   hardBtn.disabled=!hardModeUnlocked();
+   hardBtn.classList.toggle('active',hard);
+   hardBtn.textContent=hardModeUnlocked()?'HARD • 1.5×':'HARD • LOCKED';
+ }
+ if(hint)hint.textContent=hard?'Enemies have 1.5× health. Hard Mode has its own stage progression.':hardModeUnlocked()?'Hard Mode unlocked — switch modes whenever you are ready.':'Defeat Hollowmaw on 1-10 to unlock Hard Mode.';
+ map.classList.toggle('hard-map',hard);
+ map.innerHTML='<div class="map-route-line"></div><div class="map-start-label">'+(hard?'VERDANT VALLEY • HARD MODE':'VERDANT VALLEY')+'</div>';
  levels.forEach((lvl,i)=>{
-   const unlocked=levelUnlocked(lvl.id),done=save.completedLevels.includes(lvl.id);
+   const unlocked=levelUnlocked(lvl.id,campaignMode),done=completed.includes(lvl.id);
    const row=document.createElement('div');
    row.className='map-stage-row '+(i%2===0?'left':'right');
    const el=document.createElement(unlocked?'button':'div');
-   el.className='map-node '+(unlocked?'unlocked':'locked')+(lvl.id===10?' boss-node':'')+(done?' completed':'');
+   el.className='map-node '+(unlocked?'unlocked':'locked')+(lvl.id===10?' boss-node':'')+(done?' completed':'')+(hard?' hard-node':'');
    const marker=lvl.id===10?'◆':done?'✓':unlocked?'✦':'•';
-   el.innerHTML=`<span class="map-marker">${marker}</span><div class="map-node-copy"><span>1-${lvl.id}</span><b>${lvl.name}</b><small>${done?'Cleared':unlocked?lvl.waves+' waves':'Locked'}</small></div>`;
+   el.innerHTML=`<span class="map-marker">${marker}</span><div class="map-node-copy"><span>${hard?'HARD ':''}1-${lvl.id}</span><b>${lvl.name}</b><small>${done?'Cleared':unlocked?lvl.waves+' waves':'Locked'}</small></div>`;
    if(unlocked)el.onclick=()=>startLevel(lvl.id);
    row.appendChild(el);map.appendChild(row);
  });
@@ -620,7 +646,7 @@ let pendingLevelId=null,loadoutDraft=[],battleLoadout=[];
 function renderLoadoutPicker(){
   const grid=$('#loadoutGrid'),count=$('#loadoutCount'),start=$('#loadoutStartBtn'),title=$('#loadoutLevelName');
   if(!grid)return;
-  if(title&&pendingLevelId)title.textContent='1-'+pendingLevelId+' • '+levels[pendingLevelId-1].name;
+  if(title&&pendingLevelId)title.textContent=(pendingMode==='hard'?'HARD • ':'')+'1-'+pendingLevelId+' • '+levels[pendingLevelId-1].name+(pendingMode==='hard'?' • 1.5× enemy health':'');
   grid.innerHTML='';
   save.unlocked.forEach(id=>{
     const b=beasts[id],selected=loadoutDraft.includes(id),card=document.createElement('button'),ss=stageStats(id);
@@ -633,7 +659,7 @@ function renderLoadoutPicker(){
   if(start){start.disabled=loadoutDraft.length<1;start.textContent=loadoutDraft.length?'DEFEND WITH '+loadoutDraft.length:'SELECT AT LEAST 1'}
 }
 function openLoadoutPicker(id){
-  pendingLevelId=id;
+  pendingLevelId=id;pendingMode=campaignMode;
   const valid=(save.lastLoadout||[]).filter(x=>save.unlocked.includes(x)).slice(0,4);
   loadoutDraft=valid.length?valid:save.unlocked.slice(0,Math.min(4,save.unlocked.length));
   renderLoadoutPicker();$('#loadoutModal').classList.remove('hidden');
@@ -643,7 +669,7 @@ function startLevel(id){openLoadoutPicker(id)}
 function beginSelectedLevel(){
   if(!pendingLevelId||!loadoutDraft.length)return;
   battleLoadout=[...loadoutDraft].slice(0,4);save.lastLoadout=[...battleLoadout];persist();
-  currentLevel=levels[pendingLevelId-1];path=currentLevel.path;$('#loadoutModal').classList.add('hidden');pendingLevelId=null;
+  currentLevel=levels[pendingLevelId-1];path=currentLevel.path;battleMode=pendingMode;$('#loadoutModal').classList.add('hidden');pendingLevelId=null;
   reset();show('gameScreen');last=performance.now();requestAnimationFrame(loop);
 }
 if($('#loadoutStartBtn'))$('#loadoutStartBtn').onclick=()=>beginSelectedLevel();
@@ -652,7 +678,7 @@ if($('#loadoutModal'))$('#loadoutModal').addEventListener('pointerdown',e=>{if(e
 let towers=[],enemies=[],projectiles=[],effects=[],selectedSpecies=null,selectedTower=null,gold=400,lives=20,wave=0,running=false,last=0,queue=[],speed=1,waveParticipants=new Set();
 let battleReport={kills:0,damageByBeast:{},xpByBeast:{},wavesCleared:0,bossDefeated:false};
 
-function ui(){$('#gold').textContent=Math.floor(gold);$('#lives').textContent=lives;$('#wave').textContent=wave;if(selectedTower)renderUpgradeButtons()}
+function ui(){$('#gold').textContent=Math.floor(gold);$('#lives').textContent=lives;$('#wave').textContent=wave;const badge=$('#battleModeBadge');if(badge){badge.textContent=battleMode==='hard'?'HARD • 1.5× HP':'NORMAL';badge.classList.toggle('hard',battleMode==='hard')}if(selectedTower)renderUpgradeButtons()}
 const upgradeDefs={
  power:[
   {name:'Sharpened Instinct',desc:'+20% damage',mult:.65},
@@ -798,7 +824,7 @@ if($('#selectedTowerModal')){
 }
 function reset(){
   towers=[];enemies=[];projectiles=[];effects=[];selectedSpecies=null;selectedTower=null;gold=400;lives=20;wave=0;running=false;queue=[];speed=1;waveParticipants=new Set();
-  battleReport={kills:0,damageByBeast:{},xpByBeast:{},wavesCleared:0};
+  battleReport={kills:0,damageByBeast:{},xpByBeast:{},wavesCleared:0,bossDefeated:false};
   document.querySelectorAll('.speed-choice').forEach(b=>b.classList.toggle('active',Number(b.dataset.speed)===1));$('#waveXpNotice').textContent='';ui();choices();renderSelectedTower();updateNextWavePreview();
 }
 $('#exitLevelBtn').onclick=()=>show('campaignScreen');
@@ -830,18 +856,19 @@ function updateNextWavePreview(){
   const el=$('#nextWaveInfo');
   if(!el)return;
   if(wave>=10){el.textContent='Final wave complete';return}
-  el.textContent='Next: '+wavePreviewText(wave+1);
+  el.textContent='Next: '+wavePreviewText(wave+1)+(battleMode==='hard'?' • HARD 1.5× HP':'');
 }
 $('#startWaveBtn').onclick=()=>{
   if(running||wave>=10)return;
   wave++;running=true;waveParticipants=new Set(towers.map(t=>t.b.id));queue=[];
-  const waveHp=(48+wave*16+wave*wave*.7)*currentLevel.hp;
+  const difficulty=modeDifficulty();
+  const waveHp=(48+wave*16+wave*wave*.7)*currentLevel.hp*difficulty;
   const waveSpeed=(42+wave*1.6)*currentLevel.speed;
   const spacing=Math.max(390,690-currentLevel.id*18);
 
   if(wave===10&&currentLevel.boss){
-    const bossHp=3200*currentLevel.hp;
-    queue.push({delay:900,hp:bossHp,speed:20*currentLevel.speed,reward:400,boss:true,type:'hollowmaw'});
+    const bossHp=6400*currentLevel.hp*difficulty;
+    queue.push({delay:900,hp:bossHp,speed:20*currentLevel.speed,reward:500,boss:true,type:'hollowmaw'});
     const adds=[['hound',3600],['glimmer',4400],['brute',5400],['hound',6500],['glimmer',7600],['brute',9000],['hound',10400]];
     adds.forEach(([id,delay])=>{const type=enemyTypes[id];queue.push({delay,hp:waveHp*type.hp,speed:waveSpeed*type.speed,reward:Math.max(8,Math.round((16+wave)*type.reward)),type:id})});
     queue.sort((a,b)=>a.delay-b.delay);
@@ -910,8 +937,8 @@ function updateBossPhases(e){
   }
   if(ratio<=.45&&!e.boss45){
     e.boss45=true;
-    const hp=(48+wave*16+wave*wave*.7)*currentLevel.hp;
-    [0,360,720,1080].forEach(delay=>queue.push({delay,hp:hp*enemyTypes.hound.hp,speed:(42+wave*1.6)*currentLevel.speed*enemyTypes.hound.speed,reward:18,type:'hound'}));
+    const hp=(48+wave*16+wave*wave*.7)*currentLevel.hp*modeDifficulty();
+    [0,300,600,900,1200,1500].forEach(delay=>queue.push({delay,hp:hp*enemyTypes.hound.hp,speed:(42+wave*1.6)*currentLevel.speed*enemyTypes.hound.speed,reward:18,type:'hound'}));
     queue.sort((a,b)=>a.delay-b.delay);
     fx('bossPulse',e.x,e.y,'#9f62ff',{size:145,life:.9,maxLife:.9});
     showProgressToast('PACK CALL','Hollowmaw summons a pack of Ruin Hounds.','boss');
@@ -1185,12 +1212,15 @@ function finish(win){
   $('#resultModal').classList.remove('hidden');
   $('#resultTitle').textContent=win?'Victory!':'The Core Has Fallen';
   if(win){
-    const bossEgg=currentLevel.boss&&battleReport.bossDefeated&&!save.bossEggRewards.includes(currentLevel.id);
-    save.essence+=currentLevel.reward;
-    if(!save.completedLevels.includes(currentLevel.id))save.completedLevels.push(currentLevel.id);
+    const hard=battleMode==='hard',reward=Math.round(currentLevel.reward*(hard?1.5:1));
+    const bossEgg=!hard&&currentLevel.boss&&battleReport.bossDefeated&&!save.bossEggRewards.includes(currentLevel.id);
+    save.essence+=reward;
+    const completed=hard?save.hardCompletedLevels:save.completedLevels;
+    if(!completed.includes(currentLevel.id))completed.push(currentLevel.id);
     if(bossEgg){save.bossEggRewards.push(currentLevel.id);pendingBossEggReward=rollRewardEgg(commonPool)}
     save.wardenLevel=Math.max(save.wardenLevel,1+Math.ceil(currentLevel.id/2));persist();
-    $('#resultText').textContent=`${currentLevel.name} defended. You earned ${currentLevel.reward} Essence. ${currentLevel.id<10?'Level 1-'+(currentLevel.id+1)+' unlocked.':'Verdant Valley complete!'}${bossEgg?' Boss reward: Common Egg earned!':''}`;
+    const unlockText=currentLevel.id<10?(hard?'Hard 1-'+(currentLevel.id+1)+' unlocked.':'Level 1-'+(currentLevel.id+1)+' unlocked.'):(hard?'Verdant Valley Hard Mode complete!':'Verdant Valley complete! Hard Mode unlocked!');
+    $('#resultText').textContent=`${hard?'HARD • ':''}${currentLevel.name} defended. You earned ${reward} Essence. ${unlockText}${bossEgg?' Boss reward: Common Egg earned!':''}`;
   }else $('#resultText').textContent=currentLevel.boss&&!battleReport.bossDefeated?'Hollowmaw was not defeated. Rebuild your defence and face the boss again.':'Strengthen your defence and try again.';
 
   const summary=$('#battleSummary');
@@ -1204,7 +1234,7 @@ function finish(win){
       '<div class="summary-xp"><small>BEAST XP EARNED</small>'+ (xpRows||'<span><b>No XP earned</b></span>') +'</div>';
   }
 }
-$('#resultContinue').onclick=()=>{const reward=pendingBossEggReward;pendingBossEggReward=null;$('#resultModal').classList.add('hidden');show('hubScreen');if(reward)setTimeout(()=>showBossEggReward(reward),120)};
+$('#resultContinue').onclick=()=>{const reward=pendingBossEggReward;pendingBossEggReward=null;$('#resultModal').classList.add('hidden');renderCampaignMap();show('hubScreen');if(reward)setTimeout(()=>showBossEggReward(reward),120)};
 
 
 function groundPalette(theme){
