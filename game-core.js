@@ -684,50 +684,52 @@ const upgradeDefs={
   {name:'Sharpened Instinct',desc:'+20% damage',mult:.65},
   {name:'Hunter Reach',desc:'+18% range and +10% damage',mult:1.0},
   {name:'Apex Force',desc:'+35% damage and empowered projectiles',mult:1.6},
-  {name:'Mythic Instinct',desc:'Massive final buff: huge damage and extra reach',mult:3.0}
+  {name:'Mythic Instinct',desc:'Huge damage and extra reach',mult:3.0},
+  {name:"Warden's Wrath",desc:'ULTIMATE: devastating damage, extra reach and a shockwave on every hit',mult:4.5}
  ],
  special:[
   {name:'Quickened Spirit',desc:'12% faster attacks',mult:.55},
   {name:'Elemental Mastery',desc:'Stronger elemental status effects',mult:.9},
   {name:'Primal Surge',desc:'Unlocks a powerful type-specific effect',mult:1.5},
-  {name:'Ancestral Awakening',desc:'Massive final buff: far faster attacks and empowered elemental effects',mult:2.8}
+  {name:'Ancestral Awakening',desc:'Far faster attacks and empowered elemental effects',mult:2.8},
+  {name:'Primal Ascendance',desc:'ULTIMATE: extreme attack speed and overflowing elemental power',mult:4.3}
  ]
 };
 const beastSkills={
- embercub:{name:'Flameheart',desc:['Burn damage +25%','Burn lasts longer and splashes','Inferno: burning targets erupt','Cataclysm Flame: burns and eruptions surge dramatically'],mult:[.55,.9,1.45,2.7]},
- sprigpaw:{name:'Verdant Snare',desc:['Root chance +15%','Roots last longer','Wild Growth: roots spread nearby','Elderwood Bind: roots become far more frequent and spread wider'],mult:[.5,.85,1.4,2.6]},
- bubblit:{name:'Tidal Pulse',desc:['Slow strength increased','Slow lasts longer','Riptide: hits splash strong slow','Tsunami Pulse: massive slow field and stronger splash control'],mult:[.5,.85,1.4,2.6]},
- sparkit:{name:'Overcharge',desc:['Chain +1 target','Chain damage +20%','Supercell: chains can stun','Stormbreak: many more chains with stronger stun pressure'],mult:[.55,.9,1.45,2.7]},
- pebblum:{name:'Seismic Slam',desc:['Stun lasts longer','Hits splash nearby','Earthshatter: huge area stagger','Worldbreaker: crushing boss damage and wide area stun'],mult:[.6,.95,1.5,2.8]},
- gustwing:{name:'Tailwind',desc:['Wind pierces +1 target','+12% range','Cyclone: pierces a wide group','Tempest Crown: greatly increased piercing and reach'],mult:[.5,.9,1.45,2.7]},
- toxip:{name:'Virulent Venom',desc:['Poison damage +30%','Poison lasts longer','Plague Cloud: poison spreads','Black Venom: extreme poison damage and spreading plague'],mult:[.55,.9,1.45,2.7]},
- frostkit:{name:'Deep Freeze',desc:['Freeze chance +12%','Freeze lasts longer','Absolute Zero: freezes nearby enemies','Absolute Zero+: frequent freezes and stronger area control'],mult:[.6,.95,1.5,2.8]},
- shadepup:{name:'Night Hunt',desc:['Critical chance +12%','Critical damage increased','Execution: brutal low-health crits','Nightmare Hunt: devastating critical bursts'],mult:[.6,.95,1.55,2.9]},
- lumpling:{name:'Radiant Nova',desc:['Splash radius +20%','Splash damage +25%','Sunburst: massive radiant explosion','Solar Collapse: huge radiant splash damage'],mult:[.6,.95,1.5,2.8]},
- voltwing:{name:'Storm Relay',desc:['Chain +1 target','Chain damage +25%','Thunderweb: farther chains can stun','Thunder Dominion: enormous chain coverage and stun chance'],mult:[.65,1,1.55,2.9]},
- scorchick:{name:'Ember Rush',desc:['+10% attack speed','Burn damage +25%','Firestorm: rapid hits explode','Phoenix Rush: extreme attack speed and explosive burn'],mult:[.45,.8,1.35,2.6]},
- mosshell:{name:'Ancient Shell',desc:['Stagger lasts longer','+20% boss damage','Quake Shell: attacks stagger an area','Worldshell Quake: major boss damage and area stagger'],mult:[.55,.9,1.45,2.7]},
- drizzlet:{name:'Flash Flood',desc:['Slow strength increased','+10% attack speed','Downpour: splash slow nearby','Deluge: rapid attacks with overwhelming slow coverage'],mult:[.45,.8,1.35,2.6]},
- zapmoth:{name:'Static Swarm',desc:['Chain +1 target','+10% attack speed','Arc Swarm: rapid crowd chaining','Living Storm: extreme chain count and attack speed'],mult:[.5,.85,1.4,2.7]},
- cindrake:{name:'Meteor Core',desc:['Meteor splash +25%','Burning splash +30%','Cataclysm: enormous blast','Extinction Meteor: gigantic impact and burn explosion'],mult:[.7,1.1,1.7,3.1]},
- sporeling:{name:'Spore Colony',desc:['Poison duration +30%','Burst spreads farther','Bloom: infected enemies spread poison','Endless Bloom: devastating poison spread through crowds'],mult:[.65,1.05,1.65,3]},
- drakeling:{name:'Skybreaker',desc:['Wind pierces +1 target','+15% range','Tempest Lance: tears through groups','Sky Rend: extreme piercing with extended range'],mult:[.65,1.05,1.65,3]},
- voidling:{name:'Rift Hunger',desc:['Critical chance +15%','Crits splash void damage','Singularity: crits tear nearby enemies','Event Horizon: huge crit bursts with wide void splash'],mult:[.7,1.1,1.7,3.06]}
+ embercub:{name:'Flameheart',desc:['Burn damage +25%','Burn lasts longer and splashes','Inferno: burning targets erupt','Cataclysm Flame: burns and eruptions surge dramatically','Solar Inferno: every strike detonates a blazing inferno'],mult:[.55,.9,1.45,2.7,4.7]},
+ sprigpaw:{name:'Verdant Snare',desc:['Root chance +15%','Roots last longer','Wild Growth: roots spread nearby','Elderwood Bind: roots become far more frequent and spread wider','Worldroot: roots surge through whole enemy clusters'],mult:[.5,.85,1.4,2.6,4.7]},
+ bubblit:{name:'Tidal Pulse',desc:['Slow strength increased','Slow lasts longer','Riptide: hits splash strong slow','Tsunami Pulse: massive slow field and stronger splash control','Leviathan Tide: crushing waves lock down entire groups'],mult:[.5,.85,1.4,2.6,4.7]},
+ sparkit:{name:'Overcharge',desc:['Chain +1 target','Chain damage +20%','Supercell: chains can stun','Stormbreak: many more chains with stronger stun pressure','Heavenbolt: lightning cascades through huge chains'],mult:[.55,.9,1.45,2.7,4.7]},
+ pebblum:{name:'Seismic Slam',desc:['Stun lasts longer','Hits splash nearby','Earthshatter: huge area stagger','Worldbreaker: crushing boss damage and wide area stun','Continental Break: seismic hits crush bosses and crowds'],mult:[.6,.95,1.5,2.8,4.7]},
+ gustwing:{name:'Tailwind',desc:['Wind pierces +1 target','+12% range','Cyclone: pierces a wide group','Tempest Crown: greatly increased piercing and reach','Eye of the Storm: relentless piercing gales sweep the path'],mult:[.5,.9,1.45,2.7,4.7]},
+ toxip:{name:'Virulent Venom',desc:['Poison damage +30%','Poison lasts longer','Plague Cloud: poison spreads','Black Venom: extreme poison damage and spreading plague','Extinction Venom: toxic damage spreads explosively'],mult:[.55,.9,1.45,2.7,4.7]},
+ frostkit:{name:'Deep Freeze',desc:['Freeze chance +12%','Freeze lasts longer','Absolute Zero: freezes nearby enemies','Absolute Zero+: frequent freezes and stronger area control','Eternal Winter: repeated freezes engulf nearby enemies'],mult:[.6,.95,1.5,2.8,4.7]},
+ shadepup:{name:'Night Hunt',desc:['Critical chance +12%','Critical damage increased','Execution: brutal low-health crits','Nightmare Hunt: devastating critical bursts','Death Hunt: critical strikes become brutally lethal'],mult:[.6,.95,1.55,2.9,4.7]},
+ lumpling:{name:'Radiant Nova',desc:['Splash radius +20%','Splash damage +25%','Sunburst: massive radiant explosion','Solar Collapse: huge radiant splash damage','Supernova: radiant blasts engulf a huge area'],mult:[.6,.95,1.5,2.8,4.7]},
+ voltwing:{name:'Storm Relay',desc:['Chain +1 target','Chain damage +25%','Thunderweb: farther chains can stun','Thunder Dominion: enormous chain coverage and stun chance','Godstorm: massive lightning chains dominate the battlefield'],mult:[.65,1,1.55,2.9,4.7]},
+ scorchick:{name:'Ember Rush',desc:['+10% attack speed','Burn damage +25%','Firestorm: rapid hits explode','Phoenix Rush: extreme attack speed and explosive burn','Phoenix Ascension: blistering speed creates constant explosions'],mult:[.45,.8,1.35,2.6,4.7]},
+ mosshell:{name:'Ancient Shell',desc:['Stagger lasts longer','+20% boss damage','Quake Shell: attacks stagger an area','Worldshell Quake: major boss damage and area stagger','Titan Quake: enormous stagger and boss-breaking force'],mult:[.55,.9,1.45,2.7,4.7]},
+ drizzlet:{name:'Flash Flood',desc:['Slow strength increased','+10% attack speed','Downpour: splash slow nearby','Deluge: rapid attacks with overwhelming slow coverage','Oceanfall: relentless floods overwhelm enemy movement'],mult:[.45,.8,1.35,2.6,4.7]},
+ zapmoth:{name:'Static Swarm',desc:['Chain +1 target','+10% attack speed','Arc Swarm: rapid crowd chaining','Living Storm: extreme chain count and attack speed','Infinite Circuit: lightning jumps rapidly through large groups'],mult:[.5,.85,1.4,2.7,4.7]},
+ cindrake:{name:'Meteor Core',desc:['Meteor splash +25%','Burning splash +30%','Cataclysm: enormous blast','Extinction Meteor: gigantic impact and burn explosion','Worldfire Meteor: colossal impacts devastate whole packs'],mult:[.7,1.1,1.7,3.1,4.7]},
+ sporeling:{name:'Spore Colony',desc:['Poison duration +30%','Burst spreads farther','Bloom: infected enemies spread poison','Endless Bloom: devastating poison spread through crowds','Final Bloom: poison propagates through nearly everything nearby'],mult:[.65,1.05,1.65,3,4.7]},
+ drakeling:{name:'Skybreaker',desc:['Wind pierces +1 target','+15% range','Tempest Lance: tears through groups','Sky Rend: extreme piercing with extended range','Heaven Rend: colossal piercing gales tear through the path'],mult:[.65,1.05,1.65,3,4.7]},
+ voidling:{name:'Rift Hunger',desc:['Critical chance +15%','Crits splash void damage','Singularity: crits tear nearby enemies','Event Horizon: huge crit bursts with wide void splash','Black Horizon: void criticals collapse enemies around the target'],mult:[.7,1.1,1.7,3.06,4.7]}
 };
 function upgradeCost(t,path){
  const tier=t[path+'Tier']||0;
  if(path==='skill'){
    const skill=beastSkills[t.b.id],mult=skill?.mult?.[tier];
-   return mult?Math.ceil(t.baseCost*mult/5)*5:null;
+   return mult?Math.ceil(t.baseCost*mult*1.12/5)*5:null;
  }
  const def=upgradeDefs[path][tier];
- return def?Math.ceil(t.baseCost*def.mult/5)*5:null;
+ return def?Math.ceil(t.baseCost*def.mult*1.12/5)*5:null;
 }
 function recalcTower(t){
  const base=battleStats(t.b.id),p=t.powerTier||0,s=t.specialTier||0,k=t.skillTier||0,id=t.b.id;
- const powerDamage=[1,1.2,1.32,1.782,2.85][p]||1;
- const powerRange=[1,1,1.18,1.18,1.36][p]||1;
- const specialRate=[1,.88,.88,.88,.68][s]||1;
+ const powerDamage=[1,1.2,1.32,1.782,2.85,4.15][p]||1;
+ const powerRange=[1,1,1.18,1.18,1.36,1.48][p]||1;
+ const specialRate=[1,.88,.88,.88,.68,.52][s]||1;
  let skillDamage=1,skillRange=1,skillRate=1;
  if(id==='gustwing'&&k>=2)skillRange*=1.12;
  if(id==='drakeling'&&k>=2)skillRange*=1.15;
@@ -736,6 +738,7 @@ function recalcTower(t){
  if(id==='zapmoth'&&k>=2)skillRate*=.90;
  if(id==='mosshell'&&k>=2)skillDamage*=1.08;
  if(k>=4){skillDamage*=1.35;skillRate*=.82;skillRange*=1.08}
+ if(k>=5){skillDamage*=1.28;skillRate*=.88;skillRange*=1.06}
  t.b={...base,damage:base.damage*powerDamage*skillDamage,range:clampCombatRange(base.range*powerRange*skillRange),rate:base.rate*specialRate*skillRate};
 }
 function combatRangeBase(id){
@@ -783,34 +786,47 @@ function renderSelectedTower(){
   const targetSelect=$('#targetModeSelect');if(targetSelect)targetSelect.value=selectedTower.targetMode||'first';
   renderUpgradeButtons();
 }
+function towerUltimatePath(t){
+  if((t.powerTier||0)>=5)return 'power';
+  if((t.specialTier||0)>=5)return 'special';
+  if((t.skillTier||0)>=5)return 'skill';
+  return null;
+}
 function renderUpgradeButtons(){
  if(!selectedTower)return;
+ const claimed=towerUltimatePath(selectedTower);
  ['power','special'].forEach(path=>{
-   const tier=selectedTower[path+'Tier']||0,other=path==='power'?'special':'power',otherTier=selectedTower[other+'Tier']||0;
+   const tier=selectedTower[path+'Tier']||0;
    const btn=$('#'+path+'UpgradeBtn'),desc=$('#'+path+'UpgradeDesc');
    if(!btn||!desc)return;
-   if(tier>=4){btn.textContent='MAX TIER';btn.disabled=true;desc.textContent='Tier IV complete.';return}
-   const locked=tier===3&&otherTier>=4,cost=upgradeCost(selectedTower,path),def=upgradeDefs[path][tier];
-   btn.disabled=locked||gold<cost;
-   btn.textContent=locked?'TIER IV LOCKED':`Tier ${tier+1} • ${def.name} • ${cost}g`;
-   desc.textContent=locked?'The other core path already claimed Tier IV.':def.desc;
+   if(tier>=5){btn.textContent='ULTIMATE MASTERED';btn.disabled=true;desc.textContent='Tier V Ultimate active.';btn.classList.add('ultimate-owned');return}
+   btn.classList.remove('ultimate-owned');
+   const locked=tier===4&&claimed&&claimed!==path,cost=upgradeCost(selectedTower,path),def=upgradeDefs[path][tier];
+   btn.disabled=!!locked||gold<cost;
+   btn.textContent=locked?'ULTIMATE CLAIMED BY '+claimed.toUpperCase():(tier===4?`Tier V • ULTIMATE • ${def.name} • ${cost}g`:`Tier ${tier+1} • ${def.name} • ${cost}g`);
+   desc.textContent=locked?'Only one of the three upgrade paths can claim Tier V.':def.desc;
  });
  const skill=beastSkills[selectedTower.b.id],tier=selectedTower.skillTier||0,btn=$('#skillUpgradeBtn'),desc=$('#skillUpgradeDesc'),title=$('#skillPathName');
  if(title)title.textContent=skill?.name||'Beast Talent';
  if(btn&&desc&&skill){
-   if(tier>=4){btn.textContent='MAX TIER';btn.disabled=true;desc.textContent='Unique talent fully mastered at Tier IV.'}
-   else{const cost=upgradeCost(selectedTower,'skill');btn.disabled=gold<cost;btn.textContent=`Tier ${tier+1} • ${cost}g`;desc.textContent=skill.desc[tier]}
+   if(tier>=5){btn.textContent='ULTIMATE MASTERED';btn.disabled=true;desc.textContent='Tier V species Ultimate active.';btn.classList.add('ultimate-owned')}
+   else{
+     btn.classList.remove('ultimate-owned');
+     const locked=tier===4&&claimed&&claimed!=='skill',cost=upgradeCost(selectedTower,'skill');
+     btn.disabled=!!locked||gold<cost;
+     btn.textContent=locked?'ULTIMATE CLAIMED BY '+claimed.toUpperCase():(tier===4?`Tier V • ULTIMATE • ${cost}g`:`Tier ${tier+1} • ${cost}g`);
+     desc.textContent=locked?'Only one of the three upgrade paths can claim Tier V.':skill.desc[tier];
+   }
  }
 }
 function buyTowerUpgrade(path){
  if(!selectedTower)return;
- const tier=selectedTower[path+'Tier']||0;
- if(path!=='skill'){
-   const other=path==='power'?'special':'power',otherTier=selectedTower[other+'Tier']||0;
-   if(tier>=4||(tier===3&&otherTier>=4))return;
- }else if(tier>=4)return;
+ const tier=selectedTower[path+'Tier']||0,claimed=towerUltimatePath(selectedTower);
+ if(tier>=5)return;
+ if(tier===4&&claimed&&claimed!==path)return;
  const cost=upgradeCost(selectedTower,path);if(gold<cost)return;
  gold-=cost;selectedTower[path+'Tier']=tier+1;selectedTower.spent+=cost;recalcTower(selectedTower);ui();renderSelectedTower();
+ if(tier===4)showProgressToast('ULTIMATE UNLOCKED',(path==='power'?"Warden's Wrath":path==='special'?'Primal Ascendance':beastSkills[selectedTower.b.id].name+' Ultimate')+' is now active.','evolution');
 }
 $('#powerUpgradeBtn').onclick=()=>buyTowerUpgrade('power');
 $('#specialUpgradeBtn').onclick=()=>buyTowerUpgrade('special');
@@ -827,7 +843,23 @@ function reset(){
   battleReport={kills:0,damageByBeast:{},xpByBeast:{},wavesCleared:0,bossDefeated:false};
   document.querySelectorAll('.speed-choice').forEach(b=>b.classList.toggle('active',Number(b.dataset.speed)===1));$('#waveXpNotice').textContent='';ui();choices();renderSelectedTower();updateNextWavePreview();
 }
-$('#exitLevelBtn').onclick=()=>show('campaignScreen');
+let exitResumeSpeed=1;
+function openExitConfirmation(){
+  const modal=$('#exitConfirmModal');if(!modal)return;
+  exitResumeSpeed=speed||1;speed=0;modal.classList.remove('hidden');
+}
+function closeExitConfirmation(){
+  const modal=$('#exitConfirmModal');if(modal)modal.classList.add('hidden');
+  speed=exitResumeSpeed||1;
+}
+function confirmExitLevel(){
+  const modal=$('#exitConfirmModal');if(modal)modal.classList.add('hidden');
+  running=false;queue=[];enemies=[];projectiles=[];effects=[];speed=1;selectedTower=null;renderCampaignMap();show('campaignScreen');
+}
+$('#exitLevelBtn').onclick=()=>openExitConfirmation();
+if($('#exitStayBtn'))$('#exitStayBtn').onclick=()=>closeExitConfirmation();
+if($('#exitConfirmBtn'))$('#exitConfirmBtn').onclick=()=>confirmExitLevel();
+if($('#exitConfirmModal'))$('#exitConfirmModal').addEventListener('pointerdown',e=>{if(e.target.classList.contains('exit-confirm-backdrop'))closeExitConfirmation()});
 function setSpeed(next){speed=next;document.querySelectorAll('.speed-choice').forEach(b=>b.classList.toggle('active',Number(b.dataset.speed)===speed))}
 document.querySelectorAll('.speed-choice').forEach(b=>b.onclick=()=>setSpeed(Number(b.dataset.speed)));
 function waveEnemyMix(w){
@@ -1091,11 +1123,13 @@ function applyBeastTalent(p,t){
  }
 }
 function hitProjectile(p){
-  const mastery=p.specialTier>=2,primal=p.specialTier>=3,awakened=p.specialTier>=4,apex=p.powerTier>=3,mythic=p.powerTier>=4,t=p.target;
+  const mastery=p.specialTier>=2,primal=p.specialTier>=3,awakened=p.specialTier>=4,ascendant=p.specialTier>=5,apex=p.powerTier>=3,mythic=p.powerTier>=4,wrath=p.powerTier>=5,talentUltimate=p.skillTier>=5,t=p.target;
   spawnImpactEffect(p,t);
   let damage=p.damage;
   if(awakened)damage*=1.35;
+  if(ascendant)damage*=1.18;
   if(mythic)damage*=1.18;
+  if(wrath)damage*=1.32;
   let critChance=0,critMult=2;
   if(p.type==='Dark'){
     critChance=(p.beastId==='voidling'?.40:.28)+(mastery?.10:0)+(primal?.17:0);
@@ -1166,6 +1200,19 @@ function hitProjectile(p){
     fx('light',t.x,t.y,'#fff4a6',{size:primal?90:66});
   }
   applyBeastTalent(p,t);
+  if(wrath){
+    enemies.filter(e=>e!==t&&Math.hypot(e.x-t.x,e.y-t.y)<72).forEach(e=>e.hp-=p.damage*.32);
+    fx('apex',t.x,t.y,'#ffd46f',{size:105});
+  }
+  if(ascendant){
+    t.slow=Math.max(t.slow||0,.7);
+    enemies.filter(e=>e!==t&&Math.hypot(e.x-t.x,e.y-t.y)<65).slice(0,4).forEach(e=>e.hp-=p.damage*.18);
+    fx('apex',t.x,t.y,p.color,{size:98});
+  }
+  if(talentUltimate){
+    enemies.filter(e=>e!==t&&Math.hypot(e.x-t.x,e.y-t.y)<88).slice(0,5).forEach(e=>e.hp-=p.damage*.22);
+    fx('apex',t.x,t.y,'#f1b4ff',{size:112});
+  }
   if(t.boss){
     t.stun=Math.min(t.stun||0,.32);
     t.root=Math.min(t.root||0,.18);
