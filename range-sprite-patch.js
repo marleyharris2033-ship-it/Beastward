@@ -1,27 +1,16 @@
 // Beastward sprite/runtime patch: reliable drag placement + Level 30 evolved art
 (() => {
-  const custom = {
-    shadepup:{sprite:'assets/pixel/shadepup.png?v=39',tower:'assets/pixel/shadepup.png?v=39'},
-    scorchick:{sprite:'assets/pixel/scorchick.png?v=39',tower:'assets/pixel/scorchick.png?v=39'},
-    voidling:{sprite:'assets/pixel/voidling.png?v=39',tower:'assets/pixel/voidling.png?v=39'}
-  };
-  Object.entries(custom).forEach(([id,art])=>{
-    if(!beasts[id])return;
-    beasts[id].sprite=art.sprite; beasts[id].towerSprite=art.tower;
-    const img=new Image(); img.onerror=()=>{img.src='assets/sprites/'+id+'.svg'}; img.src=art.tower; spriteImgs[id]=img;
-  });
+  const custom={shadepup:{sprite:'assets/pixel/shadepup.png?v=39',tower:'assets/pixel/shadepup.png?v=39'},scorchick:{sprite:'assets/pixel/scorchick.png?v=39',tower:'assets/pixel/scorchick.png?v=39'},voidling:{sprite:'assets/pixel/voidling.png?v=39',tower:'assets/pixel/voidling.png?v=39'}};
+  Object.entries(custom).forEach(([id,art])=>{if(!beasts[id])return;beasts[id].sprite=art.sprite;beasts[id].towerSprite=art.tower;const img=new Image();img.onerror=()=>{img.src='assets/sprites/'+id+'.svg'};img.src=art.tower;spriteImgs[id]=img});
 
-  // Level 30 / first evolution artwork: use the polished sheet directly.
-  const stage2Art='assets/pixel/evolved/stage2_sheet.png?v=57';
+  // First evolutions are real standalone image assets. No sheet cropping.
   const originalStageSpriteMarkup=stageSpriteMarkup;
   stageSpriteMarkup=function(id,stage=evolutionStage(id),extra='',unseen=false){
     if(stage!==2)return originalStageSpriteMarkup(id,stage,extra,unseen);
-    const b=beasts[id],name=nameForStage(id,2),cell=stage2SheetCell(id);
-    const left=-(cell.col*100),top=-(cell.row*100);
-    return `<span class="stage-sprite stage-2 type-${b.type.toLowerCase()} ${unseen?'unseen-sprite':''} ${extra}" aria-label="${unseen?'Undiscovered beast':name}" style="position:relative;display:inline-block;overflow:hidden;">
-      <img class="stage-form stage2-direct-crop" src="${stage2Art}" alt="${unseen?'Undiscovered beast':name}" style="position:absolute!important;width:500%!important;height:400%!important;max-width:none!important;max-height:none!important;left:${left}%!important;top:${top}%!important;object-fit:fill!important;transform:none!important;${unseen?'filter:brightness(0) saturate(0) contrast(1.2)!important;opacity:.86;':''}">
-    </span>`;
+    const b=beasts[id],name=nameForStage(id,2),src=`assets/pixel/evolved/${id}_2.svg?v=64`;
+    return `<span class="stage-sprite stage-2 type-${b.type.toLowerCase()} ${unseen?'unseen-sprite':''} ${extra}" aria-label="${unseen?'Undiscovered beast':name}"><img class="stage-form" src="${src}" alt="${unseen?'Undiscovered beast':name}" style="display:block!important;width:100%!important;height:100%!important;object-fit:contain!important;opacity:${unseen?'.86':'1'}!important;${unseen?'filter:brightness(0) saturate(0) contrast(1.2)!important;':''}"></span>`;
   };
+  Object.keys(beasts).forEach(id=>{const img=new Image();img.onerror=()=>{img.src=beasts[id].sprite};img.src=`assets/pixel/evolved/${id}_2.svg?v=64`;evolutionSpriteImgs[id][2]=img});
 
   let pointer=null,dragSpecies=null,dragPointerId=null,dragging=false,suppressClick=false;
   const canvasPosFromClient=(clientX,clientY)=>{const r=canvas.getBoundingClientRect();return{x:(clientX-r.left)*canvas.width/r.width,y:(clientY-r.top)*canvas.height/r.height,inside:clientX>=r.left&&clientX<=r.right&&clientY>=r.top&&clientY<=r.bottom}};
@@ -36,5 +25,5 @@
   document.addEventListener('pointerup',e=>{if(!dragging||e.pointerId!==dragPointerId)return;e.preventDefault();const pos=pointerPos(e),id=dragSpecies;placeDraggedBeast(id,pos);dragging=false;dragSpecies=null;dragPointerId=null;pointer=null;document.querySelectorAll('.tower-choice').forEach(x=>x.classList.remove('dragging'));setTimeout(()=>{suppressClick=false},0)},{passive:false});
   document.addEventListener('pointercancel',e=>{if(e.pointerId!==dragPointerId)return;dragging=false;dragSpecies=null;dragPointerId=null;pointer=null;document.querySelectorAll('.tower-choice').forEach(x=>x.classList.remove('dragging'))});
   canvas.addEventListener('pointermove',e=>{if(!dragging)pointer=pointerPos(e)});canvas.addEventListener('pointerleave',()=>{if(!dragging)pointer=null});
-  const baseDraw=draw;draw=function(){baseDraw();if(selectedTower)rangeRing(selectedTower.x,selectedTower.y,selectedTower.b.range,selectedTower.b.color||'#ffe17b',true);if(dragging&&dragSpecies&&pointer){const b=battleStats(dragSpecies),valid=pointer.inside&&placementValid(pointer.x,pointer.y,beasts[dragSpecies]);rangeRing(pointer.x,pointer.y,b.range,b.color||'#ffe17b',valid);const stage=evolutionStage(dragSpecies);ctx.save();ctx.globalAlpha=valid?.92:.62;if(stage===2&&stage2SheetImg.complete&&stage2SheetImg.naturalWidth){const cell=stage2SheetCell(dragSpecies),size=78;ctx.drawImage(stage2SheetImg,cell.sx,cell.sy,128,128,pointer.x-size/2,pointer.y-size/2,size,size)}else{const img=stage===3?(evolutionSpriteImgs[dragSpecies]?.[3]||spriteImgs[dragSpecies]):spriteImgs[dragSpecies];if(img&&img.complete){const size=stage===3?82:74;ctx.drawImage(img,pointer.x-size/2,pointer.y-size/2,size,size)}}ctx.restore()}};
+  const baseDraw=draw;draw=function(){baseDraw();if(selectedTower)rangeRing(selectedTower.x,selectedTower.y,selectedTower.b.range,selectedTower.b.color||'#ffe17b',true);if(dragging&&dragSpecies&&pointer){const b=battleStats(dragSpecies),valid=pointer.inside&&placementValid(pointer.x,pointer.y,beasts[dragSpecies]);rangeRing(pointer.x,pointer.y,b.range,b.color||'#ffe17b',valid);const stage=evolutionStage(dragSpecies);ctx.save();ctx.globalAlpha=valid?.92:.62;const img=stage===2?(evolutionSpriteImgs[dragSpecies]?.[2]||spriteImgs[dragSpecies]):stage===3?(evolutionSpriteImgs[dragSpecies]?.[3]||spriteImgs[dragSpecies]):spriteImgs[dragSpecies];if(img&&img.complete){const size=stage===3?82:stage===2?78:74;ctx.drawImage(img,pointer.x-size/2,pointer.y-size/2,size,size)}ctx.restore()}};
 })();
