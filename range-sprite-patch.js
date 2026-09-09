@@ -135,14 +135,19 @@
       const valid=pointer.inside&&placementValid(pointer.x,pointer.y,beasts[dragSpecies]);
       rangeRing(pointer.x,pointer.y,b.range,b.color||'#ffe17b',valid);
       const stage=evolutionStage(dragSpecies);
-      const img=stage>1?(evolutionSpriteImgs[dragSpecies]?.[stage]||spriteImgs[dragSpecies]):spriteImgs[dragSpecies];
-      if(img&&img.complete){
-        ctx.save();
-        ctx.globalAlpha=valid?.92:.62;
-        const size=stage===3?82:stage===2?78:74;
-        ctx.drawImage(img,pointer.x-size/2,pointer.y-size/2,size,size);
-        ctx.restore();
+      ctx.save();
+      ctx.globalAlpha=valid?.92:.62;
+      if(stage===2&&stage2SheetImg.complete&&stage2SheetImg.naturalWidth){
+        const cell=stage2SheetCell(dragSpecies),size=78;
+        ctx.drawImage(stage2SheetImg,cell.sx,cell.sy,128,128,pointer.x-size/2,pointer.y-size/2,size,size);
+      }else{
+        const img=stage===3?(evolutionSpriteImgs[dragSpecies]?.[3]||spriteImgs[dragSpecies]):spriteImgs[dragSpecies];
+        if(img&&img.complete){
+          const size=stage===3?82:74;
+          ctx.drawImage(img,pointer.x-size/2,pointer.y-size/2,size,size);
+        }
       }
+      ctx.restore();
     }
   };
 
