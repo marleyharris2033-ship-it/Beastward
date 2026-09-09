@@ -601,6 +601,7 @@ function renderSelectedTower(){
   if(modal)modal.classList.remove('hidden');
   $('#selectedTowerName').textContent=nameFor(selectedTower.b.id);
   $('#selectedTowerStats').innerHTML=`Level ${progress(selectedTower.b.id).level} • ★${ascension(selectedTower.b.id)} • Range ${Math.round(selectedTower.b.range)} • Sell ${Math.floor(selectedTower.spent*.8)} gold`+statBars(selectedTower.b.id);
+  const targetSelect=$('#targetModeSelect');if(targetSelect)targetSelect.value=selectedTower.targetMode||'first';
   renderUpgradeButtons();
 }
 function renderUpgradeButtons(){
@@ -635,6 +636,7 @@ function buyTowerUpgrade(path){
 $('#powerUpgradeBtn').onclick=()=>buyTowerUpgrade('power');
 $('#specialUpgradeBtn').onclick=()=>buyTowerUpgrade('special');
 $('#skillUpgradeBtn').onclick=()=>buyTowerUpgrade('skill');
+if($('#targetModeSelect'))$('#targetModeSelect').onchange=e=>{if(selectedTower)selectedTower.targetMode=e.target.value};
 if($('#closeTowerModalBtn'))$('#closeTowerModalBtn').onclick=()=>closeTowerModal();
 if($('#selectedTowerModal')){
   $('#selectedTowerModal').addEventListener('pointerdown',e=>{
@@ -659,14 +661,20 @@ function waveEnemyMix(w){
   if(w===9)return ['brute','hound','wisp','raider'];
   return ['brute','hound','wisp','raider'];
 }
+function waveComposition(w){
+  const n=4+w*2+Math.floor((currentLevel.id-1)*.5),mix=waveEnemyMix(Math.min(10,w)),counts={};
+  for(let i=0;i<n;i++){const id=mix[i%mix.length];counts[id]=(counts[id]||0)+1}
+  if(w===10&&(currentLevel.boss||currentLevel.id===10))counts.hollowmaw=1;
+  return counts;
+}
 function wavePreviewText(w){
-  const mix=waveEnemyMix(Math.min(10,w));
-  return mix.map(id=>enemyTypes[id].name).join(' • ');
+  const counts=waveComposition(Math.min(10,w));
+  return Object.entries(counts).map(([id,count])=>count+'× '+enemyTypes[id].name).join(' • ');
 }
 function updateNextWavePreview(){
   const el=$('#nextWaveInfo');
   if(!el)return;
-  if(wave>=10){el.textContent='Final wave';return}
+  if(wave>=10){el.textContent='Final wave complete';return}
   el.textContent='Next: '+wavePreviewText(wave+1);
 }
 $('#startWaveBtn').onclick=()=>{
@@ -698,7 +706,7 @@ canvas.addEventListener('pointerdown',e=>{
   if(!selectedSpecies)return;
   const b=beasts[selectedSpecies];
   if(gold<b.cost||distPath(x,y)<55||blockedByScenery(x,y)||towers.some(t=>Math.hypot(t.x-x,t.y-y)<64))return;
-  const placed={x,y,b:battleStats(selectedSpecies),cool:0,baseCost:b.cost,spent:b.cost,powerTier:0,specialTier:0,skillTier:0};
+  const placed={x,y,b:battleStats(selectedSpecies),cool:0,baseCost:b.cost,spent:b.cost,powerTier:0,specialTier:0,skillTier:0,targetMode:'first'};
   towers.push(placed);
   if(running)waveParticipants.add(selectedSpecies);
   gold-=b.cost;selectedTower=placed;selectedSpecies=null;document.querySelectorAll('.tower-choice').forEach(x=>x.classList.remove('selected'));ui();renderSelectedTower();
@@ -727,9 +735,22 @@ function move(e,dt){
   e.x+=dx/d*sp*dt;e.y+=dy/d*sp*dt;return true;
 }
 function defeatEnemy(e){const i=enemies.indexOf(e);if(i<0)return false;gold+=e.reward;enemies.splice(i,1);ui();return true;}
+function pathProgress(e){
+  const a=path[e.seg],b=path[e.seg+1];if(!a||!b)return e.seg;
+  const full=Math.max(1,Math.hypot(b.x-a.x,b.y-a.y)),left=Math.hypot(b.x-e.x,b.y-e.y);
+  return e.seg+(1-left/full);
+}
+function pickTarget(t,candidates){
+  const mode=t.targetMode||'first';
+  if(mode==='last')return candidates.sort((a,b)=>pathProgress(a)-pathProgress(b))[0];
+  if(mode==='strongest')return candidates.sort((a,b)=>b.hp-a.hp)[0];
+  if(mode==='weakest')return candidates.sort((a,b)=>a.hp-b.hp)[0];
+  if(mode==='fastest')return candidates.sort((a,b)=>b.speed-a.speed)[0];
+  return candidates.sort((a,b)=>pathProgress(b)-pathProgress(a))[0];
+}
 function attack(t,dt){
   t.cool-=dt;if(t.cool>0)return;
-  const target=enemies.filter(e=>Math.hypot(e.x-t.x,e.y-t.y)<=t.b.range).sort((a,b)=>b.seg-a.seg)[0];
+  const target=pickTarget(t,enemies.filter(e=>Math.hypot(e.x-t.x,e.y-t.y)<=t.b.range));
   if(!target)return;
   t.cool=t.b.rate;projectiles.push({x:t.x,y:t.y,target,damage:t.b.damage,type:t.b.type,color:t.b.color,beastId:t.b.id,speed:t.b.type==='Rock'?300:t.b.type==='Wind'?520:420,fromX:t.x,fromY:t.y,spin:0,powerTier:t.powerTier||0,specialTier:t.specialTier||0,skillTier:t.skillTier||0});
 }
