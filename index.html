@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#102019"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>Beastward</title><link rel="stylesheet" href="style.css?v=20260909-52"></head><body>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#102019"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>Beastward</title><link rel="stylesheet" href="style.css?v=20260909-53"></head><body>
 <div id="app">
 <section id="titleScreen" class="screen active">
   <div class="title-shell">
@@ -147,10 +147,22 @@
     <button id="loadoutStartBtn" class="primary loadout-start" disabled>SELECT AT LEAST 1</button>
   </div>
 </div>
+<div id="exitConfirmModal" class="modal exit-confirm-modal hidden">
+  <div class="exit-confirm-backdrop modal-backdrop"></div>
+  <div class="modal-card exit-confirm-card">
+    <div class="screen-crest mini">!</div>
+    <h2>Leave This Level?</h2>
+    <p>Your current wave progress, placed beasts and battle upgrades will be lost.</p>
+    <div class="exit-confirm-actions">
+      <button id="exitStayBtn" class="primary">KEEP PLAYING</button>
+      <button id="exitConfirmBtn" class="battle-exit confirm-exit-btn">EXIT LEVEL</button>
+    </div>
+  </div>
+</div>
 <div id="selectedTowerModal" class="tower-modal hidden"><div class="tower-modal-backdrop"></div><div id="selectedTowerPanel" class="selected-tower-panel tower-modal-card"><button id="closeTowerModalBtn" class="tower-modal-close" aria-label="Close upgrades">×</button>
   <div class="selected-tower-head"><div><b id="selectedTowerName">Selected Beast</b><div id="selectedTowerStats" class="tiny"></div></div><button id="sellTowerBtn" class="sell-btn compact">SELL • 80%</button></div>
   <div class="targeting-box"><label for="targetModeSelect">TARGET PRIORITY</label><select id="targetModeSelect"><option value="first">First</option><option value="last">Last</option><option value="strongest">Strongest</option><option value="weakest">Weakest</option><option value="fastest">Fastest</option></select></div><div class="upgrade-tree">
-    <div class="upgrade-rule">Battle upgrades only last for this level. Ferocity and Primal Gift can both reach Tier III, but only one can claim the powerful Tier IV. Every beast Talent can independently reach Tier IV.</div>
+    <div class="upgrade-rule">Battle upgrades only last for this level. All three paths can reach Tier IV. Tier V is an Ultimate: once one path claims it, the other two are locked at Tier IV.</div>
     <div class="upgrade-path">
       <div class="upgrade-path-head"><span class="path-icon">⚔</span><div><b>Ferocity</b><small>Damage and reach</small></div></div></div>
       <button id="powerUpgradeBtn" class="upgrade-btn"></button>
@@ -170,4 +182,4 @@
 </div>
 <div id="progressToast" class="progress-toast hidden"><b id="progressToastTitle">BEAST LEVEL UP</b><span id="progressToastText"></span></div><div id="resultModal" class="modal hidden"><div class="modal-card result-report-card"><h2 id="resultTitle"></h2><p id="resultText"></p><div id="battleSummary" class="battle-summary"></div><button id="resultContinue" class="primary">Continue</button></div></div>
 <div id="eggModal" class="modal hidden"><div class="modal-card"><h2 id="eggResultTitle"></h2><img id="eggResultSprite" class="result-sprite"><h3 id="eggResultName"></h3><p id="eggResultText"></p><button id="eggResultContinue" class="primary">Continue</button></div></div>
-</div><script src="game.js?v=20260909-52"></script></body></html>
+</div><script src="game.js?v=20260909-53"></script></body></html>
