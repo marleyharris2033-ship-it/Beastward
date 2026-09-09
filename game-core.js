@@ -498,6 +498,7 @@ if($('#loadoutStartBtn'))$('#loadoutStartBtn').onclick=()=>beginSelectedLevel();
 if($('#loadoutCancelBtn'))$('#loadoutCancelBtn').onclick=()=>closeLoadoutPicker();
 if($('#loadoutModal'))$('#loadoutModal').addEventListener('pointerdown',e=>{if(e.target.classList.contains('loadout-backdrop'))closeLoadoutPicker()});
 let towers=[],enemies=[],projectiles=[],effects=[],selectedSpecies=null,selectedTower=null,gold=400,lives=20,wave=0,running=false,last=0,queue=[],speed=1,waveParticipants=new Set();
+let battleReport={kills:0,damageByBeast:{},xpByBeast:{},wavesCleared:0};
 
 function ui(){$('#gold').textContent=Math.floor(gold);$('#lives').textContent=lives;$('#wave').textContent=wave;if(selectedTower)renderUpgradeButtons()}
 const upgradeDefs={
@@ -645,6 +646,7 @@ if($('#selectedTowerModal')){
 }
 function reset(){
   towers=[];enemies=[];projectiles=[];effects=[];selectedSpecies=null;selectedTower=null;gold=400;lives=20;wave=0;running=false;queue=[];speed=1;waveParticipants=new Set();
+  battleReport={kills:0,damageByBeast:{},xpByBeast:{},wavesCleared:0};
   document.querySelectorAll('.speed-choice').forEach(b=>b.classList.toggle('active',Number(b.dataset.speed)===1));$('#waveXpNotice').textContent='';ui();choices();renderSelectedTower();updateNextWavePreview();
 }
 $('#exitLevelBtn').onclick=()=>show('campaignScreen');
@@ -734,7 +736,7 @@ function move(e,dt){
   if(d<sp*dt){e.x=target.x;e.y=target.y;e.seg++;return e.seg<path.length-1}
   e.x+=dx/d*sp*dt;e.y+=dy/d*sp*dt;return true;
 }
-function defeatEnemy(e){const i=enemies.indexOf(e);if(i<0)return false;gold+=e.reward;enemies.splice(i,1);ui();return true;}
+function defeatEnemy(e){const i=enemies.indexOf(e);if(i<0)return false;gold+=e.reward;battleReport.kills++;enemies.splice(i,1);ui();return true;}
 function pathProgress(e){
   const a=path[e.seg],b=path[e.seg+1];if(!a||!b)return e.seg;
   const full=Math.max(1,Math.hypot(b.x-a.x,b.y-a.y)),left=Math.hypot(b.x-e.x,b.y-e.y);
@@ -767,12 +769,25 @@ function addXP(ids,amount){
   persist();
   return levelUps;
 }
+function showProgressToast(title,text,kind='normal'){
+  const toast=$('#progressToast');if(!toast)return;
+  toast.className='progress-toast '+kind;
+  $('#progressToastTitle').textContent=title;
+  $('#progressToastText').textContent=text;
+  toast.classList.remove('hidden');
+  clearTimeout(showProgressToast.timer);
+  showProgressToast.timer=setTimeout(()=>toast.classList.add('hidden'),2400);
+}
 function completeWave(){
   const amount=5+wave*5,bonus=24+wave*4;
-  gold+=bonus;ui();
+  gold+=bonus;battleReport.wavesCleared=Math.max(battleReport.wavesCleared,wave);ui();
+  waveParticipants.forEach(id=>battleReport.xpByBeast[id]=(battleReport.xpByBeast[id]||0)+amount);
   const ups=addXP(waveParticipants,amount);
   $('#waveXpNotice').textContent=`Wave ${wave} clear • +${amount} XP • +${bonus} gold`;
-  if(ups.length)setTimeout(()=>alert(ups.join('\n')),80);
+  if(ups.length){
+    const evolution=ups.find(x=>x.includes('Level 15')||x.includes('Level 30'));
+    showProgressToast(evolution?'EVOLUTION READY':'BEAST LEVEL UP',ups.join(' • '),evolution?'evolution':'levelup');
+  }
   setTimeout(()=>{if($('#waveXpNotice'))$('#waveXpNotice').textContent=''},1800);
 }
 function fx(kind,x,y,color='#fff',extra={}){effects.push({kind,x,y,color,life:1,maxLife:1,...extra})}
@@ -813,6 +828,7 @@ function hitProjectile(p){
     if(Math.random()<critChance){damage*=critMult;fx('crit',t.x,t.y,'#ff79ff')}
   }
   t.hp-=damage;
+  battleReport.damageByBeast[p.beastId]=(battleReport.damageByBeast[p.beastId]||0)+Math.max(0,damage);
 
   if(p.type==='Fire'){
     const burnDps=p.damage*(primal?.55:mastery?.42:.28),burnTime=primal?3.4:mastery?3:2.4;
@@ -911,8 +927,19 @@ function finish(win){
   $('#resultTitle').textContent=win?'Victory!':'The Core Has Fallen';
   if(win){
     save.essence+=currentLevel.reward;if(!save.completedLevels.includes(currentLevel.id))save.completedLevels.push(currentLevel.id);save.wardenLevel=Math.max(save.wardenLevel,1+Math.ceil(currentLevel.id/2));persist();
-    $('#resultText').textContent=`${currentLevel.name} defended. You earned ${currentLevel.reward} Essence. Level ${currentLevel.id<10?'1-'+(currentLevel.id+1)+' unlocked.':'region complete!'}`;
+    $('#resultText').textContent=`${currentLevel.name} defended. You earned ${currentLevel.reward} Essence. ${currentLevel.id<10?'Level 1-'+(currentLevel.id+1)+' unlocked.':'Verdant Valley complete!'}`;
   }else $('#resultText').textContent='Strengthen your defence and try again.';
+
+  const summary=$('#battleSummary');
+  if(summary){
+    const damageEntries=Object.entries(battleReport.damageByBeast).sort((a,b)=>b[1]-a[1]);
+    const best=damageEntries[0],bestName=best?nameFor(best[0]):'—',bestDamage=best?Math.round(best[1]):0;
+    const xpRows=Object.entries(battleReport.xpByBeast).sort((a,b)=>b[1]-a[1]).map(([id,xp])=>'<span><b>'+nameFor(id)+'</b><em>+'+xp+' XP</em></span>').join('');
+    summary.innerHTML='<div class="summary-stat"><small>ENEMIES DEFEATED</small><b>'+battleReport.kills+'</b></div>'+
+      '<div class="summary-stat"><small>WAVES CLEARED</small><b>'+battleReport.wavesCleared+'/10</b></div>'+
+      '<div class="summary-stat standout"><small>TOP DAMAGE</small><b>'+bestName+'</b><em>'+bestDamage+' dmg</em></div>'+
+      '<div class="summary-xp"><small>BEAST XP EARNED</small>'+ (xpRows||'<span><b>No XP earned</b></span>') +'</div>';
+  }
 }
 $('#resultContinue').onclick=()=>{$('#resultModal').classList.add('hidden');show('hubScreen')};
 
