@@ -592,3 +592,11 @@ radial-gradient(ellipse at 82% 57%,#193722 0 6%,transparent 7%);opacity:.75}
   .bestiary-layout.no-selection .bestiary-list{max-height:none;overflow:visible}
   .bestiary-detail{scroll-margin-top:90px}
 }
+
+/* ===== Four-beast battle roster + balance pass v41 ===== */
+@media(max-width:760px){
+  .tower-panel{padding:12px}
+  .tower-choice{margin-bottom:7px;padding:7px 8px;min-height:72px}
+  .tower-choice img,.tower-list-sprite{width:54px!important;height:54px!important}
+  .tower-choice small{font-size:11px;line-height:1.25}
+}
