@@ -79,12 +79,26 @@ function nameForStage(id,stage){
   const b=beasts[id];
   return stage===3?b.evo30:stage===2?b.evo20:b.name;
 }
+const stage2SpeciesOrder=['embercub','sprigpaw','bubblit','sparkit','pebblum','gustwing','toxip','frostkit','shadepup','lumpling','voltwing','scorchick','mosshell','drizzlet','zapmoth','cindrake','sporeling','drakeling','voidling'];
+const stage2SheetImg=new Image();
+stage2SheetImg.src='assets/pixel/evolved/stage2_sheet.png?v=57';
+function stage2SheetCell(id){
+  const index=Math.max(0,stage2SpeciesOrder.indexOf(id));
+  return {index,col:index%5,row:Math.floor(index/5),sx:(index%5)*128,sy:Math.floor(index/5)*128};
+}
 function spritePathForStage(id,stage=1){
-  return stage>1?`assets/pixel/evolved/${id}_${stage}.svg?v=48`:beasts[id].sprite;
+  return stage===3?`assets/pixel/evolved/${id}_3.svg?v=48`:beasts[id].sprite;
 }
 function currentSprite(id){return spritePathForStage(id,evolutionStage(id))}
 function stageSpriteMarkup(id,stage=evolutionStage(id),extra='',unseen=false){
-  const b=beasts[id],src=spritePathForStage(id,stage),name=nameForStage(id,stage);
+  const b=beasts[id],name=nameForStage(id,stage);
+  if(stage===2){
+    const cell=stage2SheetCell(id),x=cell.col*25,y=cell.row*(100/3);
+    return `<span class="stage-sprite stage-2 type-${b.type.toLowerCase()} ${unseen?'unseen-sprite':''} ${extra}" aria-label="${unseen?'Undiscovered beast':name}">
+      <span class="stage2-sheet-form" style="background-position:${x}% ${y}%"></span>
+    </span>`;
+  }
+  const src=spritePathForStage(id,stage);
   return `<span class="stage-sprite stage-${stage} type-${b.type.toLowerCase()} ${unseen?'unseen-sprite':''} ${extra}">
     <img class="stage-form" src="${src}" alt="${unseen?'Undiscovered beast':name}">
   </span>`;
@@ -96,19 +110,17 @@ Object.values(beasts).forEach(b=>{
   base.src=b.sprite;
   spriteImgs[b.id]=base;
   evolutionSpriteImgs[b.id]={};
-  [2,3].forEach(stage=>{
-    const form=new Image();
-    form.onerror=()=>{form.src=b.sprite};
-    form.src=spritePathForStage(b.id,stage);
-    evolutionSpriteImgs[b.id][stage]=form;
-  });
+  const finalForm=new Image();
+  finalForm.onerror=()=>{finalForm.src=b.sprite};
+  finalForm.src=spritePathForStage(b.id,3);
+  evolutionSpriteImgs[b.id][3]=finalForm;
 });
 document.addEventListener('error',e=>{
   const img=e.target;
   if(!img||img.tagName!=='IMG'||img.dataset.spriteFallback)return;
   const src=img.src||'',file=src.split('/').pop()||'';
   if(src.includes('/assets/pixel/evolved/')){
-    const match=src.match(/\/evolved\/([a-z]+)_[23]\.svg/);
+    const match=src.match(/\/evolved\/([a-z]+)_3\.svg/);
     if(match&&beasts[match[1]]){img.dataset.spriteFallback='1';img.src=beasts[match[1]].sprite}
     return;
   }
@@ -1873,8 +1885,14 @@ function draw(){
       ctx.moveTo(t.x-r,t.y+r-l);ctx.lineTo(t.x-r,t.y+r);ctx.lineTo(t.x-r+l,t.y+r);
       ctx.moveTo(t.x+r-l,t.y+r);ctx.lineTo(t.x+r,t.y+r);ctx.lineTo(t.x+r,t.y+r-l);ctx.stroke();
     }
-    const stage=evolutionStage(t.b.id),img=stage>1?(evolutionSpriteImgs[t.b.id]?.[stage]||spriteImgs[t.b.id]):spriteImgs[t.b.id];
-    if(img&&img.complete){const size=stage===3?88:stage===2?83:78;ctx.drawImage(img,t.x-size/2,t.y-size/2,size,size)}
+    const stage=evolutionStage(t.b.id);
+    if(stage===2&&stage2SheetImg.complete&&stage2SheetImg.naturalWidth){
+      const cell=stage2SheetCell(t.b.id),size=83;
+      ctx.drawImage(stage2SheetImg,cell.sx,cell.sy,128,128,t.x-size/2,t.y-size/2,size,size);
+    }else{
+      const img=stage===3?(evolutionSpriteImgs[t.b.id]?.[3]||spriteImgs[t.b.id]):spriteImgs[t.b.id];
+      if(img&&img.complete){const size=stage===3?88:78;ctx.drawImage(img,t.x-size/2,t.y-size/2,size,size)}
+    }
   });
 
   enemies.forEach(e=>{
