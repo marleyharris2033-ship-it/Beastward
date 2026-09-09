@@ -1,9 +1,9 @@
 // Beastward sprite/runtime patch: reliable drag placement + clean Safari-safe fallback art
 (() => {
   const custom = {
-    shadepup:{sprite:'assets/sprites/shadepup.svg',tower:'assets/sprites/shadepup.svg'},
-    scorchick:{sprite:'assets/sprites/scorchick.svg',tower:'assets/sprites/scorchick.svg'},
-    voidling:{sprite:'assets/sprites/voidling.svg',tower:'assets/sprites/voidling.svg'}
+    shadepup:{sprite:'assets/pixel/shadepup.png?v=39',tower:'assets/pixel/shadepup.png?v=39'},
+    scorchick:{sprite:'assets/pixel/scorchick.png?v=39',tower:'assets/pixel/scorchick.png?v=39'},
+    voidling:{sprite:'assets/pixel/voidling.png?v=39',tower:'assets/pixel/voidling.png?v=39'}
   };
 
   Object.entries(custom).forEach(([id,art])=>{
