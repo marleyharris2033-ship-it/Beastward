@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#102019"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>Beastward</title><link rel="stylesheet" href="style.css?v=20260909-33"></head><body>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#102019"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>Beastward</title><link rel="stylesheet" href="style.css?v=20260909-34"></head><body>
 <div id="app">
 <section id="titleScreen" class="screen active">
   <div class="title-shell">
@@ -121,6 +121,18 @@
     </aside>
   </div>
 </section>
+<div id="loadoutModal" class="loadout-modal hidden">
+  <div class="loadout-backdrop"></div>
+  <div class="loadout-card-shell">
+    <button id="loadoutCancelBtn" class="tower-modal-close" aria-label="Close loadout">×</button>
+    <div class="screen-crest mini">◆</div>
+    <h2>Choose Your Battle Team</h2>
+    <p id="loadoutLevelName" class="sub centred"></p>
+    <div class="loadout-topline"><b id="loadoutCount">0 / 5 selected</b><small>Choose up to five beasts for this level.</small></div>
+    <div id="loadoutGrid" class="loadout-grid"></div>
+    <button id="loadoutStartBtn" class="primary loadout-start" disabled>SELECT AT LEAST 1</button>
+  </div>
+</div>
 <div id="selectedTowerModal" class="tower-modal hidden"><div class="tower-modal-backdrop"></div><div id="selectedTowerPanel" class="selected-tower-panel tower-modal-card"><button id="closeTowerModalBtn" class="tower-modal-close" aria-label="Close upgrades">×</button>
   <div class="selected-tower-head"><div><b id="selectedTowerName">Selected Beast</b><div id="selectedTowerStats" class="tiny"></div></div><button id="sellTowerBtn" class="sell-btn compact">SELL • 80%</button></div>
   <div class="upgrade-tree">
@@ -144,4 +156,4 @@
 </div>
 <div id="resultModal" class="modal hidden"><div class="modal-card"><h2 id="resultTitle"></h2><p id="resultText"></p><button id="resultContinue" class="primary">Continue</button></div></div>
 <div id="eggModal" class="modal hidden"><div class="modal-card"><h2 id="eggResultTitle"></h2><img id="eggResultSprite" class="result-sprite"><h3 id="eggResultName"></h3><p id="eggResultText"></p><button id="eggResultContinue" class="primary">Continue</button></div></div>
-</div><script src="game.js?v=20260909-33"></script></body></html>
+</div><script src="game.js?v=20260909-34"></script></body></html>
