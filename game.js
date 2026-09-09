@@ -1,10 +1,10 @@
-// Beastward loader v25
+// Beastward loader v26
 (() => {
   const core = document.createElement('script');
   core.src = 'game-core.js?v=20260909-57';
   core.onload = () => {
     const patch = document.createElement('script');
-    patch.src = 'range-sprite-patch.js?v=20260909-61';
+    patch.src = 'range-sprite-patch.js?v=20260909-62';
     document.head.appendChild(patch);
   };
   document.head.appendChild(core);
