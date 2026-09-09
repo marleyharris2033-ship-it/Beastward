@@ -301,13 +301,32 @@ function renderBestiary(){
    ['All',...new Set(Object.values(beasts).map(b=>b.type))].forEach(type=>{const btn=document.createElement('button');btn.className='best-filter'+(type===bestiaryType?' active':'');btn.textContent=type;btn.onclick=()=>{bestiaryType=type;bestiarySelected=null;renderBestiary()};filters.appendChild(btn)});
    const q=(search.value||'').toLowerCase();
    const arr=Object.values(beasts).filter(b=>(bestiaryType==='All'||b.type===bestiaryType)&&(!q||(b.name+' '+b.type+' '+b.role+' '+b.evo20+' '+b.evo30).toLowerCase().includes(q)));
-   if(!bestiarySelected||!arr.some(b=>b.id===bestiarySelected))bestiarySelected=arr[0]?.id||null;
+   if(bestiarySelected&&!arr.some(b=>b.id===bestiarySelected))bestiarySelected=null;
+   const layout=document.querySelector('.bestiary-layout');
    list.innerHTML='';
-   arr.forEach(b=>{const row=document.createElement('button');row.className='best-row'+(b.id===bestiarySelected?' active':'');const unlocked=save.unlocked.includes(b.id);row.innerHTML=`${stageSpriteMarkup(b.id,evolutionStage(b.id),'row-sprite')}<div><h4>${nameFor(b.id)}</h4><small>${b.type} • Lv ${progress(b.id).level} • ${unlocked?'Collected':'Undiscovered'}</small></div><span class="tag">${b.role}</span>`;row.onclick=()=>{bestiarySelected=b.id;renderBestiary()};list.appendChild(row)});
-   if(!bestiarySelected){detail.innerHTML='<div class="lore-card">No beasts match your search.</div>';return}
+   arr.forEach(b=>{
+     const row=document.createElement('button');row.className='best-row'+(b.id===bestiarySelected?' active':'');
+     const unlocked=save.unlocked.includes(b.id);
+     row.innerHTML=`${stageSpriteMarkup(b.id,evolutionStage(b.id),'row-sprite')}<div><h4>${nameFor(b.id)}</h4><small>${b.type} • Lv ${progress(b.id).level} • ${unlocked?'Collected':'Undiscovered'}</small></div><span class="tag">${b.role}</span>`;
+     row.onclick=()=>{
+       bestiarySelected=bestiarySelected===b.id?null:b.id;
+       renderBestiary();
+       if(bestiarySelected&&window.innerWidth<=760)setTimeout(()=>detail.scrollIntoView({behavior:'smooth',block:'start'}),40);
+     };
+     list.appendChild(row);
+   });
+   if(!bestiarySelected){
+     detail.innerHTML='';
+     detail.classList.add('hidden');
+     if(layout)layout.classList.add('no-selection');
+     return;
+   }
+   detail.classList.remove('hidden');
+   if(layout)layout.classList.remove('no-selection');
    const b=beasts[bestiarySelected],lore=beastLore(b.id),p=progress(b.id),unlocked=save.unlocked.includes(b.id);
-   detail.innerHTML=`<div class="best-hero"><div class="best-portrait">${stageSpriteMarkup(b.id,evolutionStage(b.id),'portrait-sprite')}</div><div class="best-detail-title"><h3>${nameFor(b.id)}</h3><div class="best-pills"><span class="best-pill">${b.type}</span><span class="best-pill">${b.role}</span><span class="best-pill">Level ${p.level}/30</span><span class="best-pill">Ascension ${ascension(b.id)}/3</span><span class="best-pill">${unlocked?'Collected':'Not collected'}</span></div><p><b>${lore[0]}</b><br>${lore[1]}</p></div></div>${statBars(b.id)}<div class="best-section"><b>Evolution line</b><div class="evo-line"><div class="evo">${stageSpriteMarkup(b.id,1,'evo-sprite')}<small>Lv 1</small><b>${b.name}</b></div><div class="evo">${stageSpriteMarkup(b.id,2,'evo-sprite')}<small>Lv 15</small><b>${b.evo20}</b></div><div class="evo">${stageSpriteMarkup(b.id,3,'evo-sprite')}<small>Lv 30</small><b>${b.evo30}</b></div></div></div>`;
- }else if(bestiaryTab==='enemies'){
+   detail.innerHTML=`<button class="best-detail-close" type="button" aria-label="Close beast details">×</button><div class="best-hero"><div class="best-portrait">${stageSpriteMarkup(b.id,evolutionStage(b.id),'portrait-sprite')}</div><div class="best-detail-title"><h3>${nameFor(b.id)}</h3><div class="best-pills"><span class="best-pill">${b.type}</span><span class="best-pill">${b.role}</span><span class="best-pill">Level ${p.level}/30</span><span class="best-pill">Ascension ${ascension(b.id)}/3</span><span class="best-pill">${unlocked?'Collected':'Not collected'}</span></div><p><b>${lore[0]}</b><br>${lore[1]}</p></div></div>${statBars(b.id)}<div class="best-section"><b>Evolution line</b><div class="evo-line"><div class="evo">${stageSpriteMarkup(b.id,1,'evo-sprite')}<small>Lv 1</small><b>${b.name}</b></div><div class="evo">${stageSpriteMarkup(b.id,2,'evo-sprite')}<small>Lv 15</small><b>${b.evo20}</b></div><div class="evo">${stageSpriteMarkup(b.id,3,'evo-sprite')}<small>Lv 30</small><b>${b.evo30}</b></div></div></div>`;
+   const close=detail.querySelector('.best-detail-close');
+   if(close)close.onclick=()=>{bestiarySelected=null;renderBestiary()}; }else if(bestiaryTab==='enemies'){
    filters.innerHTML='';list.innerHTML='';
    bestiaryEnemies.forEach((e,i)=>{const row=document.createElement('button');row.className='best-row'+(bestiarySelected===i?' active':'');row.innerHTML=`<img src="${e.sprite}" alt="${e.name}"><div><h4>${e.name}</h4><small>${e.kind}</small></div><span class="tag">Enemy</span>`;row.onclick=()=>{bestiarySelected=i;renderBestiary()};list.appendChild(row)});
    if(typeof bestiarySelected!=='number')bestiarySelected=0;const e=bestiaryEnemies[bestiarySelected]||bestiaryEnemies[0];detail.innerHTML=`<div class="best-hero"><div class="best-portrait"><img src="${e.sprite}" alt="${e.name}"></div><div class="best-detail-title"><h3>${e.name}</h3><div class="best-pills"><span class="best-pill">${e.kind}</span><span class="best-pill">Enemy</span></div><p>${e.text}</p></div></div><div class="best-section"><b>Warden advice</b><p>${e.kind==='Fast'?'Use slows, freezes and good path coverage.':e.kind==='Heavy'?'High damage, poison and boss-style single-target builds work well.':e.kind==='Swarm'?'Splash, chain lightning and rapid attackers are ideal.':e.kind==='Boss'?'Use upgraded beasts and combine damage with control effects.':'A balanced defence handles these reliably.'}</p></div>`;
