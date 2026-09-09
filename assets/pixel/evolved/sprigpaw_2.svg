@@ -1,8 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" shape-rendering="crispEdges">
- <g style="color:#7ad95f"><g fill="#75d85c" stroke="#d8f7a3" stroke-width="2" opacity="0.9">
-   <ellipse cx="18" cy="26" rx="7" ry="13" transform="rotate(-35 18 26)"/>
-   <ellipse cx="80" cy="24" rx="7" ry="13" transform="rotate(38 80 24)"/>
-   
- </g></g>
- 
- </svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><ellipse cx="64" cy="112" rx="33" ry="7" fill="#000" opacity=".2"/><path d="M46 39C27 32 24 18 30 8c4 13 17 14 23 27M81 38c8-19 24-22 32-14-15 3-17 16-27 22" fill="#c9ef85" stroke="#203e28" stroke-width="5"/><path d="M31 82C27 58 39 38 60 33 82 29 99 45 98 72c0 22-16 34-35 34-19 0-29-7-32-24Z" fill="#5fae4e" stroke="#203e28" stroke-width="6"/><path d="M42 45 35 23l18 14M83 43l11-20-17 14" fill="#2f6f3b" stroke="#203e28" stroke-width="5"/><path d="M35 89 27 108M88 89l9 19" stroke="#203e28" stroke-width="6"/><path d="M96 83c17 2 21 15 11 25-3-10-11-13-20-12" fill="#2f6f3b" stroke="#203e28" stroke-width="5"/><rect x="50" y="58" width="7" height="7" rx="2" fill="#fff"/><rect x="72" y="58" width="7" height="7" rx="2" fill="#fff"/><rect x="53" y="61" width="3" height="3" fill="#203e28"/><rect x="75" y="61" width="3" height="3" fill="#203e28"/><path d="M58 74l6 5 6-5" fill="none" stroke="#203e28" stroke-width="4" stroke-linecap="round"/></svg>

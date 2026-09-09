@@ -1,7 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" shape-rendering="crispEdges">
- <g style="color:#fff0a2"><g fill="none" stroke="#fff0a2" stroke-width="3" opacity="1">
-   <ellipse cx="48" cy="15" rx="23" ry="7"/><path d="M13 44 17 38 21 44 17 50Z" fill="#fff5bc"/><path d="M78 47 82 40 86 47 82 54Z" fill="#fff5bc"/>
-   <ellipse cx="48" cy="15" rx="30" ry="10"/><path d="M48 2 52 9 48 16 44 9Z" fill="#fff5bc"/><path d="M12 72 16 65 20 72 16 79Z" fill="#fff5bc"/><path d="M79 72 83 65 87 72 83 79Z" fill="#fff5bc"/>
- </g></g>
- <circle cx="48" cy="48" r="42" fill="none" stroke="#fff0a2" stroke-width="2" opacity=".22"/><circle cx="48" cy="48" r="36" fill="none" stroke="#fff0a2" stroke-width="1.5" opacity=".16"/>
- </svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><ellipse cx="64" cy="112" rx="38" ry="7" fill="#000" opacity=".2"/><ellipse cx="64" cy="20" rx="28" ry="10" fill="none" stroke="#fff2a8" stroke-width="5"/><path d="M39 40 29 20M89 40l10-20M34 27l-11 4M94 27l11 4" stroke="#e4c762" stroke-width="5"/><path d="M32 81C28 58 40 38 61 34c23-4 38 13 36 40-2 22-17 32-35 32-17 0-27-7-30-25Z" fill="#e4c762" stroke="#705b2c" stroke-width="6"/><path d="M43 45 35 29l16 7M83 45l10-16-16 7" fill="#fff2a8" stroke="#705b2c" stroke-width="5"/><path d="M38 86 30 108M88 86l8 22" stroke="#705b2c" stroke-width="6"/><rect x="50" y="55" width="7" height="7" rx="2" fill="#fff"/><rect x="72" y="55" width="7" height="7" rx="2" fill="#fff"/><rect x="53" y="58" width="3" height="3" fill="#705b2c"/><rect x="75" y="58" width="3" height="3" fill="#705b2c"/><path d="M58 71l6 5 6-5" fill="none" stroke="#705b2c" stroke-width="4" stroke-linecap="round"/><path d="M44 83 55 94l9-9 10 9 11-11" fill="none" stroke="#fff2a8" stroke-width="4"/></svg>

@@ -1,8 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" shape-rendering="crispEdges">
- <g style="color:#ff9a39"><g fill="#ff8b2f" stroke="#ffdf74" stroke-width="2" opacity="0.9">
-   <path d="M17 70 C7 56 15 46 24 37 C22 53 35 58 27 72 Z"/>
-   <path d="M72 34 C67 22 79 15 84 7 C84 20 93 25 83 39 Z"/>
-   
- </g></g>
- 
- </svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><ellipse cx="64" cy="112" rx="35" ry="7" fill="#000" opacity=".2"/><path d="M96 78C115 65 114 44 101 28c1 15-9 19-7 30-10-11-17-17-22-31-7 21-2 41 11 54Z" fill="#ffd35b" stroke="#5e2520" stroke-width="5"/><path d="M34 83C31 58 40 35 60 29 81 22 96 39 96 64c1 19-9 37-30 42-18 3-29-7-32-23Z" fill="#f06a2a" stroke="#5e2520" stroke-width="6"/><path d="M44 43 38 20l17 14 10-23 9 23 18-13-7 26" fill="#9f2f24" stroke="#5e2520" stroke-width="5"/><path d="M35 70C18 61 13 43 22 31c9 13 17 18 26 22M91 70c17-9 24-27 15-39-9 13-17 18-26 22" fill="#ffd35b" stroke="#5e2520" stroke-width="5"/><path d="M91 84c19 4 25 17 14 29-2-12-11-15-22-15" fill="#9f2f24" stroke="#5e2520" stroke-width="5"/><rect x="50" y="57" width="7" height="7" rx="2" fill="#fff"/><rect x="72" y="57" width="7" height="7" rx="2" fill="#fff"/><rect x="53" y="60" width="3" height="3" fill="#5e2520"/><rect x="75" y="60" width="3" height="3" fill="#5e2520"/><path d="M58 73l6 5 6-5" fill="none" stroke="#5e2520" stroke-width="4" stroke-linecap="round"/></svg>
