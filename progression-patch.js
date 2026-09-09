@@ -1,4 +1,4 @@
-// Beastward stage stars + quests v1
+// Beastward stage stars + quests v2
 (() => {
   let soldThisBattle=0;
 
@@ -21,6 +21,7 @@
   const style=document.createElement('style');
   style.textContent=`
     .stage-stars{margin-top:5px;font-size:12px;letter-spacing:2px;color:#56665b}.stage-stars .earned{color:#f1cf61;text-shadow:0 0 7px #d7ad3955}
+    .stage-objectives{margin:8px 0 10px;padding:10px;border-radius:10px;background:#101d17;border:1px solid #ffffff14}.stage-objectives>b{display:block;color:#e9d16f;font-size:11px;letter-spacing:.1em;margin-bottom:7px}.objective-row{display:flex;gap:6px;flex-wrap:wrap}.objective-chip{padding:5px 7px;border-radius:7px;background:#ffffff08;color:#9fb0a5;font-size:9px;border:1px solid #ffffff0c}.objective-chip.earned{color:#e6e89d;background:#32431f;border-color:#d0c45344}
     .quest-board{margin:14px 0 18px;padding:14px;border-radius:14px;background:#0a1812cc;border:1px solid #ffffff18}
     .quest-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.quest-head b{color:#ead279;letter-spacing:.12em;font-size:13px}.quest-head small{color:#9daf9f}
     .quest-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.quest-card{padding:10px;border-radius:10px;background:#12251b;border:1px solid #ffffff12}
@@ -35,16 +36,10 @@
   function starState(level=currentLevel,mode=battleMode){ensureProgression();return save.stageStars[starKey(level,mode)]||[false,false,false]}
   function starCount(level=currentLevel,mode=battleMode){return starState(level,mode).filter(Boolean).length}
 
-  function renderStars(count){return [0,1,2].map(i=>`<span class="${i<count?'earned':''}">★</span>`).join('')}
-
   function ensureQuestBoard(){
-    const panel=document.querySelector('.campaign-panel');
-    if(!panel)return null;
+    const panel=document.querySelector('.campaign-panel');if(!panel)return null;
     let board=document.querySelector('#questBoard');
-    if(!board){
-      board=document.createElement('div');board.id='questBoard';board.className='quest-board';
-      const map=document.querySelector('.campaign-map');panel.insertBefore(board,map);
-    }
+    if(!board){board=document.createElement('div');board.id='questBoard';board.className='quest-board';const map=document.querySelector('.campaign-map');panel.insertBefore(board,map)}
     return board;
   }
 
@@ -59,77 +54,53 @@
     board.querySelectorAll('.quest-claim:not(:disabled)').forEach(btn=>btn.onclick=()=>claimQuest(btn.dataset.quest));
   }
 
+  function showQuestEggReward(result){
+    if(!result)return;
+    const {id,isNew,tier='Common'}=result,b=beasts[id];
+    $('#eggResultTitle').textContent='Quest Reward • '+tier+' Egg';
+    $('#eggResultSprite').src=b.sprite;$('#eggResultName').textContent=b.name;
+    const a=ascension(id),need=ascensionNeed(id),held=copies(id);
+    $('#eggResultText').textContent=isNew?b.name+' hatched from your quest reward and joined your Beast Vault.':b.name+' duplicate hatched. You now have '+held+(a<3?'/'+need:'')+' copies towards the next Ascension.';
+    $('#eggModal').classList.remove('hidden');
+  }
+
   function teamForReward(){return (save.lastLoadout||[]).filter(id=>save.unlocked.includes(id)).slice(0,4)}
   function claimQuest(id){
     ensureProgression();const q=quests.find(x=>x.id===id);if(!q||save.claimedQuests.includes(id)||questValue(q)<q.goal)return;
-    save.claimedQuests.push(id);
-    const team=teamForReward();
-    if(q.reward.xp&&team.length)addXP(team,q.reward.xp);
-    if(q.reward.essence)save.essence+=q.reward.essence;
-    let egg=null;
-    if(q.reward.egg==='common')egg=rollRewardEgg(commonPool,'Common');
-    if(q.reward.egg==='rare')egg=rollRewardEgg(rarePool,'Rare');
-    persist();renderQuests();
-    showProgressToast('QUEST COMPLETE',q.name+' • '+q.rewardText,'levelup');
-    if(egg)setTimeout(()=>showBossEggReward(egg),320);
+    save.claimedQuests.push(id);const team=teamForReward();
+    if(q.reward.xp&&team.length)addXP(team,q.reward.xp);if(q.reward.essence)save.essence+=q.reward.essence;
+    let egg=null;if(q.reward.egg==='common')egg=rollRewardEgg(commonPool,'Common');if(q.reward.egg==='rare')egg=rollRewardEgg(rarePool,'Rare');
+    persist();renderQuests();showProgressToast('QUEST COMPLETE',q.name+' • '+q.rewardText,'levelup');if(egg)setTimeout(()=>showQuestEggReward(egg),320);
   }
 
   const baseRenderCampaignMap=renderCampaignMap;
   renderCampaignMap=function(){
-    ensureProgression();const result=baseRenderCampaignMap();
-    const rows=[...document.querySelectorAll('.campaign-map .map-stage-row')];
-    const visible=levels.filter(l=>levelWorld(l)===campaignWorld);
-    rows.forEach((row,i)=>{
-      const lvl=visible[i],node=row.querySelector('.map-node');if(!lvl||!node)return;
-      let stars=node.querySelector('.stage-stars');if(!stars){stars=document.createElement('div');stars.className='stage-stars';node.appendChild(stars)}
-      const state=save.stageStars[(campaignMode||'normal')+':'+lvl.id]||[false,false,false];
-      stars.innerHTML=state.map(v=>`<span class="${v?'earned':''}">★</span>`).join('');
-    });
+    ensureProgression();const result=baseRenderCampaignMap();const rows=[...document.querySelectorAll('.campaign-map .map-stage-row')],visible=levels.filter(l=>levelWorld(l)===campaignWorld);
+    rows.forEach((row,i)=>{const lvl=visible[i],node=row.querySelector('.map-node');if(!lvl||!node)return;let stars=node.querySelector('.stage-stars');if(!stars){stars=document.createElement('div');stars.className='stage-stars';node.appendChild(stars)}const state=save.stageStars[(campaignMode||'normal')+':'+lvl.id]||[false,false,false];stars.innerHTML=state.map(v=>`<span class="${v?'earned':''}">★</span>`).join('')});
     renderQuests();return result;
   };
 
-  const baseReset=reset;
-  reset=function(){soldThisBattle=0;return baseReset()};
-
-  const sellBtn=document.querySelector('#sellTowerBtn');
-  if(sellBtn)sellBtn.addEventListener('pointerdown',()=>{if(selectedTower&&towers.includes(selectedTower))soldThisBattle++},{capture:true});
-
-  function activeSynergyCount(){
-    try{return window.BeastwardSynergies?.active?.().length||0}catch(_){return 0}
+  function renderObjectivePreview(){
+    const shell=document.querySelector('.loadout-card-shell');if(!shell||!pendingLevelId)return;
+    let box=document.querySelector('#stageObjectivePreview');if(!box){box=document.createElement('div');box.id='stageObjectivePreview';box.className='stage-objectives';const grid=document.querySelector('#loadoutGrid');shell.insertBefore(box,grid)}
+    const lvl=levels.find(x=>x.id===pendingLevelId),mode=pendingMode||campaignMode||'normal',state=lvl?(save.stageStars[mode+':'+lvl.id]||[false,false,false]):[false,false,false];
+    box.innerHTML=`<b>3-STAR OBJECTIVES</b><div class="objective-row"><span class="objective-chip ${state[0]?'earned':''}">${state[0]?'★':'☆'} Clear the stage</span><span class="objective-chip ${state[1]?'earned':''}">${state[1]?'★':'☆'} Finish with 15+ lives</span><span class="objective-chip ${state[2]?'earned':''}">${state[2]?'★':'☆'} No beasts sold</span></div>`;
   }
+  const baseRenderLoadoutPicker=renderLoadoutPicker;
+  renderLoadoutPicker=function(){const result=baseRenderLoadoutPicker();renderObjectivePreview();return result};
 
-  function awardStageStars(){
-    ensureProgression();const key=starKey(),previous=save.stageStars[key]||[false,false,false];
-    const earned=[true,lives>=15,soldThisBattle===0];
-    const merged=previous.map((v,i)=>v||earned[i]);
-    save.stageStars[key]=merged;
-    return {earned,merged,newStars:merged.filter((v,i)=>v&&!previous[i]).length};
-  }
+  const baseReset=reset;reset=function(){soldThisBattle=0;return baseReset()};
+  const sellBtn=document.querySelector('#sellTowerBtn');if(sellBtn)sellBtn.addEventListener('pointerdown',()=>{if(selectedTower&&towers.includes(selectedTower))soldThisBattle++},{capture:true});
+
+  function activeSynergyCount(){try{return window.BeastwardSynergies?.active?.().length||0}catch(_){return 0}}
+  function awardStageStars(){ensureProgression();const key=starKey(),previous=save.stageStars[key]||[false,false,false],earned=[true,lives>=15,soldThisBattle===0],merged=previous.map((v,i)=>v||earned[i]);save.stageStars[key]=merged;return {earned,merged,newStars:merged.filter((v,i)=>v&&!previous[i]).length}}
 
   const baseFinish=finish;
   finish=function(win){
-    const killsBefore=battleReport?.kills||0;
-    const bossBefore=!!battleReport?.bossDefeated;
-    const synergyCount=activeSynergyCount();
-    const result=baseFinish(win);
-    ensureProgression();
-    save.questStats.kills=(save.questStats.kills||0)+killsBefore;
-    let starResult=null;
-    if(win){
-      save.questStats.clears=(save.questStats.clears||0)+1;
-      starResult=awardStageStars();
-      if(starResult.merged.every(Boolean))save.questStats.perfects=Math.max(1,save.questStats.perfects||0);
-      if(synergyCount>=2)save.questStats.synergyWins=(save.questStats.synergyWins||0)+1;
-      if(bossBefore)save.questStats.bosses=(save.questStats.bosses||0)+1;
-    }
-    persist();renderCampaignMap();
-    const card=document.querySelector('.result-report-card');
-    if(card){
-      let stars=card.querySelector('#resultStars');if(!stars){stars=document.createElement('div');stars.id='resultStars';stars.className='result-stars';const summary=document.querySelector('#battleSummary');card.insertBefore(stars,summary)}
-      if(win&&starResult){
-        stars.style.display='block';stars.innerHTML=`<b>${starCount()}/3 STAGE STARS</b><div class="result-star-row">${starResult.merged.map(v=>`<span class="${v?'earned':''}">★</span>`).join('')}</div><div class="result-objectives"><span class="done">✓ Clear the stage</span><span class="${lives>=15?'done':''}">${lives>=15?'✓':'○'} Finish with 15+ lives</span><span class="${soldThisBattle===0?'done':''}">${soldThisBattle===0?'✓':'○'} No beasts sold</span></div>`;
-      }else stars.style.display='none';
-    }
+    const killsBefore=battleReport?.kills||0,bossBefore=!!battleReport?.bossDefeated,synergyCount=activeSynergyCount();const result=baseFinish(win);ensureProgression();save.questStats.kills=(save.questStats.kills||0)+killsBefore;let starResult=null;
+    if(win){save.questStats.clears=(save.questStats.clears||0)+1;starResult=awardStageStars();if(starResult.merged.every(Boolean))save.questStats.perfects=Math.max(1,save.questStats.perfects||0);if(synergyCount>=2)save.questStats.synergyWins=(save.questStats.synergyWins||0)+1;if(bossBefore)save.questStats.bosses=(save.questStats.bosses||0)+1}
+    persist();renderCampaignMap();const card=document.querySelector('.result-report-card');
+    if(card){let stars=card.querySelector('#resultStars');if(!stars){stars=document.createElement('div');stars.id='resultStars';stars.className='result-stars';const summary=document.querySelector('#battleSummary');card.insertBefore(stars,summary)}if(win&&starResult){stars.style.display='block';stars.innerHTML=`<b>${starCount()}/3 STAGE STARS${starResult.newStars?' • +'+starResult.newStars+' NEW':''}</b><div class="result-star-row">${starResult.merged.map(v=>`<span class="${v?'earned':''}">★</span>`).join('')}</div><div class="result-objectives"><span class="done">✓ Clear the stage</span><span class="${lives>=15?'done':''}">${lives>=15?'✓':'○'} Finish with 15+ lives</span><span class="${soldThisBattle===0?'done':''}">${soldThisBattle===0?'✓':'○'} No beasts sold</span></div>`}else stars.style.display='none'}
     renderQuests();return result;
   };
 
