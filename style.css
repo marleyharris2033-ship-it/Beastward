@@ -714,3 +714,57 @@ radial-gradient(ellipse at 82% 57%,#193722 0 6%,transparent 7%);opacity:.75}
 .progress-toast.boss-danger b{color:#ff9bab}
 .progress-toast.boss-win{border-color:#7cd68c;background:linear-gradient(145deg,#21432b,#122219);box-shadow:0 12px 38px #000b,0 0 25px #75da8944}
 .progress-toast.boss-win b{color:#b8ffc4}
+
+/* ===== Pokédex-style Bestiary + full evolution forms v48 ===== */
+.stage-sprite .stage-form{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  z-index:1;
+  background:transparent!important;
+  border-radius:0!important;
+  image-rendering:auto;
+  filter:drop-shadow(0 3px 3px #0007);
+}
+.stage-sprite.stage-2 .stage-form{transform:scale(1.04)}
+.stage-sprite.stage-3 .stage-form{transform:scale(1.08);filter:drop-shadow(0 4px 4px #0008)}
+.stage-sprite.unseen-sprite .stage-form{
+  filter:brightness(0) saturate(0) contrast(1.2)!important;
+  opacity:.86;
+}
+.best-row.bestiary-entry.unseen{
+  border-color:#343d38;
+  background:linear-gradient(145deg,#101713,#0b100d);
+}
+.best-row.bestiary-entry.unseen h4,
+.best-row.bestiary-entry.unseen small,
+.best-row.bestiary-entry.unseen .tag{color:#69736d}
+.best-row.bestiary-entry.unseen .row-sprite{
+  background:radial-gradient(circle,#39423d 0%,#151b17 72%);
+}
+.best-row.bestiary-entry.seen .row-sprite{
+  background:radial-gradient(circle,#25422f 0%,#0d1812 72%);
+}
+.silhouette-portrait{
+  background:radial-gradient(circle,#364039,#101411 70%)!important;
+  border-color:#465049!important;
+}
+.dex-number{
+  display:inline-block;
+  margin-bottom:5px;
+  color:#b8a45c;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.14em;
+}
+.dex-stat-grid{margin-top:14px}
+.undiscovered-entry .best-detail-title h3{color:#858f89}
+.undiscovered-entry .best-detail-title p{color:#8d9991}
+@media(max-width:760px){
+  .bestiary-list{max-height:52svh}
+  .best-row.bestiary-entry{grid-template-columns:54px 1fr auto;padding:8px}
+  .best-row.bestiary-entry .row-sprite{width:54px;height:54px}
+  .best-row.bestiary-entry h4{font-size:16px}
+}
