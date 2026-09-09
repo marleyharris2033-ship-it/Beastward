@@ -134,11 +134,13 @@
       const b=battleStats(dragSpecies);
       const valid=pointer.inside&&placementValid(pointer.x,pointer.y,beasts[dragSpecies]);
       rangeRing(pointer.x,pointer.y,b.range,b.color||'#ffe17b',valid);
-      const img=spriteImgs[dragSpecies];
+      const stage=evolutionStage(dragSpecies);
+      const img=stage>1?(evolutionSpriteImgs[dragSpecies]?.[stage]||spriteImgs[dragSpecies]):spriteImgs[dragSpecies];
       if(img&&img.complete){
         ctx.save();
-        ctx.globalAlpha=valid?.90:.60;
-        ctx.drawImage(img,pointer.x-37,pointer.y-37,74,74);
+        ctx.globalAlpha=valid?.92:.62;
+        const size=stage===3?82:stage===2?78:74;
+        ctx.drawImage(img,pointer.x-size/2,pointer.y-size/2,size,size);
         ctx.restore();
       }
     }
