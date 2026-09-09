@@ -1,4 +1,4 @@
-// Beastward team synergies v1
+// Beastward team synergies v2
 (() => {
   const synergyDefs = [
     {id:'wildfire',name:'Wildfire',types:['Fire','Wind'],icon:'🔥',desc:'Fire burn damage +25%. Wind deals +20% damage to burning enemies.'},
@@ -13,9 +13,10 @@
 
   let synergyBattleActive = false;
 
+  const typesFor = ids => new Set((ids || []).filter(id => beasts[id]).map(id => beasts[id].type));
   const teamIds = () => synergyBattleActive && battleLoadout?.length ? battleLoadout : (loadoutDraft || []);
   const activeSynergies = (ids = teamIds()) => {
-    const types = new Set((ids || []).filter(id => beasts[id]).map(id => beasts[id].type));
+    const types = typesFor(ids);
     return synergyDefs.filter(s => s.types.every(t => types.has(t)));
   };
   const hasSynergy = id => activeSynergies().some(s => s.id === id);
@@ -36,6 +37,9 @@
     .synergy-card .synergy-icon{font-size:17px;line-height:1}
     .synergy-card b{display:block;font-size:11px;color:#e9d37b}
     .synergy-card small{display:block;font-size:9px;line-height:1.3;color:#b9c8be;margin-top:2px}
+    .synergy-card.suggestion{background:#101914;border-color:#ffffff14;opacity:.82}
+    .synergy-card.suggestion b{color:#b7c6bc}
+    .synergy-card.suggestion em{display:block;font-style:normal;color:#80d7a1;font-size:9px;margin-top:2px}
     .synergy-empty{padding:8px 9px;border-radius:9px;background:#ffffff08;color:#9eafa4;font-size:10px}
     .battle-synergy-strip{margin:0 0 10px;padding:9px;border-radius:10px;background:#08150faa;border:1px solid #ffffff14}
     .battle-synergy-strip>small{display:block;color:#9fb0a5;font-size:9px;letter-spacing:.12em;margin-bottom:5px}
@@ -62,13 +66,27 @@
   function renderSynergyPreview(){
     const panel = ensureLoadoutPanel();
     if(!panel) return;
-    const active = activeSynergies(loadoutDraft || []);
+    const ids = loadoutDraft || [];
+    const selectedTypes = typesFor(ids);
+    const active = activeSynergies(ids);
+    const suggestions = synergyDefs
+      .filter(s => !active.includes(s))
+      .map(s => ({...s, missing:s.types.filter(t => !selectedTypes.has(t)), owned:s.types.filter(t => selectedTypes.has(t))}))
+      .filter(s => s.owned.length === 1 && s.missing.length === 1)
+      .slice(0,3);
+
+    const activeHtml = active.map(s => `
+      <div class="synergy-card"><span class="synergy-icon">${s.icon}</span><div><b>${s.name}</b><small>${s.desc}</small></div></div>
+    `).join('');
+    const suggestionHtml = suggestions.map(s => `
+      <div class="synergy-card suggestion"><span class="synergy-icon">${s.icon}</span><div><b>${s.name}</b><em>Add ${s.missing[0]} to activate</em><small>${s.desc}</small></div></div>
+    `).join('');
+
     panel.innerHTML = `
       <div class="synergy-preview-head"><b>TEAM SYNERGIES</b><small>${active.length} active</small></div>
       <div class="synergy-list">
-        ${active.length ? active.map(s => `
-          <div class="synergy-card"><span class="synergy-icon">${s.icon}</span><div><b>${s.name}</b><small>${s.desc}</small></div></div>
-        `).join('') : '<div class="synergy-empty">Pair complementary beast types to unlock battle bonuses.</div>'}
+        ${activeHtml || suggestionHtml || '<div class="synergy-empty">Select a beast to reveal compatible type pairings.</div>'}
+        ${activeHtml ? suggestionHtml : ''}
       </div>
     `;
   }
@@ -154,20 +172,31 @@
     const wasBurning = (t.burn || 0) > 0;
     const wasSlowed = (t.slow || 0) > 0;
     const wasStunned = (t.stun || 0) > 0;
+    const beforeSlow = t.slow || 0;
+    const beforeBurnDps = t.burnDps || 0;
+    const beforePoisonDps = t.poisonDps || 0;
 
     const result = baseHitProjectile(p);
 
-    if(hasSynergy('wildfire')){
-      if(p.type === 'Fire' && t.burnDps) t.burnDps *= 1.25;
-      if(p.type === 'Wind' && wasBurning && t.hp > 0){
-        const bonus = p.damage * .20;
-        t.hp -= bonus; reportExtraDamage(p.beastId, bonus);
-        fx('burst',t.x,t.y,'#ff9b45',{size:44,life:.45,maxLife:.45});
-      }
+    if(p.type === 'Fire' && t.burnDps > beforeBurnDps){
+      let factor = 1;
+      if(hasSynergy('wildfire')) factor *= 1.25;
+      if(hasSynergy('blightfire')) factor *= 1.15;
+      if(factor > 1) t.burnDps *= factor;
+    }
+
+    if(p.type === 'Poison' && t.poisonDps > beforePoisonDps && hasSynergy('blightfire')){
+      t.poisonDps *= 1.15;
+    }
+
+    if(hasSynergy('wildfire') && p.type === 'Wind' && wasBurning && t.hp > 0){
+      const bonus = p.damage * .20;
+      t.hp -= bonus; reportExtraDamage(p.beastId, bonus);
+      fx('burst',t.x,t.y,'#ff9b45',{size:44,life:.45,maxLife:.45});
     }
 
     if(hasSynergy('stormfront')){
-      if(p.type === 'Water' && t.slow) t.slow *= 1.20;
+      if(p.type === 'Water' && t.slow > beforeSlow) t.slow *= 1.20;
       if(p.type === 'Electric'){
         const extra = enemies
           .filter(e => e !== t && e.hp > 0 && Math.hypot(e.x-t.x,e.y-t.y) < 120)
@@ -196,11 +225,6 @@
       const bonus = p.damage * .25;
       t.hp -= bonus; reportExtraDamage(p.beastId, bonus);
       fx('zap',t.x,t.y,'#ffe66a',{size:52,life:.45,maxLife:.45});
-    }
-
-    if(hasSynergy('blightfire')){
-      if(p.type === 'Fire' && t.burnDps) t.burnDps *= 1.15;
-      if(p.type === 'Poison' && t.poisonDps) t.poisonDps *= 1.15;
     }
 
     return result;
