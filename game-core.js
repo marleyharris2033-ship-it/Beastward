@@ -3,25 +3,25 @@ const screens=[...document.querySelectorAll('.screen')];
 function show(id){screens.forEach(s=>s.classList.toggle('active',s.id===id))}
 
 const beasts={
-embercub:{id:'embercub',name:'Embercub',type:'Fire',role:'Damage',cost:140,range:138,rate:.60,damage:21,color:'#ff7a3d',evo20:'Pyrelion',evo30:'Infernalion',sprite:'assets/pixel/embercub.png',towerSprite:'assets/pixel/embercub_tower.png'},
-sprigpaw:{id:'sprigpaw',name:'Sprigpaw',type:'Nature',role:'Control',cost:150,range:135,rate:.70,damage:19,color:'#62c96b',evo20:'Thornmaw',evo30:'Elderfang',sprite:'assets/pixel/sprigpaw.png',towerSprite:'assets/pixel/sprigpaw_tower.png'},
-bubblit:{id:'bubblit',name:'Bubblit',type:'Water',role:'Slow',cost:145,range:140,rate:.65,damage:18,color:'#55a8ff',evo20:'Tiderex',evo30:'Abyssara',sprite:'assets/pixel/bubblit.png',towerSprite:'assets/pixel/bubblit_tower.png'},
-sparkit:{id:'sparkit',name:'Sparkit',type:'Electric',role:'Chain',cost:150,range:140,rate:.72,damage:18,color:'#ffd64e',evo20:'Voltail',evo30:'Stormclaw',sprite:'assets/pixel/sparkit.png',towerSprite:'assets/pixel/sparkit_tower.png'},
-pebblum:{id:'pebblum',name:'Pebblum',type:'Rock',role:'Heavy',cost:165,range:125,rate:.95,damage:31,color:'#a89b8e',evo20:'Boulderback',evo30:'Titanrock',sprite:'assets/pixel/pebblum.png',towerSprite:'assets/pixel/pebblum_tower.png'},
-gustwing:{id:'gustwing',name:'Gustwing',type:'Wind',role:'Range',cost:155,range:175,rate:.66,damage:20,color:'#b6efd0',evo20:'Galehawk',evo30:'Tempestral',sprite:'assets/pixel/gustwing.png',towerSprite:'assets/pixel/gustwing_tower.png'},
-toxip:{id:'toxip',name:'Toxip',type:'Poison',role:'Damage over Time',cost:150,range:135,rate:.74,damage:19,color:'#d46be8',evo20:'Venomane',evo30:'Plaguefang',sprite:'assets/pixel/toxip.png',towerSprite:'assets/pixel/toxip_tower.png'},
-frostkit:{id:'frostkit',name:'Frostkit',type:'Ice',role:'Freeze',cost:175,range:145,rate:.82,damage:23,color:'#9fe8ff',evo20:'Glacifang',evo30:'Cryowyrm',sprite:'assets/pixel/frostkit.png',towerSprite:'assets/pixel/frostkit_tower.png'},
-shadepup:{id:'shadepup',name:'Shadepup',type:'Dark',role:'Critical',cost:180,range:135,rate:.74,damage:24,color:'#8f79cf',evo20:'Dreadfang',evo30:'Nightreaver',sprite:'assets/sprites/shadepup.svg',towerSprite:'assets/sprites/shadepup.svg'},
-lumpling:{id:'lumpling',name:'Lumpling',type:'Light',role:'Splash',cost:185,range:155,rate:.82,damage:24,color:'#fff0a2',evo20:'Radihorn',evo30:'Solarius',sprite:'assets/pixel/lumpling.png',towerSprite:'assets/pixel/lumpling_tower.png'},
-voltwing:{id:'voltwing',name:'Voltwing',type:'Electric',role:'Chain+',cost:190,range:175,rate:.72,damage:23,color:'#fff277',evo20:'Thunderoc',evo30:'Stormra',sprite:'assets/pixel/voltwing.png',towerSprite:'assets/pixel/voltwing_tower.png'},
-scorchick:{id:'scorchick',name:'Scorchick',type:'Fire',role:'Rapid Burn',cost:135,range:125,rate:.45,damage:13,color:'#ff9a3d',evo20:'Flarewing',evo30:'Sunphoenix',sprite:'assets/sprites/scorchick.svg',towerSprite:'assets/sprites/scorchick.svg'},
-mosshell:{id:'mosshell',name:'Mosshell',type:'Nature',role:'Stagger',cost:160,range:120,rate:.98,damage:30,color:'#78b85b',evo20:'Groveshell',evo30:'Worldback',sprite:'assets/pixel/mosshell.png',towerSprite:'assets/pixel/mosshell_tower.png'},
-drizzlet:{id:'drizzlet',name:'Drizzlet',type:'Water',role:'Rapid Slow',cost:140,range:145,rate:.50,damage:14,color:'#6bcce8',evo20:'Rilltail',evo30:'Torrentusk',sprite:'assets/pixel/drizzlet.png',towerSprite:'assets/pixel/drizzlet_tower.png'},
-zapmoth:{id:'zapmoth',name:'Zapmoth',type:'Electric',role:'Fast Chain',cost:145,range:150,rate:.54,damage:14,color:'#ffe55f',evo20:'Voltmoth',evo30:'Tempestwing',sprite:'assets/pixel/zapmoth.png',towerSprite:'assets/pixel/zapmoth_tower.png'},
-cindrake:{id:'cindrake',name:'Cindrake',type:'Fire',role:'Meteor',cost:235,range:165,rate:.85,damage:38,color:'#ff6b35',evo20:'Magmara',evo30:'Vulcanox',sprite:'assets/pixel/cindrake.png',towerSprite:'assets/pixel/cindrake_tower.png'},
-sporeling:{id:'sporeling',name:'Sporeling',type:'Poison',role:'Toxic Burst',cost:220,range:160,rate:.78,damage:29,color:'#d47be3',evo20:'Mycomaw',evo30:'Fungorath',sprite:'assets/pixel/sporeling.png',towerSprite:'assets/pixel/sporeling_tower.png'},
-drakeling:{id:'drakeling',name:'Drakeling',type:'Wind',role:'Piercing Gale',cost:230,range:200,rate:.70,damage:30,color:'#8de6d7',evo20:'Draconis',evo30:'Aetherion',sprite:'assets/pixel/drakeling.png',towerSprite:'assets/pixel/drakeling_tower.png'},
-voidling:{id:'voidling',name:'Voidling',type:'Dark',role:'Void Critical',cost:240,range:170,rate:.78,damage:35,color:'#a675e8',evo20:'Riftbeast',evo30:'Oblivion',sprite:'assets/sprites/voidling.svg',towerSprite:'assets/sprites/voidling.svg'}
+embercub:{id:'embercub',name:'Embercub',type:'Fire',role:'Damage',cost:140,range:138,rate:0.6,damage:22,color:'#ff7a3d',evo20:'Pyrelion',evo30:'Infernalion',sprite:'assets/pixel/embercub.png',towerSprite:'assets/pixel/embercub_tower.png'},
+sprigpaw:{id:'sprigpaw',name:'Sprigpaw',type:'Nature',role:'Control',cost:150,range:135,rate:0.68,damage:20,color:'#62c96b',evo20:'Thornmaw',evo30:'Elderfang',sprite:'assets/pixel/sprigpaw.png',towerSprite:'assets/pixel/sprigpaw_tower.png'},
+bubblit:{id:'bubblit',name:'Bubblit',type:'Water',role:'Slow',cost:145,range:140,rate:0.62,damage:19,color:'#55a8ff',evo20:'Tiderex',evo30:'Abyssara',sprite:'assets/pixel/bubblit.png',towerSprite:'assets/pixel/bubblit_tower.png'},
+sparkit:{id:'sparkit',name:'Sparkit',type:'Electric',role:'Chain',cost:150,range:140,rate:0.66,damage:20,color:'#ffd64e',evo20:'Voltail',evo30:'Stormclaw',sprite:'assets/pixel/sparkit.png',towerSprite:'assets/pixel/sparkit_tower.png'},
+pebblum:{id:'pebblum',name:'Pebblum',type:'Rock',role:'Heavy',cost:165,range:125,rate:0.92,damage:34,color:'#a89b8e',evo20:'Boulderback',evo30:'Titanrock',sprite:'assets/pixel/pebblum.png',towerSprite:'assets/pixel/pebblum_tower.png'},
+gustwing:{id:'gustwing',name:'Gustwing',type:'Wind',role:'Range',cost:155,range:175,rate:0.62,damage:22,color:'#b6efd0',evo20:'Galehawk',evo30:'Tempestral',sprite:'assets/pixel/gustwing.png',towerSprite:'assets/pixel/gustwing_tower.png'},
+toxip:{id:'toxip',name:'Toxip',type:'Poison',role:'Damage over Time',cost:150,range:135,rate:0.7,damage:21,color:'#d46be8',evo20:'Venomane',evo30:'Plaguefang',sprite:'assets/pixel/toxip.png',towerSprite:'assets/pixel/toxip_tower.png'},
+frostkit:{id:'frostkit',name:'Frostkit',type:'Ice',role:'Freeze',cost:175,range:145,rate:0.76,damage:25,color:'#9fe8ff',evo20:'Glacifang',evo30:'Cryowyrm',sprite:'assets/pixel/frostkit.png',towerSprite:'assets/pixel/frostkit_tower.png'},
+shadepup:{id:'shadepup',name:'Shadepup',type:'Dark',role:'Critical',cost:180,range:135,rate:0.68,damage:27,color:'#8f79cf',evo20:'Dreadfang',evo30:'Nightreaver',sprite:'assets/sprites/shadepup.svg',towerSprite:'assets/sprites/shadepup.svg'},
+lumpling:{id:'lumpling',name:'Lumpling',type:'Light',role:'Splash',cost:185,range:155,rate:0.76,damage:26,color:'#fff0a2',evo20:'Radihorn',evo30:'Solarius',sprite:'assets/pixel/lumpling.png',towerSprite:'assets/pixel/lumpling_tower.png'},
+voltwing:{id:'voltwing',name:'Voltwing',type:'Electric',role:'Chain+',cost:190,range:175,rate:0.66,damage:26,color:'#fff277',evo20:'Thunderoc',evo30:'Stormra',sprite:'assets/pixel/voltwing.png',towerSprite:'assets/pixel/voltwing_tower.png'},
+scorchick:{id:'scorchick',name:'Scorchick',type:'Fire',role:'Rapid Burn',cost:135,range:125,rate:0.42,damage:15,color:'#ff9a3d',evo20:'Flarewing',evo30:'Sunphoenix',sprite:'assets/sprites/scorchick.svg',towerSprite:'assets/sprites/scorchick.svg'},
+mosshell:{id:'mosshell',name:'Mosshell',type:'Nature',role:'Stagger',cost:160,range:120,rate:0.92,damage:33,color:'#78b85b',evo20:'Groveshell',evo30:'Worldback',sprite:'assets/pixel/mosshell.png',towerSprite:'assets/pixel/mosshell_tower.png'},
+drizzlet:{id:'drizzlet',name:'Drizzlet',type:'Water',role:'Rapid Slow',cost:140,range:145,rate:0.46,damage:15,color:'#6bcce8',evo20:'Rilltail',evo30:'Torrentusk',sprite:'assets/pixel/drizzlet.png',towerSprite:'assets/pixel/drizzlet_tower.png'},
+zapmoth:{id:'zapmoth',name:'Zapmoth',type:'Electric',role:'Fast Chain',cost:145,range:150,rate:0.5,damage:16,color:'#ffe55f',evo20:'Voltmoth',evo30:'Tempestwing',sprite:'assets/pixel/zapmoth.png',towerSprite:'assets/pixel/zapmoth_tower.png'},
+cindrake:{id:'cindrake',name:'Cindrake',type:'Fire',role:'Meteor',cost:235,range:165,rate:0.78,damage:43,color:'#ff6b35',evo20:'Magmara',evo30:'Vulcanox',sprite:'assets/pixel/cindrake.png',towerSprite:'assets/pixel/cindrake_tower.png'},
+sporeling:{id:'sporeling',name:'Sporeling',type:'Poison',role:'Toxic Burst',cost:220,range:160,rate:0.7,damage:33,color:'#d47be3',evo20:'Mycomaw',evo30:'Fungorath',sprite:'assets/pixel/sporeling.png',towerSprite:'assets/pixel/sporeling_tower.png'},
+drakeling:{id:'drakeling',name:'Drakeling',type:'Wind',role:'Piercing Gale',cost:230,range:200,rate:0.64,damage:34,color:'#8de6d7',evo20:'Draconis',evo30:'Aetherion',sprite:'assets/pixel/drakeling.png',towerSprite:'assets/pixel/drakeling_tower.png'},
+voidling:{id:'voidling',name:'Voidling',type:'Dark',role:'Void Critical',cost:240,range:170,rate:0.7,damage:40,color:'#a675e8',evo20:'Riftbeast',evo30:'Oblivion',sprite:'assets/sprites/voidling.svg',towerSprite:'assets/sprites/voidling.svg'}
 };
 
 const starters=['embercub','sprigpaw','bubblit'];
@@ -114,7 +114,7 @@ document.addEventListener('error',e=>{
 },true);
 
 function blankSave(){return {starter:null,essence:0,wardenLevel:1,unlocked:[],freeCommonClaimed:false,beastProgress:{},beastCopies:{},ascensions:{},completedLevels:[],lastLoadout:[],createdAt:Date.now(),lastPlayed:Date.now()}}
-function normaliseSave(s){s=s||blankSave();s.unlocked=s.unlocked||[];s.beastProgress=s.beastProgress||{};s.beastCopies=s.beastCopies||{};s.ascensions=s.ascensions||{};s.completedLevels=s.completedLevels||[];s.lastLoadout=(s.lastLoadout||[]).filter(id=>s.unlocked.includes(id)).slice(0,5);if(s.freeCommonClaimed===undefined)s.freeCommonClaimed=false;if(!s.wardenLevel)s.wardenLevel=1;if(s.essence===undefined)s.essence=0;return s}
+function normaliseSave(s){s=s||blankSave();s.unlocked=s.unlocked||[];s.beastProgress=s.beastProgress||{};s.beastCopies=s.beastCopies||{};s.ascensions=s.ascensions||{};s.completedLevels=s.completedLevels||[];s.lastLoadout=(s.lastLoadout||[]).filter(id=>s.unlocked.includes(id)).slice(0,4);if(s.freeCommonClaimed===undefined)s.freeCommonClaimed=false;if(!s.wardenLevel)s.wardenLevel=1;if(s.essence===undefined)s.essence=0;return s}
 const legacy=localStorage.getItem('beastward-save');
 if(legacy&&!localStorage.getItem('beastward-save-1')&&!localStorage.getItem('beastward-save-2')&&!localStorage.getItem('beastward-save-3')){
   localStorage.setItem('beastward-save-1',legacy);
@@ -263,6 +263,9 @@ const enemyTypes={
  hound:{id:'hound',name:'Ruin Hound',kind:'Fast',hp:.62,speed:1.55,reward:.85,size:17,sprite:'assets/enemies/ruin_hound.svg',text:'A fast hunter with low health. It punishes defences with poor coverage.'},
  brute:{id:'brute',name:'Stone Brute',kind:'Heavy',hp:2.15,speed:.68,reward:1.75,size:23,sprite:'assets/enemies/stone_brute.svg',text:'Slow, heavily armoured and difficult to bring down before it reaches the Core.'},
  wisp:{id:'wisp',name:'Grove Wisp',kind:'Swarm',hp:.44,speed:1.18,reward:.55,size:15,sprite:'assets/enemies/wisp_swarm.svg',text:'Fragile spirits that arrive in dense groups and overwhelm slow attackers.'},
+ thornling:{id:'thornling',name:'Thornling',kind:'Skirmisher',hp:.82,speed:1.28,reward:.95,size:17,sprite:'assets/enemies/thornling.svg',text:'A nimble thorn beast that sits between a Raider and a Hound in speed and toughness.'},
+ shellback:{id:'shellback',name:'Moss Shellback',kind:'Armoured',hp:1.62,speed:.82,reward:1.4,size:21,sprite:'assets/enemies/moss_shellback.svg',text:'A plated forest beast with solid health that pressures low-damage defences.'},
+ glimmer:{id:'glimmer',name:'Glimmer Moth',kind:'Flutter',hp:.56,speed:1.38,reward:.72,size:16,sprite:'assets/enemies/glimmer_moth.svg',text:'A fragile but erratic flier that reaches the Core quickly if ignored.'},
  hollowmaw:{id:'hollowmaw',name:'Hollowmaw',kind:'Boss',hp:1,speed:1,reward:1,size:34,sprite:'assets/enemies/hollowmaw.svg',text:'A corrupted alpha beast with enormous health. Five lives are lost if it reaches the Core.'}
 };
 const bestiaryEnemies=Object.values(enemyTypes);
@@ -493,23 +496,23 @@ function renderLoadoutPicker(){
     const b=beasts[id],selected=loadoutDraft.includes(id),card=document.createElement('button'),ss=stageStats(id);
     card.className='loadout-card'+(selected?' selected':'');
     card.innerHTML=stageSpriteMarkup(id,evolutionStage(id),'loadout-sprite')+'<div class="loadout-card-copy"><b>'+nameFor(id)+'</b><small>Lv '+progress(id).level+' • '+b.type+' • '+b.role+'</small><small>POW '+ss.power+'/'+ss.cap+' • SPD '+ss.speed+'/'+ss.cap+' • RNG '+ss.range+'/'+ss.cap+'</small></div><span class="loadout-check">'+(selected?'✓':'+')+'</span>';
-    card.onclick=()=>{const i=loadoutDraft.indexOf(id);if(i>=0)loadoutDraft.splice(i,1);else if(loadoutDraft.length<5)loadoutDraft.push(id);renderLoadoutPicker()};
+    card.onclick=()=>{const i=loadoutDraft.indexOf(id);if(i>=0)loadoutDraft.splice(i,1);else if(loadoutDraft.length<4)loadoutDraft.push(id);renderLoadoutPicker()};
     grid.appendChild(card);
   });
-  if(count)count.textContent=loadoutDraft.length+' / 5 selected';
+  if(count)count.textContent=loadoutDraft.length+' / 4 selected';
   if(start){start.disabled=loadoutDraft.length<1;start.textContent=loadoutDraft.length?'DEFEND WITH '+loadoutDraft.length:'SELECT AT LEAST 1'}
 }
 function openLoadoutPicker(id){
   pendingLevelId=id;
-  const valid=(save.lastLoadout||[]).filter(x=>save.unlocked.includes(x)).slice(0,5);
-  loadoutDraft=valid.length?valid:save.unlocked.slice(0,Math.min(5,save.unlocked.length));
+  const valid=(save.lastLoadout||[]).filter(x=>save.unlocked.includes(x)).slice(0,4);
+  loadoutDraft=valid.length?valid:save.unlocked.slice(0,Math.min(4,save.unlocked.length));
   renderLoadoutPicker();$('#loadoutModal').classList.remove('hidden');
 }
 function closeLoadoutPicker(){$('#loadoutModal').classList.add('hidden');pendingLevelId=null}
 function startLevel(id){openLoadoutPicker(id)}
 function beginSelectedLevel(){
   if(!pendingLevelId||!loadoutDraft.length)return;
-  battleLoadout=[...loadoutDraft].slice(0,5);save.lastLoadout=[...battleLoadout];persist();
+  battleLoadout=[...loadoutDraft].slice(0,4);save.lastLoadout=[...battleLoadout];persist();
   currentLevel=levels[pendingLevelId-1];path=currentLevel.path;$('#loadoutModal').classList.add('hidden');pendingLevelId=null;
   reset();show('gameScreen');last=performance.now();requestAnimationFrame(loop);
 }
@@ -594,7 +597,7 @@ function battleStats(id){
 }
 function choices(){
   const w=$('#towerChoices');w.innerHTML='';
-  const available=(battleLoadout&&battleLoadout.length?battleLoadout:save.unlocked.slice(0,5)).filter(id=>save.unlocked.includes(id));
+  const available=(battleLoadout&&battleLoadout.length?battleLoadout:save.unlocked.slice(0,4)).filter(id=>save.unlocked.includes(id));
   available.forEach(id=>{
     const b=beasts[id],el=document.createElement('button');
     el.className='tower-choice';
@@ -672,15 +675,16 @@ $('#exitLevelBtn').onclick=()=>show('campaignScreen');
 function setSpeed(next){speed=next;document.querySelectorAll('.speed-choice').forEach(b=>b.classList.toggle('active',Number(b.dataset.speed)===speed))}
 document.querySelectorAll('.speed-choice').forEach(b=>b.onclick=()=>setSpeed(Number(b.dataset.speed)));
 function waveEnemyMix(w){
-  if(w<=2)return ['raider'];
-  if(w===3)return ['raider','hound'];
-  if(w===4)return ['raider','wisp'];
-  if(w===5)return ['brute','raider'];
-  if(w===6)return ['wisp','hound','raider'];
-  if(w===7)return ['brute','hound','raider'];
-  if(w===8)return ['wisp','brute','hound'];
-  if(w===9)return ['brute','hound','wisp','raider'];
-  return ['brute','hound','wisp','raider'];
+  if(w===1)return ['raider'];
+  if(w===2)return ['raider','thornling'];
+  if(w===3)return ['raider','hound','thornling'];
+  if(w===4)return ['raider','wisp','glimmer'];
+  if(w===5)return ['brute','shellback','raider'];
+  if(w===6)return ['wisp','hound','glimmer','thornling'];
+  if(w===7)return ['brute','hound','shellback','raider'];
+  if(w===8)return ['wisp','shellback','glimmer','thornling'];
+  if(w===9)return ['brute','hound','wisp','shellback','glimmer'];
+  return ['brute','hound','wisp','thornling','shellback','glimmer','raider'];
 }
 function waveComposition(w){
   const n=4+w*2+Math.floor((currentLevel.id-1)*.5),mix=waveEnemyMix(Math.min(10,w)),counts={};
@@ -842,8 +846,8 @@ function hitProjectile(p){
   if(mythic)damage*=1.18;
   let critChance=0,critMult=2;
   if(p.type==='Dark'){
-    critChance=(p.beastId==='voidling'?.35:.28)+(mastery?.10:0)+(primal?.17:0);
-    critMult=primal?2.6:mastery?2.2:2;
+    critChance=(p.beastId==='voidling'?.40:.28)+(mastery?.10:0)+(primal?.17:0);
+    critMult=p.beastId==='voidling'?(primal?2.85:mastery?2.45:2.25):(primal?2.6:mastery?2.2:2);
     if(Math.random()<critChance){damage*=critMult;fx('crit',t.x,t.y,'#ff79ff')}
   }
   t.hp-=damage;
