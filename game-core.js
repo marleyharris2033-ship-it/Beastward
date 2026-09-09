@@ -113,8 +113,8 @@ document.addEventListener('error',e=>{
   }
 },true);
 
-function blankSave(){return {starter:null,essence:0,wardenLevel:1,unlocked:[],freeCommonClaimed:false,beastProgress:{},beastCopies:{},ascensions:{},completedLevels:[],lastLoadout:[],createdAt:Date.now(),lastPlayed:Date.now()}}
-function normaliseSave(s){s=s||blankSave();s.unlocked=s.unlocked||[];s.beastProgress=s.beastProgress||{};s.beastCopies=s.beastCopies||{};s.ascensions=s.ascensions||{};s.completedLevels=s.completedLevels||[];s.lastLoadout=(s.lastLoadout||[]).filter(id=>s.unlocked.includes(id)).slice(0,4);if(s.freeCommonClaimed===undefined)s.freeCommonClaimed=false;if(!s.wardenLevel)s.wardenLevel=1;if(s.essence===undefined)s.essence=0;return s}
+function blankSave(){return {starter:null,essence:0,wardenLevel:1,unlocked:[],freeCommonClaimed:false,beastProgress:{},beastCopies:{},ascensions:{},completedLevels:[],bossEggRewards:[],lastLoadout:[],createdAt:Date.now(),lastPlayed:Date.now()}}
+function normaliseSave(s){s=s||blankSave();s.unlocked=s.unlocked||[];s.beastProgress=s.beastProgress||{};s.beastCopies=s.beastCopies||{};s.ascensions=s.ascensions||{};s.completedLevels=s.completedLevels||[];s.bossEggRewards=s.bossEggRewards||[];s.lastLoadout=(s.lastLoadout||[]).filter(id=>s.unlocked.includes(id)).slice(0,4);if(s.freeCommonClaimed===undefined)s.freeCommonClaimed=false;if(!s.wardenLevel)s.wardenLevel=1;if(s.essence===undefined)s.essence=0;return s}
 const legacy=localStorage.getItem('beastward-save');
 if(legacy&&!localStorage.getItem('beastward-save-1')&&!localStorage.getItem('beastward-save-2')&&!localStorage.getItem('beastward-save-3')){
   localStorage.setItem('beastward-save-1',legacy);
@@ -323,7 +323,7 @@ const enemyTypes={
  thornling:{id:'thornling',name:'Thornling',kind:'Skirmisher',hp:.82,speed:1.28,reward:.95,size:17,sprite:'assets/enemies/thornling.svg',text:'A nimble thorn beast that sits between a Raider and a Hound in speed and toughness.'},
  shellback:{id:'shellback',name:'Moss Shellback',kind:'Armoured',hp:1.62,speed:.82,reward:1.4,size:21,sprite:'assets/enemies/moss_shellback.svg',text:'A plated forest beast with solid health that pressures low-damage defences.'},
  glimmer:{id:'glimmer',name:'Glimmer Moth',kind:'Flutter',hp:.56,speed:1.38,reward:.72,size:16,sprite:'assets/enemies/glimmer_moth.svg',text:'A fragile but erratic flier that reaches the Core quickly if ignored.'},
- hollowmaw:{id:'hollowmaw',name:'Hollowmaw',kind:'Boss',hp:1,speed:1,reward:1,size:34,sprite:'assets/enemies/hollowmaw.svg',text:'A corrupted alpha beast with enormous health. Five lives are lost if it reaches the Core.'}
+ hollowmaw:{id:'hollowmaw',name:'Hollowmaw',kind:'Boss',hp:1,speed:1,reward:1,size:42,sprite:'assets/enemies/hollowmaw.svg',text:'A corrupted alpha beast with enormous health. Five lives are lost if it reaches the Core.'}
 };
 const bestiaryEnemies=Object.values(enemyTypes);
 let bestiaryTab='beasts',bestiaryType='All',bestiarySelected=null;
@@ -460,7 +460,7 @@ const levels=[
  ]
 },
 {
- id:5,name:"Ancient Shrine",theme:"shrine",waves:10,reward:185,hp:1.58,speed:1.08,boss:true,
+ id:5,name:"Ancient Shrine",theme:"shrine",waves:10,reward:185,hp:1.58,speed:1.08,
  pathWidth:70,pathEdge:"#55594e",pathFill:"#8d917d",
  path:[{x:-30,y:300},{x:175,y:120},{x:385,y:300},{x:540,y:105},{x:710,y:300},{x:545,y:500},{x:340,y:365},{x:780,y:365},{x:930,y:245}],
  scenery:[
@@ -577,7 +577,7 @@ if($('#loadoutStartBtn'))$('#loadoutStartBtn').onclick=()=>beginSelectedLevel();
 if($('#loadoutCancelBtn'))$('#loadoutCancelBtn').onclick=()=>closeLoadoutPicker();
 if($('#loadoutModal'))$('#loadoutModal').addEventListener('pointerdown',e=>{if(e.target.classList.contains('loadout-backdrop'))closeLoadoutPicker()});
 let towers=[],enemies=[],projectiles=[],effects=[],selectedSpecies=null,selectedTower=null,gold=400,lives=20,wave=0,running=false,last=0,queue=[],speed=1,waveParticipants=new Set();
-let battleReport={kills:0,damageByBeast:{},xpByBeast:{},wavesCleared:0};
+let battleReport={kills:0,damageByBeast:{},xpByBeast:{},wavesCleared:0,bossDefeated:false};
 
 function ui(){$('#gold').textContent=Math.floor(gold);$('#lives').textContent=lives;$('#wave').textContent=wave;if(selectedTower)renderUpgradeButtons()}
 const upgradeDefs={
@@ -744,9 +744,9 @@ function waveEnemyMix(w){
   return ['brute','hound','wisp','thornling','shellback','glimmer','raider'];
 }
 function waveComposition(w){
+  if(w===10&&currentLevel.boss)return {hollowmaw:1,hound:3,brute:2,glimmer:2};
   const n=4+w*2+Math.floor((currentLevel.id-1)*.5),mix=waveEnemyMix(Math.min(10,w)),counts={};
   for(let i=0;i<n;i++){const id=mix[i%mix.length];counts[id]=(counts[id]||0)+1}
-  if(w===10&&(currentLevel.boss||currentLevel.id===10))counts.hollowmaw=1;
   return counts;
 }
 function wavePreviewText(w){
@@ -761,16 +761,25 @@ function updateNextWavePreview(){
 }
 $('#startWaveBtn').onclick=()=>{
   if(running||wave>=10)return;
-  wave++;running=true;waveParticipants=new Set(towers.map(t=>t.b.id));
-  const n=4+wave*2+Math.floor((currentLevel.id-1)*.5),mix=waveEnemyMix(wave);queue=[];
+  wave++;running=true;waveParticipants=new Set(towers.map(t=>t.b.id));queue=[];
   const waveHp=(48+wave*16+wave*wave*.7)*currentLevel.hp;
   const waveSpeed=(42+wave*1.6)*currentLevel.speed;
   const spacing=Math.max(390,690-currentLevel.id*18);
-  for(let i=0;i<n;i++){
-    const id=mix[i%mix.length],type=enemyTypes[id];
-    queue.push({delay:i*(id==='wisp'?spacing*.62:spacing),hp:waveHp*type.hp,speed:waveSpeed*type.speed,reward:Math.max(5,Math.round((13+wave+Math.floor(currentLevel.id/2))*type.reward)),type:id});
+
+  if(wave===10&&currentLevel.boss){
+    const bossHp=3200*currentLevel.hp;
+    queue.push({delay:900,hp:bossHp,speed:20*currentLevel.speed,reward:400,boss:true,type:'hollowmaw'});
+    const adds=[['hound',3600],['glimmer',4400],['brute',5400],['hound',6500],['glimmer',7600],['brute',9000],['hound',10400]];
+    adds.forEach(([id,delay])=>{const type=enemyTypes[id];queue.push({delay,hp:waveHp*type.hp,speed:waveSpeed*type.speed,reward:Math.max(8,Math.round((16+wave)*type.reward)),type:id})});
+    queue.sort((a,b)=>a.delay-b.delay);
+    showProgressToast('HOLLOWMAW APPROACHES','Boss Wave • Defeat Hollowmaw before it reaches the Beast Core.','boss');
+  }else{
+    const n=4+wave*2+Math.floor((currentLevel.id-1)*.5),mix=waveEnemyMix(wave);
+    for(let i=0;i<n;i++){
+      const id=mix[i%mix.length],type=enemyTypes[id];
+      queue.push({delay:i*(id==='wisp'?spacing*.62:spacing),hp:waveHp*type.hp,speed:waveSpeed*type.speed,reward:Math.max(5,Math.round((13+wave+Math.floor(currentLevel.id/2))*type.reward)),type:id});
+    }
   }
-  if(wave===10&&(currentLevel.boss||currentLevel.id===10))queue.push({delay:n*spacing+700,hp:900*currentLevel.hp,speed:28*currentLevel.speed,reward:180+currentLevel.id*10,boss:true,type:'hollowmaw'});
   ui();updateNextWavePreview();
 };
 
@@ -805,7 +814,7 @@ const enemyImgs={};
 Object.values(enemyTypes).forEach(type=>{const img=new Image();img.src=type.sprite;enemyImgs[type.id]=img});
 function spawn(s){
   const type=enemyTypes[s.type]||enemyTypes.raider;
-  enemies.push({x:path[0].x,y:path[0].y,seg:0,hp:s.hp,max:s.hp,speed:s.speed,reward:s.reward,boss:!!s.boss,type:type.id,size:type.size,slow:0,slowFactor:.62,root:0,stun:0,burn:0,burnDps:0,poison:0,poisonDps:0})
+  enemies.push({x:path[0].x,y:path[0].y,seg:0,hp:s.hp,max:s.hp,speed:s.speed,baseSpeed:s.speed,reward:s.reward,boss:!!s.boss,type:type.id,size:type.size,slow:0,slowFactor:.62,root:0,stun:0,burn:0,burnDps:0,poison:0,poisonDps:0,boss70:false,boss45:false,boss20:false})
 }
 function move(e,dt){
   const target=path[e.seg+1];if(!target)return false;
@@ -816,7 +825,30 @@ function move(e,dt){
   if(d<sp*dt){e.x=target.x;e.y=target.y;e.seg++;return e.seg<path.length-1}
   e.x+=dx/d*sp*dt;e.y+=dy/d*sp*dt;return true;
 }
-function defeatEnemy(e){const i=enemies.indexOf(e);if(i<0)return false;gold+=e.reward;battleReport.kills++;enemies.splice(i,1);ui();return true;}
+function defeatEnemy(e){const i=enemies.indexOf(e);if(i<0)return false;gold+=e.reward;battleReport.kills++;if(e.boss){battleReport.bossDefeated=true;showProgressToast('HOLLOWMAW DEFEATED','The alpha beast has fallen. The path to the Core is safe.','boss-win')}enemies.splice(i,1);ui();return true;}
+function updateBossPhases(e){
+  if(!e||!e.boss||e.hp<=0)return;
+  const ratio=e.hp/e.max;
+  if(ratio<=.70&&!e.boss70){
+    e.boss70=true;
+    towers.forEach(t=>t.cool=Math.max(t.cool||0,1.15));
+    fx('bossPulse',e.x,e.y,'#d279ff',{size:120,life:.9,maxLife:.9});
+    showProgressToast('DREAD ROAR','Hollowmaw staggers every Beast for a moment.','boss');
+  }
+  if(ratio<=.45&&!e.boss45){
+    e.boss45=true;
+    const hp=(48+wave*16+wave*wave*.7)*currentLevel.hp;
+    [0,360,720,1080].forEach(delay=>queue.push({delay,hp:hp*enemyTypes.hound.hp,speed:(42+wave*1.6)*currentLevel.speed*enemyTypes.hound.speed,reward:18,type:'hound'}));
+    queue.sort((a,b)=>a.delay-b.delay);
+    fx('bossPulse',e.x,e.y,'#9f62ff',{size:145,life:.9,maxLife:.9});
+    showProgressToast('PACK CALL','Hollowmaw summons a pack of Ruin Hounds.','boss');
+  }
+  if(ratio<=.20&&!e.boss20){
+    e.boss20=true;e.speed=e.baseSpeed*1.55;
+    fx('bossPulse',e.x,e.y,'#ff556f',{size:165,life:1,maxLife:1});
+    showProgressToast('HOLLOWMAW ENRAGES','Below 20% health Hollowmaw moves much faster. Finish it now!','boss-danger');
+  }
+}
 function pathProgress(e){
   const a=path[e.seg],b=path[e.seg+1];if(!a||!b)return e.seg;
   const full=Math.max(1,Math.hypot(b.x-a.x,b.y-a.y)),left=Math.hypot(b.x-e.x,b.y-e.y);
@@ -1016,6 +1048,11 @@ function hitProjectile(p){
     fx('light',t.x,t.y,'#fff4a6',{size:primal?90:66});
   }
   applyBeastTalent(p,t);
+  if(t.boss){
+    t.stun=Math.min(t.stun||0,.32);
+    t.root=Math.min(t.root||0,.18);
+    t.slowFactor=Math.max(t.slowFactor||1,.72);
+  }
   if(awakened){t.slow=Math.max(t.slow||0,.35);fx('apex',t.x,t.y,p.color,{size:74})}
   if(apex)fx('apex',t.x,t.y,p.color,{size:mythic?82:58});
 }
@@ -1026,7 +1063,11 @@ function update(dt){
     if(e.burn>0){e.burn=Math.max(0,e.burn-dt);e.hp-=(e.burnDps||0)*dt}
     if(e.poison>0){e.poison=Math.max(0,e.poison-dt);e.hp-=(e.poisonDps||0)*dt}
     if(e.hp<=0){defeatEnemy(e);continue}
-    if(!move(e,dt)){lives-=e.boss?5:1;enemies.splice(i,1);ui();if(lives<=0)return finish(false)}
+    if(e.boss)updateBossPhases(e);
+    if(!move(e,dt)){
+      if(e.boss){enemies.splice(i,1);lives=Math.max(0,lives-5);ui();showProgressToast('THE CORE IS BREACHED','Hollowmaw reached the Beast Core.','boss-danger');return finish(false)}
+      lives-=1;enemies.splice(i,1);ui();if(lives<=0)return finish(false)
+    }
   }
   towers.forEach(t=>attack(t,dt));
   for(let i=projectiles.length-1;i>=0;i--){
@@ -1043,17 +1084,40 @@ function update(dt){
   for(let i=effects.length-1;i>=0;i--){const e=effects[i];e.life-=dt;if(e.kind==='particle'){e.x+=(e.vx||0)*dt;e.y+=(e.vy||0)*dt}if(e.life<=0)effects.splice(i,1)}
   if(running&&!queue.length&&!enemies.length){
     running=false;completeWave();
-    if(wave>=10)finish(true);
+    if(wave>=10){
+      if(currentLevel.boss&&!battleReport.bossDefeated)return finish(false);
+      finish(true);
+    }
   }
+}
+let pendingBossEggReward=null;
+function rollRewardEgg(pool){
+  const id=pool[Math.floor(Math.random()*pool.length)],isNew=!save.unlocked.includes(id);
+  if(isNew)addBeast(id);else save.beastCopies[id]=(save.beastCopies[id]||0)+1;
+  return {id,isNew};
+}
+function showBossEggReward(result){
+  if(!result)return;
+  const {id,isNew}=result,b=beasts[id];
+  $('#eggResultTitle').textContent='Boss Reward • Common Egg';
+  $('#eggResultSprite').src=b.sprite;
+  $('#eggResultName').textContent=b.name;
+  const a=ascension(id),need=ascensionNeed(id),held=copies(id);
+  $('#eggResultText').textContent=isNew?`${b.name} hatched from Hollowmaw's reward egg and joined your Beast Vault.`:`${b.name} duplicate hatched. You now have ${held}${a<3?'/'+need:''} copies towards the next Ascension.`;
+  $('#eggModal').classList.remove('hidden');
 }
 function finish(win){
   running=false;queue=[];
   $('#resultModal').classList.remove('hidden');
   $('#resultTitle').textContent=win?'Victory!':'The Core Has Fallen';
   if(win){
-    save.essence+=currentLevel.reward;if(!save.completedLevels.includes(currentLevel.id))save.completedLevels.push(currentLevel.id);save.wardenLevel=Math.max(save.wardenLevel,1+Math.ceil(currentLevel.id/2));persist();
-    $('#resultText').textContent=`${currentLevel.name} defended. You earned ${currentLevel.reward} Essence. ${currentLevel.id<10?'Level 1-'+(currentLevel.id+1)+' unlocked.':'Verdant Valley complete!'}`;
-  }else $('#resultText').textContent='Strengthen your defence and try again.';
+    const bossEgg=currentLevel.boss&&battleReport.bossDefeated&&!save.bossEggRewards.includes(currentLevel.id);
+    save.essence+=currentLevel.reward;
+    if(!save.completedLevels.includes(currentLevel.id))save.completedLevels.push(currentLevel.id);
+    if(bossEgg){save.bossEggRewards.push(currentLevel.id);pendingBossEggReward=rollRewardEgg(commonPool)}
+    save.wardenLevel=Math.max(save.wardenLevel,1+Math.ceil(currentLevel.id/2));persist();
+    $('#resultText').textContent=`${currentLevel.name} defended. You earned ${currentLevel.reward} Essence. ${currentLevel.id<10?'Level 1-'+(currentLevel.id+1)+' unlocked.':'Verdant Valley complete!'}${bossEgg?' Boss reward: Common Egg earned!':''}`;
+  }else $('#resultText').textContent=currentLevel.boss&&!battleReport.bossDefeated?'Hollowmaw was not defeated. Rebuild your defence and face the boss again.':'Strengthen your defence and try again.';
 
   const summary=$('#battleSummary');
   if(summary){
@@ -1066,7 +1130,7 @@ function finish(win){
       '<div class="summary-xp"><small>BEAST XP EARNED</small>'+ (xpRows||'<span><b>No XP earned</b></span>') +'</div>';
   }
 }
-$('#resultContinue').onclick=()=>{$('#resultModal').classList.add('hidden');show('hubScreen')};
+$('#resultContinue').onclick=()=>{const reward=pendingBossEggReward;pendingBossEggReward=null;$('#resultModal').classList.add('hidden');show('hubScreen');if(reward)setTimeout(()=>showBossEggReward(reward),120)};
 
 
 function groundPalette(theme){
@@ -1348,6 +1412,11 @@ function drawEffect(e){
   if(e.kind==='crit'){
     ctx.fillStyle=e.color;ctx.shadowBlur=12;ctx.shadowColor=e.color;ctx.font='bold 18px sans-serif';ctx.fillText('CRIT!',e.x-22,e.y-24*(1-a)-18);
   }
+  if(e.kind==='bossPulse'){
+    const r=(e.size||120)*(1-a*.65);ctx.strokeStyle=e.color;ctx.lineWidth=5;ctx.shadowBlur=22;ctx.shadowColor=e.color;
+    ctx.beginPath();ctx.arc(e.x,e.y,r,0,Math.PI*2);ctx.stroke();
+    ctx.globalAlpha=a*.45;ctx.beginPath();ctx.arc(e.x,e.y,r*.68,0,Math.PI*2);ctx.stroke();
+  }
   if(e.kind==='impact'){
     const r=(e.size||54)*(1-a*.55);
     ctx.translate(e.x,e.y);ctx.shadowBlur=18;ctx.shadowColor=e.color;ctx.strokeStyle=e.color;ctx.fillStyle=e.color;
@@ -1411,14 +1480,28 @@ function draw(){
   });
 
   enemies.forEach(e=>{
-    const img=enemyImgs[e.type]||enemyImgs.raider,size=e.size||18,drawSize=size*2.45;
-    ctx.save();ctx.globalAlpha=.25;ctx.fillStyle='#07110c';ctx.beginPath();ctx.ellipse(e.x,e.y+size*.72,size*.85,size*.28,0,0,Math.PI*2);ctx.fill();ctx.restore();
+    const img=enemyImgs[e.type]||enemyImgs.raider,size=e.size||18,drawSize=e.boss?size*3.15:size*2.45;
+    ctx.save();ctx.globalAlpha=e.boss?.38:.25;ctx.fillStyle='#07110c';ctx.beginPath();ctx.ellipse(e.x,e.y+size*.82,e.boss?size*1.2:size*.85,e.boss?size*.38:size*.28,0,0,Math.PI*2);ctx.fill();ctx.restore();
+    if(e.boss){ctx.save();ctx.strokeStyle=e.boss20?'#ff536f':'#b96aff';ctx.globalAlpha=.75;ctx.lineWidth=4;ctx.shadowBlur=18;ctx.shadowColor=e.boss20?'#ff536f':'#b96aff';ctx.beginPath();ctx.arc(e.x,e.y,size*1.55,0,Math.PI*2);ctx.stroke();ctx.restore()}
     if(img&&img.complete)ctx.drawImage(img,e.x-drawSize/2,e.y-drawSize/2,drawSize,drawSize);
     else{ctx.fillStyle=e.boss?'#6d2738':'#49382b';ctx.beginPath();ctx.arc(e.x,e.y,size,0,Math.PI*2);ctx.fill()}
-    const barW=e.boss?70:44,barY=e.y-size-13;
+    const barW=e.boss?92:44,barY=e.y-size-18;
     ctx.fillStyle='#171717';ctx.fillRect(e.x-barW/2,barY,barW,6);
     ctx.fillStyle=e.boss?'#b84a68':'#d95252';ctx.fillRect(e.x-barW/2,barY,barW*(Math.max(0,e.hp)/e.max),6);
   });
+  const activeBoss=enemies.find(e=>e.boss);
+  if(activeBoss){
+    const bw=430,bh=24,bx=(canvas.width-bw)/2,by=20,ratio=Math.max(0,activeBoss.hp/activeBoss.max);
+    ctx.save();
+    ctx.fillStyle='#09080dcc';roundedRect(bx-8,by-8,bw+16,54,12);ctx.fill();
+    ctx.strokeStyle='#7f4b91';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='#f1d7ff';ctx.font='bold 14px Georgia,serif';ctx.textAlign='center';ctx.fillText(activeBoss.boss20?'HOLLOWMAW • ENRAGED':'HOLLOWMAW',canvas.width/2,by+8);
+    ctx.fillStyle='#241529';roundedRect(bx,by+16,bw,bh,7);ctx.fill();
+    ctx.fillStyle=activeBoss.boss20?'#ef4c69':'#9d55c7';roundedRect(bx,by+16,bw*ratio,bh,7);ctx.fill();
+    ctx.strokeStyle='#e2b2f4';ctx.lineWidth=1;roundedRect(bx,by+16,bw,bh,7);ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font='bold 11px sans-serif';ctx.fillText(Math.ceil(activeBoss.hp)+' / '+Math.ceil(activeBoss.max)+' HP',canvas.width/2,by+32);
+    ctx.restore();
+  }
   projectiles.forEach(drawProjectileVisual);
   effects.forEach(drawEffect);
 }
