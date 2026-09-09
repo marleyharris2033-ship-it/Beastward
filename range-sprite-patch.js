@@ -144,45 +144,4 @@
     }
   };
 
-  // Fixed whole-screen scrollbar for the game screen.
-  const rail=document.getElementById('gameScrollRail');
-  const thumb=document.getElementById('gameScrollThumb');
-  if(rail&&thumb){
-    let scrollDragging=false,scrollPointerId=null,startY=0,startScroll=0;
-    const maxScroll=()=>Math.max(0,document.documentElement.scrollHeight-window.innerHeight);
-    const updateThumb=()=>{
-      const total=document.documentElement.scrollHeight,view=window.innerHeight,max=Math.max(1,total-view);
-      const railH=rail.clientHeight||1;
-      const thumbH=Math.max(44,Math.min(railH,railH*(view/Math.max(total,view))));
-      const travel=Math.max(0,railH-thumbH);
-      const ratio=Math.max(0,Math.min(1,window.scrollY/max));
-      thumb.style.height=thumbH+'px';
-      thumb.style.transform='translateY('+(travel*ratio)+'px)';
-      rail.classList.toggle('hidden',maxScroll()<=2);
-    };
-    const max=maxScroll();
-    thumb.addEventListener('pointerdown',e=>{
-      e.preventDefault();scrollDragging=true;scrollPointerId=e.pointerId;startY=e.clientY;startScroll=window.scrollY;
-      try{thumb.setPointerCapture(e.pointerId)}catch(_){}
-    },{passive:false});
-    document.addEventListener('pointermove',e=>{
-      if(!scrollDragging||e.pointerId!==scrollPointerId)return;
-      e.preventDefault();
-      const railH=rail.clientHeight,thumbH=thumb.offsetHeight,travel=Math.max(1,railH-thumbH);
-      const scrollMax=maxScroll();
-      window.scrollTo(0,Math.max(0,Math.min(scrollMax,startScroll+(e.clientY-startY)*(scrollMax/travel))));
-    },{passive:false});
-    document.addEventListener('pointerup',e=>{
-      if(e.pointerId!==scrollPointerId)return;scrollDragging=false;scrollPointerId=null;
-    });
-    rail.addEventListener('pointerdown',e=>{
-      if(e.target===thumb)return;
-      const rect=rail.getBoundingClientRect(),railH=rail.clientHeight,thumbH=thumb.offsetHeight;
-      const ratio=Math.max(0,Math.min(1,(e.clientY-rect.top-thumbH/2)/Math.max(1,railH-thumbH)));
-      window.scrollTo({top:maxScroll()*ratio,behavior:'smooth'});
-    });
-    window.addEventListener('scroll',updateThumb,{passive:true});
-    window.addEventListener('resize',updateThumb);
-    setTimeout(updateThumb,80);
-  }
 })();
