@@ -1146,28 +1146,28 @@ function move(e,dt){
   if(d<sp*dt){e.x=target.x;e.y=target.y;e.seg++;return e.seg<path.length-1}
   e.x+=dx/d*sp*dt;e.y+=dy/d*sp*dt;return true;
 }
-function defeatEnemy(e){const i=enemies.indexOf(e);if(i<0)return false;gold+=e.reward;battleReport.kills++;if(e.boss){battleReport.bossDefeated=true;showProgressToast('HOLLOWMAW DEFEATED','The alpha beast has fallen. The path to the Core is safe.','boss-win')}enemies.splice(i,1);ui();return true;}
+function defeatEnemy(e){const i=enemies.indexOf(e);if(i<0)return false;gold+=e.reward;battleReport.kills++;if(e.boss){battleReport.bossDefeated=true;showProgressToast(bossNameForLevel().toUpperCase()+' DEFEATED','The regional alpha has fallen. The path to the Beast Core is safe.','boss-win')}enemies.splice(i,1);ui();return true;}
 function updateBossPhases(e){
   if(!e||!e.boss||e.hp<=0)return;
-  const ratio=e.hp/e.max;
+  const ratio=e.hp/e.max,name=bossNameForLevel(),snow=levelWorld(currentLevel)===2;
   if(ratio<=.70&&!e.boss70){
-    e.boss70=true;
-    towers.forEach(t=>t.cool=Math.max(t.cool||0,1.15));
-    fx('bossPulse',e.x,e.y,'#d279ff',{size:120,life:.9,maxLife:.9});
-    showProgressToast('DREAD ROAR','Hollowmaw staggers every Beast for a moment.','boss');
+    e.boss70=true;towers.forEach(t=>t.cool=Math.max(t.cool||0,snow?1.35:1.15));
+    fx('bossPulse',e.x,e.y,snow?'#9eeaff':'#d279ff',{size:snow?138:120,life:.9,maxLife:.9});
+    showProgressToast(snow?'WHITEOUT ROAR':'DREAD ROAR',name+' staggers every Beast for a moment.','boss');
   }
   if(ratio<=.45&&!e.boss45){
     e.boss45=true;
     const hp=(48+wave*16+wave*wave*.7)*currentLevel.hp*modeDifficulty();
-    [0,300,600,900,1200,1500].forEach(delay=>queue.push({delay,hp:hp*enemyTypes.hound.hp,speed:(42+wave*1.6)*currentLevel.speed*enemyTypes.hound.speed,reward:18,type:'hound'}));
+    const addType=snow?'snowstalker':'hound',type=enemyTypes[addType];
+    [0,300,600,900,1200,1500].forEach(delay=>queue.push({delay,hp:hp*type.hp,speed:(42+wave*1.6)*currentLevel.speed*type.speed,reward:snow?22:18,type:addType}));
     queue.sort((a,b)=>a.delay-b.delay);
-    fx('bossPulse',e.x,e.y,'#9f62ff',{size:145,life:.9,maxLife:.9});
-    showProgressToast('PACK CALL','Hollowmaw summons a pack of Ruin Hounds.','boss');
+    fx('bossPulse',e.x,e.y,snow?'#bdefff':'#9f62ff',{size:snow?160:145,life:.9,maxLife:.9});
+    showProgressToast(snow?'FROZEN PACK':'PACK CALL',name+' summons a pack of '+(snow?'Snow Stalkers':'Ruin Hounds')+'.','boss');
   }
   if(ratio<=.20&&!e.boss20){
-    e.boss20=true;e.speed=e.baseSpeed*1.55;
-    fx('bossPulse',e.x,e.y,'#ff556f',{size:165,life:1,maxLife:1});
-    showProgressToast('HOLLOWMAW ENRAGES','Below 20% health Hollowmaw moves much faster. Finish it now!','boss-danger');
+    e.boss20=true;e.speed=e.baseSpeed*(snow?1.65:1.55);
+    fx('bossPulse',e.x,e.y,snow?'#e9fbff':'#ff556f',{size:snow?180:165,life:1,maxLife:1});
+    showProgressToast(name.toUpperCase()+' ENRAGES','Below 20% health '+name+' moves much faster. Finish it now!','boss-danger');
   }
 }
 function pathProgress(e){
@@ -1402,7 +1402,7 @@ function update(dt){
     if(e.hp<=0){defeatEnemy(e);continue}
     if(e.boss)updateBossPhases(e);
     if(!move(e,dt)){
-      if(e.boss){enemies.splice(i,1);lives=Math.max(0,lives-5);ui();showProgressToast('THE CORE IS BREACHED','Hollowmaw reached the Beast Core.','boss-danger');return finish(false)}
+      if(e.boss){enemies.splice(i,1);lives=Math.max(0,lives-5);ui();showProgressToast('THE CORE IS BREACHED',bossNameForLevel()+' reached the Beast Core.','boss-danger');return finish(false)}
       lives-=1;enemies.splice(i,1);ui();if(lives<=0)return finish(false)
     }
   }
@@ -1883,9 +1883,9 @@ function draw(){
     ctx.save();
     ctx.fillStyle='#09080dcc';roundedRect(bx-8,by-8,bw+16,54,12);ctx.fill();
     ctx.strokeStyle='#7f4b91';ctx.lineWidth=2;ctx.stroke();
-    ctx.fillStyle='#f1d7ff';ctx.font='bold 14px Georgia,serif';ctx.textAlign='center';ctx.fillText(activeBoss.boss20?'HOLLOWMAW • ENRAGED':'HOLLOWMAW',canvas.width/2,by+8);
+    ctx.fillStyle='#f1d7ff';ctx.font='bold 14px Georgia,serif';ctx.textAlign='center';ctx.fillText(activeBoss.boss20?bossNameForLevel().toUpperCase()+' • ENRAGED':bossNameForLevel().toUpperCase(),canvas.width/2,by+8);
     ctx.fillStyle='#241529';roundedRect(bx,by+16,bw,bh,7);ctx.fill();
-    ctx.fillStyle=activeBoss.boss20?'#ef4c69':'#9d55c7';roundedRect(bx,by+16,bw*ratio,bh,7);ctx.fill();
+    ctx.fillStyle=activeBoss.boss20?'#ef4c69':levelWorld(currentLevel)===2?'#62b8d4':'#9d55c7';roundedRect(bx,by+16,bw*ratio,bh,7);ctx.fill();
     ctx.strokeStyle='#e2b2f4';ctx.lineWidth=1;roundedRect(bx,by+16,bw,bh,7);ctx.stroke();
     ctx.fillStyle='#fff';ctx.font='bold 11px sans-serif';ctx.fillText(Math.ceil(activeBoss.hp)+' / '+Math.ceil(activeBoss.max)+' HP',canvas.width/2,by+32);
     ctx.restore();
