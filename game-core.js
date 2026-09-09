@@ -451,9 +451,18 @@ let currentLevel=levels[0],path=currentLevel.path;
 function levelUnlocked(id){return id===1||save.completedLevels.includes(id-1)}
 function renderCampaignMap(){
  const map=$('.campaign-map');if(!map)return;
- map.innerHTML='<div class="map-path"></div>';
- const coords=[[12,78],[27,60],[43,73],[55,48],[72,63],[82,42],[68,24],[47,30],[29,17],[88,14]];
- levels.forEach((lvl,i)=>{const unlocked=levelUnlocked(lvl.id),done=save.completedLevels.includes(lvl.id);const el=document.createElement(unlocked?'button':'div');el.className='map-node '+(unlocked?'unlocked':'locked')+(lvl.id===10?' boss-node':'')+(done?' completed':'');el.style.setProperty('--x',coords[i][0]+'%');el.style.setProperty('--y',coords[i][1]+'%');el.innerHTML=`<span>1-${lvl.id}</span><b>${lvl.name}</b><small>${done?'✓ Cleared':unlocked?lvl.waves+' waves':'Locked'}</small>`;if(unlocked)el.onclick=()=>startLevel(lvl.id);map.appendChild(el)});
+ map.innerHTML='<div class="map-route-line"></div><div class="map-start-label">VERDANT VALLEY</div>';
+ levels.forEach((lvl,i)=>{
+   const unlocked=levelUnlocked(lvl.id),done=save.completedLevels.includes(lvl.id);
+   const row=document.createElement('div');
+   row.className='map-stage-row '+(i%2===0?'left':'right');
+   const el=document.createElement(unlocked?'button':'div');
+   el.className='map-node '+(unlocked?'unlocked':'locked')+(lvl.id===10?' boss-node':'')+(done?' completed':'');
+   const marker=lvl.id===10?'◆':done?'✓':unlocked?'✦':'•';
+   el.innerHTML=`<span class="map-marker">${marker}</span><div class="map-node-copy"><span>1-${lvl.id}</span><b>${lvl.name}</b><small>${done?'Cleared':unlocked?lvl.waves+' waves':'Locked'}</small></div>`;
+   if(unlocked)el.onclick=()=>startLevel(lvl.id);
+   row.appendChild(el);map.appendChild(row);
+ });
 }
 let pendingLevelId=null,loadoutDraft=[],battleLoadout=[];
 function renderLoadoutPicker(){
