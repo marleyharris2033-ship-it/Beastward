@@ -113,8 +113,8 @@ document.addEventListener('error',e=>{
   }
 },true);
 
-function blankSave(){return {starter:null,essence:0,wardenLevel:1,unlocked:[],freeCommonClaimed:false,beastProgress:{},beastCopies:{},ascensions:{},completedLevels:[],createdAt:Date.now(),lastPlayed:Date.now()}}
-function normaliseSave(s){s=s||blankSave();s.unlocked=s.unlocked||[];s.beastProgress=s.beastProgress||{};s.beastCopies=s.beastCopies||{};s.ascensions=s.ascensions||{};s.completedLevels=s.completedLevels||[];if(s.freeCommonClaimed===undefined)s.freeCommonClaimed=false;if(!s.wardenLevel)s.wardenLevel=1;if(s.essence===undefined)s.essence=0;return s}
+function blankSave(){return {starter:null,essence:0,wardenLevel:1,unlocked:[],freeCommonClaimed:false,beastProgress:{},beastCopies:{},ascensions:{},completedLevels:[],lastLoadout:[],createdAt:Date.now(),lastPlayed:Date.now()}}
+function normaliseSave(s){s=s||blankSave();s.unlocked=s.unlocked||[];s.beastProgress=s.beastProgress||{};s.beastCopies=s.beastCopies||{};s.ascensions=s.ascensions||{};s.completedLevels=s.completedLevels||[];s.lastLoadout=(s.lastLoadout||[]).filter(id=>s.unlocked.includes(id)).slice(0,5);if(s.freeCommonClaimed===undefined)s.freeCommonClaimed=false;if(!s.wardenLevel)s.wardenLevel=1;if(s.essence===undefined)s.essence=0;return s}
 const legacy=localStorage.getItem('beastward-save');
 if(legacy&&!localStorage.getItem('beastward-save-1')&&!localStorage.getItem('beastward-save-2')&&!localStorage.getItem('beastward-save-3')){
   localStorage.setItem('beastward-save-1',legacy);
@@ -455,7 +455,39 @@ function renderCampaignMap(){
  const coords=[[12,78],[27,60],[43,73],[55,48],[72,63],[82,42],[68,24],[47,30],[29,17],[88,14]];
  levels.forEach((lvl,i)=>{const unlocked=levelUnlocked(lvl.id),done=save.completedLevels.includes(lvl.id);const el=document.createElement(unlocked?'button':'div');el.className='map-node '+(unlocked?'unlocked':'locked')+(lvl.id===10?' boss-node':'')+(done?' completed':'');el.style.setProperty('--x',coords[i][0]+'%');el.style.setProperty('--y',coords[i][1]+'%');el.innerHTML=`<span>1-${lvl.id}</span><b>${lvl.name}</b><small>${done?'✓ Cleared':unlocked?lvl.waves+' waves':'Locked'}</small>`;if(unlocked)el.onclick=()=>startLevel(lvl.id);map.appendChild(el)});
 }
-function startLevel(id){currentLevel=levels[id-1];path=currentLevel.path;reset();show('gameScreen');last=performance.now();requestAnimationFrame(loop)}
+let pendingLevelId=null,loadoutDraft=[],battleLoadout=[];
+function renderLoadoutPicker(){
+  const grid=$('#loadoutGrid'),count=$('#loadoutCount'),start=$('#loadoutStartBtn'),title=$('#loadoutLevelName');
+  if(!grid)return;
+  if(title&&pendingLevelId)title.textContent='1-'+pendingLevelId+' • '+levels[pendingLevelId-1].name;
+  grid.innerHTML='';
+  save.unlocked.forEach(id=>{
+    const b=beasts[id],selected=loadoutDraft.includes(id),card=document.createElement('button'),ss=stageStats(id);
+    card.className='loadout-card'+(selected?' selected':'');
+    card.innerHTML=stageSpriteMarkup(id,evolutionStage(id),'loadout-sprite')+'<div class="loadout-card-copy"><b>'+nameFor(id)+'</b><small>Lv '+progress(id).level+' • '+b.type+' • '+b.role+'</small><small>POW '+ss.power+'/'+ss.cap+' • SPD '+ss.speed+'/'+ss.cap+' • RNG '+ss.range+'/'+ss.cap+'</small></div><span class="loadout-check">'+(selected?'✓':'+')+'</span>';
+    card.onclick=()=>{const i=loadoutDraft.indexOf(id);if(i>=0)loadoutDraft.splice(i,1);else if(loadoutDraft.length<5)loadoutDraft.push(id);renderLoadoutPicker()};
+    grid.appendChild(card);
+  });
+  if(count)count.textContent=loadoutDraft.length+' / 5 selected';
+  if(start){start.disabled=loadoutDraft.length<1;start.textContent=loadoutDraft.length?'DEFEND WITH '+loadoutDraft.length:'SELECT AT LEAST 1'}
+}
+function openLoadoutPicker(id){
+  pendingLevelId=id;
+  const valid=(save.lastLoadout||[]).filter(x=>save.unlocked.includes(x)).slice(0,5);
+  loadoutDraft=valid.length?valid:save.unlocked.slice(0,Math.min(5,save.unlocked.length));
+  renderLoadoutPicker();$('#loadoutModal').classList.remove('hidden');
+}
+function closeLoadoutPicker(){$('#loadoutModal').classList.add('hidden');pendingLevelId=null}
+function startLevel(id){openLoadoutPicker(id)}
+function beginSelectedLevel(){
+  if(!pendingLevelId||!loadoutDraft.length)return;
+  battleLoadout=[...loadoutDraft].slice(0,5);save.lastLoadout=[...battleLoadout];persist();
+  currentLevel=levels[pendingLevelId-1];path=currentLevel.path;$('#loadoutModal').classList.add('hidden');pendingLevelId=null;
+  reset();show('gameScreen');last=performance.now();requestAnimationFrame(loop);
+}
+if($('#loadoutStartBtn'))$('#loadoutStartBtn').onclick=()=>beginSelectedLevel();
+if($('#loadoutCancelBtn'))$('#loadoutCancelBtn').onclick=()=>closeLoadoutPicker();
+if($('#loadoutModal'))$('#loadoutModal').addEventListener('pointerdown',e=>{if(e.target.classList.contains('loadout-backdrop'))closeLoadoutPicker()});
 let towers=[],enemies=[],projectiles=[],effects=[],selectedSpecies=null,selectedTower=null,gold=400,lives=20,wave=0,running=false,last=0,queue=[],speed=1,waveParticipants=new Set();
 
 function ui(){$('#gold').textContent=Math.floor(gold);$('#lives').textContent=lives;$('#wave').textContent=wave;if(selectedTower)renderUpgradeButtons()}
@@ -533,7 +565,8 @@ function battleStats(id){
 }
 function choices(){
   const w=$('#towerChoices');w.innerHTML='';
-  save.unlocked.forEach(id=>{
+  const available=(battleLoadout&&battleLoadout.length?battleLoadout:save.unlocked.slice(0,5)).filter(id=>save.unlocked.includes(id));
+  available.forEach(id=>{
     const b=beasts[id],el=document.createElement('button');
     el.className='tower-choice';
     const ss=stageStats(id);el.innerHTML=`${stageSpriteMarkup(id,evolutionStage(id),'tower-list-sprite')}<div><b>${nameFor(id)}</b><small>Lv ${progress(id).level} • Stage ${ss.stage} • ${b.role} • ${b.cost} gold</small><small>POW ${ss.power}/${ss.cap} • SPD ${ss.speed}/${ss.cap} • RNG ${ss.range}/${ss.cap}</small></div>`;
