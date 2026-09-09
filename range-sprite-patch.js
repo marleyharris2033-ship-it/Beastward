@@ -1,18 +1,27 @@
 // Beastward v22: improved custom sprites + placement/selection range preview
 (() => {
   const custom = {
-    shadepup: 'assets/pixel/custom/shadepup.png',
-    scorchick: 'assets/pixel/custom/scorchick.png',
-    voidling: 'assets/pixel/custom/voidling.png'
+    shadepup: {
+      sprite: 'assets/pixel/shadepup.png',
+      tower: 'assets/pixel/shadepup_tower.png'
+    },
+    scorchick: {
+      sprite: 'assets/pixel/scorchick.png',
+      tower: 'assets/pixel/scorchick_tower.png'
+    },
+    voidling: {
+      sprite: 'assets/pixel/voidling.png',
+      tower: 'assets/pixel/voidling_tower.png'
+    }
   };
 
-  Object.entries(custom).forEach(([id, src]) => {
+  Object.entries(custom).forEach(([id, art]) => {
     if (!beasts[id]) return;
-    beasts[id].sprite = src;
-    beasts[id].towerSprite = src;
+    beasts[id].sprite = art.sprite;
+    beasts[id].towerSprite = art.tower;
     const img = new Image();
     img.onerror = () => { img.src = 'assets/sprites/' + id + '.svg'; };
-    img.src = src;
+    img.src = art.tower;
     spriteImgs[id] = img;
   });
 
@@ -40,11 +49,11 @@
   function rangeRing(x, y, range, colour, valid = true) {
     ctx.save();
     ctx.fillStyle = valid ? colour : '#ff5959';
-    ctx.globalAlpha = valid ? .10 : .12;
+    ctx.globalAlpha = valid ? .07 : .10;
     ctx.beginPath();
     ctx.arc(x, y, range, 0, Math.PI * 2);
     ctx.fill();
-    ctx.globalAlpha = .78;
+    ctx.globalAlpha = .62;
     ctx.strokeStyle = valid ? colour : '#ff6b6b';
     ctx.lineWidth = 2;
     ctx.setLineDash([9, 7]);
