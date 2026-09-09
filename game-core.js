@@ -1,4 +1,32 @@
 const $=s=>document.querySelector(s);
+let beastwardSound=localStorage.getItem('beastward-sound')!=='off',audioCtx=null;
+function audioContext(){
+  if(!beastwardSound)return null;
+  try{if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();return audioCtx}catch(_){return null}
+}
+function sfx(kind){
+  const ac=audioContext();if(!ac)return;
+  const now=ac.currentTime,o=ac.createOscillator(),g=ac.createGain();
+  const presets={
+    place:[310,470,.08,'sine'],upgrade:[430,720,.12,'triangle'],wave:[250,360,.12,'triangle'],
+    boss:[95,48,.42,'sawtooth'],victory:[480,820,.28,'triangle'],defeat:[180,85,.30,'sawtooth'],level:[620,920,.20,'sine']
+  };
+  const p=presets[kind]||[300,420,.08,'sine'];
+  o.type=p[3];o.frequency.setValueAtTime(p[0],now);o.frequency.exponentialRampToValueAtTime(Math.max(30,p[1]),now+p[2]);
+  g.gain.setValueAtTime(.0001,now);g.gain.exponentialRampToValueAtTime(kind==='boss'?.16:.07,now+.015);g.gain.exponentialRampToValueAtTime(.0001,now+p[2]);
+  o.connect(g);g.connect(ac.destination);o.start(now);o.stop(now+p[2]+.02);
+}
+function haptic(kind){try{if(navigator.vibrate)navigator.vibrate(kind==='boss'?[80,45,120]:kind==='victory'?[35,35,70]:kind==='upgrade'?28:18)}catch(_){}}
+function gameFeedback(kind){sfx(kind);haptic(kind)}
+window.gameFeedback=gameFeedback;
+function updateSoundButton(){const b=$('#soundToggleBtn');if(b)b.textContent=beastwardSound?'SOUND ON':'SOUND OFF'}
+function showBossIntro(){
+  const el=$('#bossIntro');if(!el)return;
+  $('#bossIntroName').textContent=currentLevel.id===10?'HOLLOWMAW':'BOSS WAVE';
+  el.classList.remove('hidden');gameFeedback('boss');
+  clearTimeout(showBossIntro.timer);showBossIntro.timer=setTimeout(()=>el.classList.add('hidden'),2200);
+}
+
 const screens=[...document.querySelectorAll('.screen')];
 function show(id){screens.forEach(s=>s.classList.toggle('active',s.id===id))}
 
@@ -632,7 +660,7 @@ function buyTowerUpgrade(path){
    if(tier>=4||(tier===3&&otherTier>=4))return;
  }else if(tier>=4)return;
  const cost=upgradeCost(selectedTower,path);if(gold<cost)return;
- gold-=cost;selectedTower[path+'Tier']=tier+1;selectedTower.spent+=cost;recalcTower(selectedTower);ui();renderSelectedTower();
+ gold-=cost;selectedTower[path+'Tier']=tier+1;selectedTower.spent+=cost;recalcTower(selectedTower);gameFeedback('upgrade');ui();renderSelectedTower();
 }
 $('#powerUpgradeBtn').onclick=()=>buyTowerUpgrade('power');
 $('#specialUpgradeBtn').onclick=()=>buyTowerUpgrade('special');
@@ -681,7 +709,8 @@ function updateNextWavePreview(){
 }
 $('#startWaveBtn').onclick=()=>{
   if(running||wave>=10)return;
-  wave++;running=true;waveParticipants=new Set(towers.map(t=>t.b.id));
+  wave++;running=true;waveParticipants=new Set(towers.map(t=>t.b.id));gameFeedback('wave');
+  if(wave===10&&(currentLevel.boss||currentLevel.id===10))showBossIntro();
   const n=4+wave*2+Math.floor((currentLevel.id-1)*.5),mix=waveEnemyMix(wave);queue=[];
   const waveHp=(48+wave*16+wave*wave*.7)*currentLevel.hp;
   const waveSpeed=(42+wave*1.6)*currentLevel.speed;
@@ -786,7 +815,7 @@ function completeWave(){
   $('#waveXpNotice').textContent=`Wave ${wave} clear • +${amount} XP • +${bonus} gold`;
   if(ups.length){
     const evolution=ups.find(x=>x.includes('Level 15')||x.includes('Level 30'));
-    showProgressToast(evolution?'EVOLUTION READY':'BEAST LEVEL UP',ups.join(' • '),evolution?'evolution':'levelup');
+    showProgressToast(evolution?'EVOLUTION READY':'BEAST LEVEL UP',ups.join(' • '),evolution?'evolution':'levelup');gameFeedback('level');
   }
   setTimeout(()=>{if($('#waveXpNotice'))$('#waveXpNotice').textContent=''},1800);
 }
@@ -925,6 +954,7 @@ function finish(win){
   running=false;queue=[];
   $('#resultModal').classList.remove('hidden');
   $('#resultTitle').textContent=win?'Victory!':'The Core Has Fallen';
+  gameFeedback(win?'victory':'defeat');
   if(win){
     save.essence+=currentLevel.reward;if(!save.completedLevels.includes(currentLevel.id))save.completedLevels.push(currentLevel.id);save.wardenLevel=Math.max(save.wardenLevel,1+Math.ceil(currentLevel.id/2));persist();
     $('#resultText').textContent=`${currentLevel.name} defended. You earned ${currentLevel.reward} Essence. ${currentLevel.id<10?'Level 1-'+(currentLevel.id+1)+' unlocked.':'Verdant Valley complete!'}`;
@@ -1160,4 +1190,5 @@ function loop(ts){
   const dt=Math.min(.033,(ts-last)/1000||0);last=ts;
   update(dt*speed);draw();requestAnimationFrame(loop);
 }
-renderStarters();updateHub();renderSaveSlots();applyMotionSetting();setSpeed(1);renderCampaignMap();
+renderStarters();updateHub();renderSaveSlots();applyMotionSetting();setSpeed(1);renderCampaignMap();updateSoundButton();
+if($('#soundToggleBtn'))$('#soundToggleBtn').onclick=()=>{beastwardSound=!beastwardSound;localStorage.setItem('beastward-sound',beastwardSound?'on':'off');updateSoundButton();if(beastwardSound)sfx('place')};
