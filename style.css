@@ -822,3 +822,17 @@ radial-gradient(ellipse at 82% 57%,#193722 0 6%,transparent 7%);opacity:.75}
     min-width:132px;
   }
 }
+
+/* ===== Exit confirmation + Tier V Ultimate v53 ===== */
+.exit-confirm-modal{z-index:1450}
+.exit-confirm-card{width:min(430px,calc(100vw - 30px));text-align:center;border-color:#a66a4b}
+.exit-confirm-card h2{margin:6px 0;color:#f0d778;font-family:Georgia,serif}
+.exit-confirm-card p{color:#bdc8c0;line-height:1.45}
+.exit-confirm-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.exit-confirm-actions button{min-height:46px}
+.confirm-exit-btn{border:1px solid #bc675b;background:linear-gradient(#6a302b,#45211f);color:#ffd7cd;border-radius:10px;font-weight:900}
+.upgrade-btn.ultimate-owned{border-color:#f1c85b!important;background:linear-gradient(135deg,#73521b,#3d2b13)!important;color:#fff0a1!important;box-shadow:0 0 18px #efc75a44}
+.upgrade-btn:not(:disabled)[class*="upgrade-btn"]{transition:transform .12s ease,box-shadow .12s ease}
+@media(max-width:700px){
+  .exit-confirm-actions{grid-template-columns:1fr}
+}
