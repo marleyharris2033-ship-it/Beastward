@@ -1,0 +1,1 @@
+Binary beast artwork is stored as Git blobs and referenced by generated paths. Do not use text-content upload methods for PNGs.
