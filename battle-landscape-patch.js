@@ -8,8 +8,6 @@
 
   const game=document.querySelector('#gameScreen');
   if(!game)return;
-
-  // Clean up any duplicate control left by an older cached copy.
   document.querySelectorAll('#battleLandscapeBtn').forEach(el=>el.remove());
 
   const style=document.createElement('style');
@@ -17,37 +15,35 @@
   style.textContent=`
     #battleLandscapeBtn{margin-left:auto;border:1px solid #d8bc62;background:#254833;color:#f6dfa0;border-radius:10px;padding:8px 11px;font-weight:900;font-size:11px;letter-spacing:.05em;white-space:nowrap}
     #gameScreen.battle-focus{height:100svh;min-height:100svh;max-height:100svh;overflow:hidden;padding:0!important;background:#08110c}
-    #gameScreen.battle-focus .battle-hud{flex:0 0 auto;padding:5px 8px;gap:6px;display:flex;align-items:center;flex-wrap:nowrap;min-height:44px}
-    #gameScreen.battle-focus .hud-stat,#gameScreen.battle-focus .hud-wave{padding:5px 8px;min-width:62px;border-radius:9px}
-    #gameScreen.battle-focus .hud-label{font-size:8px;letter-spacing:.1em}
-    #gameScreen.battle-focus .hud-stat b,#gameScreen.battle-focus .hud-wave b{font-size:16px}
+    #gameScreen.battle-focus .battle-hud{flex:0 0 auto;padding:4px 7px;gap:5px;display:flex;align-items:center;flex-wrap:nowrap;min-height:42px}
+    #gameScreen.battle-focus .hud-stat,#gameScreen.battle-focus .hud-wave{padding:4px 7px;min-width:58px;border-radius:8px}
+    #gameScreen.battle-focus .hud-label{font-size:7px;letter-spacing:.1em}
+    #gameScreen.battle-focus .hud-stat b,#gameScreen.battle-focus .hud-wave b{font-size:15px}
     #gameScreen.battle-focus .wave-xp-notice{display:none!important}
     #gameScreen.battle-focus .speed-segment{display:flex;gap:2px;padding:2px;min-width:auto}
-    #gameScreen.battle-focus .speed-choice{min-width:34px;padding:6px 5px}
-    #gameScreen.battle-focus .battle-action,#gameScreen.battle-focus .battle-exit{padding:8px 10px;min-height:34px;font-size:10px;white-space:nowrap}
+    #gameScreen.battle-focus .speed-choice{min-width:31px;padding:5px 4px}
+    #gameScreen.battle-focus .battle-action,#gameScreen.battle-focus .battle-exit{padding:7px 9px;min-height:32px;font-size:9px;white-space:nowrap}
     #gameScreen.battle-focus .next-wave-strip{display:none!important}
-    #gameScreen.battle-focus .game-layout{flex:1;min-height:0;width:100%;max-width:none;margin:0;padding:6px;gap:7px;display:grid;grid-template-columns:minmax(0,1fr) 230px;align-items:stretch;overflow:hidden}
+    #gameScreen.battle-focus .game-layout{flex:1;min-height:0;width:100%;max-width:none;margin:0;padding:5px;gap:6px;display:grid;grid-template-columns:minmax(0,1fr) 220px;align-items:stretch;overflow:hidden}
     #gameScreen.battle-focus .battle-board{min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
-    /* Preserve the canvas' native 5:3 ratio. Stretching it was what offset the tower hitboxes. */
-    #gameScreen.battle-focus #gameCanvas{display:block;width:auto!important;height:auto!important;max-width:100%!important;max-height:100%!important;aspect-ratio:5/3;object-fit:contain;border-radius:10px}
-    #gameScreen.battle-focus .tower-panel{width:230px!important;height:100%;min-height:0;padding:7px;border-radius:11px;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column}
-    #gameScreen.battle-focus .tower-panel-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
-    #gameScreen.battle-focus .tower-panel-title span{font-size:15px}
+    #gameScreen.battle-focus #gameCanvas{display:block;width:auto!important;height:auto!important;max-width:100%!important;max-height:100%!important;aspect-ratio:5/3;object-fit:contain;border-radius:9px}
+    #gameScreen.battle-focus .tower-panel{width:220px!important;height:100%;min-height:0;padding:6px;border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+    #gameScreen.battle-focus .tower-panel-title{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;margin:0 0 3px}
+    #gameScreen.battle-focus .tower-panel-title span{font-size:13px}
     #gameScreen.battle-focus .tower-panel-title small,#gameScreen.battle-focus .tip{display:none!important}
-    #gameScreen.battle-focus .battle-synergy-strip{margin:0 0 5px;padding:4px;display:flex;gap:4px;flex-wrap:wrap;align-items:center}
+    #gameScreen.battle-focus .battle-synergy-strip{flex:0 0 auto;margin:0 0 3px;padding:2px 3px;display:flex;gap:3px;flex-wrap:nowrap;align-items:center;overflow:hidden}
     #gameScreen.battle-focus .battle-synergy-strip>small{display:none!important}
-    #gameScreen.battle-focus .battle-synergy-chip{margin:0;padding:3px 5px;font-size:8px;gap:3px}
-    #gameScreen.battle-focus .battle-synergy-chip span{font-size:9px}
-    #gameScreen.battle-focus #towerChoices{display:grid;grid-template-columns:1fr 1fr;gap:5px;align-content:start;overflow:visible}
-    #gameScreen.battle-focus .tower-choice{margin:0;padding:5px;min-height:68px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2px;text-align:center}
-    #gameScreen.battle-focus .tower-choice .stage-sprite,#gameScreen.battle-focus .tower-choice img{width:34px!important;height:34px!important;flex:0 0 34px}
-    #gameScreen.battle-focus .tower-choice b{font-size:10px;line-height:1.05}
+    #gameScreen.battle-focus .battle-synergy-chip{margin:0!important;padding:2px 4px!important;font-size:7px!important;gap:2px!important;min-width:0}
+    #gameScreen.battle-focus .battle-synergy-chip span{font-size:8px!important}
+    #gameScreen.battle-focus #towerChoices{flex:1 1 auto;min-height:0;display:grid!important;grid-template-columns:1fr 1fr!important;grid-template-rows:1fr 1fr!important;gap:4px!important;align-content:stretch!important;overflow:hidden!important}
+    #gameScreen.battle-focus .tower-choice{margin:0!important;padding:3px!important;min-height:0!important;height:100%!important;display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:center!important;gap:1px!important;text-align:center!important;overflow:hidden!important}
+    #gameScreen.battle-focus .tower-choice .stage-sprite,#gameScreen.battle-focus .tower-choice img{width:31px!important;height:31px!important;flex:0 0 31px!important}
+    #gameScreen.battle-focus .tower-choice b{font-size:9px!important;line-height:1!important;white-space:nowrap;max-width:96px;overflow:hidden;text-overflow:ellipsis}
     #gameScreen.battle-focus .tower-choice small{display:none!important}
-    #gameScreen.battle-focus .battle-level-only{display:block!important;color:#aebbb1;font-size:8px!important;line-height:1!important}
-    /* Keep tower inspect / upgrade controls usable inside landscape mode. */
-    #gameScreen.battle-focus .selected-tower-panel{position:relative;z-index:20;flex:0 0 auto;margin-top:6px;padding:7px;font-size:9px;overflow:visible}
+    #gameScreen.battle-focus .battle-level-only{display:block!important;color:#aebbb1;font-size:7px!important;line-height:1!important}
+    #gameScreen.battle-focus .selected-tower-panel{position:relative;z-index:20;flex:0 0 auto;margin-top:4px;padding:5px;font-size:8px;overflow:visible}
     #gameScreen.battle-focus .selected-tower-panel .stat-grid{display:none}
-    #gameScreen.battle-focus .selected-tower-panel button{min-height:30px;padding:6px;font-size:9px}
+    #gameScreen.battle-focus .selected-tower-panel button{min-height:27px;padding:4px;font-size:8px}
     #battleRotateHint{display:none}
     @media(orientation:portrait) and (max-width:900px){
       #gameScreen.battle-focus #battleRotateHint{display:grid;position:fixed;inset:0;z-index:120;place-items:center;background:#06100dec;color:#f0d77d;text-align:center;padding:30px;font-weight:900;letter-spacing:.06em}
@@ -55,11 +51,10 @@
     }
     @media(orientation:landscape) and (max-height:520px){
       body.battle-focus-body{overflow:hidden!important}
-      #gameScreen.battle-focus .tower-panel{width:210px!important}
-      #gameScreen.battle-focus .game-layout{grid-template-columns:minmax(0,1fr) 210px}
-      #gameScreen.battle-focus .tower-choice{min-height:58px}
-      #gameScreen.battle-focus .tower-choice .stage-sprite,#gameScreen.battle-focus .tower-choice img{width:30px!important;height:30px!important;flex-basis:30px}
-      #battleLandscapeBtn{padding:7px 9px;font-size:9px}
+      #gameScreen.battle-focus .tower-panel{width:200px!important}
+      #gameScreen.battle-focus .game-layout{grid-template-columns:minmax(0,1fr) 200px}
+      #gameScreen.battle-focus .tower-choice .stage-sprite,#gameScreen.battle-focus .tower-choice img{width:28px!important;height:28px!important;flex-basis:28px!important}
+      #battleLandscapeBtn{padding:6px 8px;font-size:8px}
     }
   `;
   document.head.appendChild(style);
@@ -105,6 +100,7 @@
     game.classList.add('battle-focus');
     document.body.classList.add('battle-focus-body');
     btn.textContent='✕ EXIT FULL';
+    simplifyTowerCards();
     try{if(document.documentElement.requestFullscreen&&!document.fullscreenElement)await document.documentElement.requestFullscreen();}catch(e){}
     try{if(screen.orientation?.lock)await screen.orientation.lock('landscape');}catch(e){}
   }
