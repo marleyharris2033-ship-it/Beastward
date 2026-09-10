@@ -1,9 +1,19 @@
 // BeastBorn battle-only landscape focus mode
 (() => {
+  if(window.__beastbornLandscapeModeInitialised){
+    document.querySelectorAll('#battleLandscapeBtn').forEach((el,i)=>{if(i>0)el.remove();});
+    return;
+  }
+  window.__beastbornLandscapeModeInitialised=true;
+
   const game=document.querySelector('#gameScreen');
   if(!game)return;
 
+  // Clean up any duplicate control left by an older cached copy.
+  document.querySelectorAll('#battleLandscapeBtn').forEach(el=>el.remove());
+
   const style=document.createElement('style');
+  style.id='battleLandscapeStyle';
   style.textContent=`
     #battleLandscapeBtn{margin-left:auto;border:1px solid #d8bc62;background:#254833;color:#f6dfa0;border-radius:10px;padding:8px 11px;font-weight:900;font-size:11px;letter-spacing:.05em;white-space:nowrap}
     #gameScreen.battle-focus{height:100svh;min-height:100svh;max-height:100svh;overflow:hidden;padding:0!important;background:#08110c}
@@ -17,9 +27,10 @@
     #gameScreen.battle-focus .battle-action,#gameScreen.battle-focus .battle-exit{padding:8px 10px;min-height:34px;font-size:10px;white-space:nowrap}
     #gameScreen.battle-focus .next-wave-strip{display:none!important}
     #gameScreen.battle-focus .game-layout{flex:1;min-height:0;width:100%;max-width:none;margin:0;padding:6px;gap:7px;display:grid;grid-template-columns:minmax(0,1fr) 230px;align-items:stretch;overflow:hidden}
-    #gameScreen.battle-focus .battle-board{min-width:0;min-height:0;display:grid;place-items:center;overflow:hidden}
-    #gameScreen.battle-focus #gameCanvas{display:block;width:100%!important;height:auto!important;max-width:100%;max-height:calc(100svh - 56px);object-fit:contain;border-radius:10px}
-    #gameScreen.battle-focus .tower-panel{width:230px!important;height:100%;min-height:0;padding:7px;border-radius:11px;overflow:hidden;display:flex;flex-direction:column}
+    #gameScreen.battle-focus .battle-board{min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    /* Preserve the canvas' native 5:3 ratio. Stretching it was what offset the tower hitboxes. */
+    #gameScreen.battle-focus #gameCanvas{display:block;width:auto!important;height:auto!important;max-width:100%!important;max-height:100%!important;aspect-ratio:5/3;object-fit:contain;border-radius:10px}
+    #gameScreen.battle-focus .tower-panel{width:230px!important;height:100%;min-height:0;padding:7px;border-radius:11px;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column}
     #gameScreen.battle-focus .tower-panel-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
     #gameScreen.battle-focus .tower-panel-title span{font-size:15px}
     #gameScreen.battle-focus .tower-panel-title small,#gameScreen.battle-focus .tip{display:none!important}
@@ -27,12 +38,16 @@
     #gameScreen.battle-focus .battle-synergy-strip>small{display:none!important}
     #gameScreen.battle-focus .battle-synergy-chip{margin:0;padding:3px 5px;font-size:8px;gap:3px}
     #gameScreen.battle-focus .battle-synergy-chip span{font-size:9px}
-    #gameScreen.battle-focus #towerChoices{display:grid;grid-template-columns:1fr 1fr;gap:5px;align-content:start;overflow:hidden}
+    #gameScreen.battle-focus #towerChoices{display:grid;grid-template-columns:1fr 1fr;gap:5px;align-content:start;overflow:visible}
     #gameScreen.battle-focus .tower-choice{margin:0;padding:5px;min-height:68px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2px;text-align:center}
     #gameScreen.battle-focus .tower-choice .stage-sprite,#gameScreen.battle-focus .tower-choice img{width:34px!important;height:34px!important;flex:0 0 34px}
     #gameScreen.battle-focus .tower-choice b{font-size:10px;line-height:1.05}
     #gameScreen.battle-focus .tower-choice small{display:none!important}
     #gameScreen.battle-focus .battle-level-only{display:block!important;color:#aebbb1;font-size:8px!important;line-height:1!important}
+    /* Keep tower inspect / upgrade controls usable inside landscape mode. */
+    #gameScreen.battle-focus .selected-tower-panel{position:relative;z-index:20;flex:0 0 auto;margin-top:6px;padding:7px;font-size:9px;overflow:visible}
+    #gameScreen.battle-focus .selected-tower-panel .stat-grid{display:none}
+    #gameScreen.battle-focus .selected-tower-panel button{min-height:30px;padding:6px;font-size:9px}
     #battleRotateHint{display:none}
     @media(orientation:portrait) and (max-width:900px){
       #gameScreen.battle-focus #battleRotateHint{display:grid;position:fixed;inset:0;z-index:120;place-items:center;background:#06100dec;color:#f0d77d;text-align:center;padding:30px;font-weight:900;letter-spacing:.06em}
@@ -56,10 +71,13 @@
   btn.textContent='⛶ FULL SCREEN';
   if(hud)hud.appendChild(btn);
 
-  const hint=document.createElement('div');
-  hint.id='battleRotateHint';
-  hint.innerHTML='<div><span>↻</span>ROTATE YOUR PHONE<br><small style="display:block;margin-top:8px;color:#b9c6bd;font-weight:600">Battle mode is designed to fit in landscape.</small></div>';
-  game.appendChild(hint);
+  let hint=document.querySelector('#battleRotateHint');
+  if(!hint){
+    hint=document.createElement('div');
+    hint.id='battleRotateHint';
+    hint.innerHTML='<div><span>↻</span>ROTATE YOUR PHONE<br><small style="display:block;margin-top:8px;color:#b9c6bd;font-weight:600">Battle mode is designed to fit in landscape.</small></div>';
+    game.appendChild(hint);
+  }
 
   function simplifyTowerCards(){
     game.querySelectorAll('.tower-choice').forEach(card=>{
@@ -77,8 +95,10 @@
     });
   }
 
-  const baseChoices=choices;
-  choices=function(){const r=baseChoices();simplifyTowerCards();return r;};
+  if(typeof choices==='function'){
+    const baseChoices=choices;
+    choices=function(){const r=baseChoices();simplifyTowerCards();return r;};
+  }
   simplifyTowerCards();
 
   async function enterFocus(){
@@ -98,9 +118,8 @@
   btn.onclick=()=>game.classList.contains('battle-focus')?leaveFocus():enterFocus();
   document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&game.classList.contains('battle-focus')){game.classList.remove('battle-focus');document.body.classList.remove('battle-focus-body');btn.textContent='⛶ FULL SCREEN';}});
 
-  const baseShow=show;
-  show=function(id){
-    if(id!=='gameScreen'&&game.classList.contains('battle-focus'))leaveFocus();
-    return baseShow(id);
-  };
+  if(typeof show==='function'){
+    const baseShow=show;
+    show=function(id){if(id!=='gameScreen'&&game.classList.contains('battle-focus'))leaveFocus();return baseShow(id);};
+  }
 })();
