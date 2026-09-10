@@ -1,4 +1,4 @@
-// BeastBorn loader v36
+// BeastBorn loader v37
 (() => {
   const core=document.createElement('script');
   core.src='game-core.js?v=20260909-57';
@@ -14,6 +14,11 @@
         progression.onload=()=>{
           const brand=document.createElement('script');
           brand.src='brand-patch.js?v=20260909-73';
+          brand.onload=()=>{
+            const stats=document.createElement('script');
+            stats.src='beast-stats-patch.js?v=20260910-74';
+            document.head.appendChild(stats);
+          };
           document.head.appendChild(brand);
         };
         document.head.appendChild(progression);
