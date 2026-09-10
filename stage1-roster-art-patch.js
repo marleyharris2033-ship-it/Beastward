@@ -1,6 +1,6 @@
 // Beastward full Stage-1 roster pixel-art override
 (() => {
-  const VERSION='20260910-stage1-roster-v2';
+  const VERSION='20260910-stage1-roster-v3';
   const IDS=[
     'embercub','sprigpaw','bubblit','sparkit','pebblum',
     'gustwing','toxip','scorchick','mosshell','drizzlet',
@@ -39,6 +39,7 @@
 
     IDS.forEach((id,index)=>{
       if(!beasts[id])return;
+      const previousStaticSrc=`assets/pixel/${id}.png`;
       const baseUrl=cropSvgUrl(baseAtlas,index,128,128,640,512);
       const towerUrl=cropSvgUrl(towerAtlas,index,64,64,320,256);
       beasts[id].sprite=baseUrl;
@@ -48,6 +49,12 @@
       towerImage.decoding='async';
       towerImage.src=towerUrl;
       spriteImgs[id]=towerImage;
+
+      // Replace decorative Stage-1 art already present in the static title/hub HTML.
+      document.querySelectorAll('img').forEach(img=>{
+        const original=img.getAttribute('src')||'';
+        if(original===previousStaticSrc)img.src=baseUrl;
+      });
     });
 
     const previousSpritePathForStage=spritePathForStage;
@@ -64,7 +71,7 @@
       return `<span class="stage-sprite stage-1 type-${b.type.toLowerCase()} ${unseen?'unseen-sprite':''} ${extra}" aria-label="${unseen?'Undiscovered beast':name}"><img class="stage-form stage1-roster-form" src="${b.sprite}" alt="${unseen?'Undiscovered beast':name}" style="display:block!important;width:100%!important;height:100%!important;object-fit:contain!important;image-rendering:pixelated!important;${unseen?'filter:brightness(0) saturate(0) contrast(1.2)!important;':''}"></span>`;
     };
 
-    // Refresh every screen that can already be visible by the time the atlas is decoded.
+    // Refresh every view that can display a base form.
     try{renderStarters();}catch(e){}
     try{renderCollection();}catch(e){}
     try{renderBestiary();}catch(e){}
