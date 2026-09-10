@@ -1,0 +1,70 @@
+{
+  "sheets": [
+    {
+      "name": "stage2",
+      "source": "assets/sheets/stage2.png",
+      "stage": 2,
+      "cols": 5,
+      "rows": 4,
+      "sprite_canvas": 128,
+      "tower_canvas": 96,
+      "padding": 6,
+      "output": "assets/generated/stage2",
+      "tower_output": "assets/generated/towers/stage2",
+      "order": [
+        "embercub",
+        "sprigpaw",
+        "bubblit",
+        "sparkit",
+        "pebblum",
+        "gustwing",
+        "toxip",
+        "frostkit",
+        "shadepup",
+        "lumpling",
+        "voltwing",
+        "scorchick",
+        "mosshell",
+        "drizzlet",
+        "zapmoth",
+        "cindrake",
+        "sporeling",
+        "drakeling",
+        "voidling"
+      ]
+    },
+    {
+      "name": "stage3",
+      "source": "assets/sheets/stage3.png",
+      "stage": 3,
+      "cols": 5,
+      "rows": 4,
+      "sprite_canvas": 128,
+      "tower_canvas": 96,
+      "padding": 5,
+      "output": "assets/generated/stage3",
+      "tower_output": "assets/generated/towers/stage3",
+      "order": [
+        "embercub",
+        "sprigpaw",
+        "bubblit",
+        "sparkit",
+        "pebblum",
+        "gustwing",
+        "toxip",
+        "frostkit",
+        "shadepup",
+        "lumpling",
+        "voltwing",
+        "scorchick",
+        "mosshell",
+        "drizzlet",
+        "zapmoth",
+        "cindrake",
+        "sporeling",
+        "drakeling",
+        "voidling"
+      ]
+    }
+  ]
+}
