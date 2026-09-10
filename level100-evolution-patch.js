@@ -1,6 +1,7 @@
-// BeastBorn Level 100 final evolution system v2
+// BeastBorn Level 100 final evolution system v3
 (() => {
   const FINAL_EVOLUTION_LEVEL=100;
+  const ART_VERSION='20260910-embercub-png-1';
   const FINAL_FORMS={
     embercub:{name:'Emberlord',damage:14,speed:4,range:3,special:5},
     sprigpaw:{name:'Verdantyr',damage:8,speed:6,range:4,special:10},
@@ -29,13 +30,13 @@
     beasts[id].finalEvolution=data;
   });
 
-  // First completed redesign: Embercub -> Flarecub -> Blazefang -> Emberlord.
+  // Embercub is the first completed four-stage PNG line.
   if(beasts.embercub){
     beasts.embercub.evo20='Flarecub';
     beasts.embercub.evo30='Blazefang';
     beasts.embercub.evo100='Emberlord';
-    beasts.embercub.sprite='assets/pixel/redesign/embercub_1.svg?v=78';
-    beasts.embercub.towerSprite='assets/pixel/redesign/embercub_1.svg?v=78';
+    beasts.embercub.sprite=`assets/pixel/redesign/embercub_1.png?v=${ART_VERSION}`;
+    beasts.embercub.towerSprite=`assets/pixel/redesign/embercub_1.png?v=${ART_VERSION}`;
   }
 
   evolutionStage=function(id){
@@ -57,8 +58,7 @@
 
   const previousSpritePathForStage=spritePathForStage;
   spritePathForStage=function(id,stage=1){
-    if(id==='embercub')return `assets/pixel/redesign/embercub_${Math.max(1,Math.min(4,stage))}.svg?v=78`;
-    // Other Lv100 forms temporarily reuse their Lv60 art until their individual redesign pass.
+    if(id==='embercub')return `assets/pixel/redesign/embercub_${Math.max(1,Math.min(4,stage))}.png?v=${ART_VERSION}`;
     if(stage>=4)return `assets/pixel/evolved/${id}_3.svg?v=48`;
     return previousSpritePathForStage(id,stage);
   };
@@ -79,10 +79,11 @@
     if(progress(id).level>=FINAL_EVOLUTION_LEVEL)syncSeenStages(id);
   });
 
-  // Load the full redesigned Embercub line for battle, collection, Bestiary and drag placement.
+  // Preload the exact four PNG forms everywhere they are used.
   if(beasts.embercub){
     [1,2,3,4].forEach(stage=>{
       const img=new Image();
+      img.decoding='async';
       img.src=spritePathForStage('embercub',stage);
       if(stage===1)spriteImgs.embercub=img;
       else evolutionSpriteImgs.embercub[stage]=img;
@@ -91,27 +92,17 @@
     if(titleEmber)titleEmber.src=spritePathForStage('embercub',1);
   }
 
-  // Final evolution capstones sit on top of level, Ascension and the player's 100-point stat build.
   const previousBattleStats=battleStats;
   battleStats=function(id){
     const b=previousBattleStats(id),f=FINAL_FORMS[id];
     if(!f||progress(id).level<FINAL_EVOLUTION_LEVEL)return b;
-    return {...b,
-      damage:b.damage*(1+f.damage/100)*(1+f.special/200),
-      rate:Math.max(.20,b.rate*(1-f.speed/100)),
-      range:clampCombatRange(b.range*(1+f.range/100)),
-      finalEvolution:true,
-      finalEvolutionName:f.name
-    };
+    return {...b,damage:b.damage*(1+f.damage/100)*(1+f.special/200),rate:Math.max(.20,b.rate*(1-f.speed/100)),range:clampCombatRange(b.range*(1+f.range/100)),finalEvolution:true,finalEvolutionName:f.name};
   };
 
   bestiaryBeastEntries=function(){
     const result=[];
     Object.values(beasts).forEach((b,speciesIndex)=>{
-      [1,2,3,4].forEach(stage=>result.push({
-        id:b.id,stage,key:beastStageKey(b.id,stage),number:speciesIndex*4+stage,
-        name:nameForStage(b.id,stage),type:b.type,role:b.role,seen:stageSeen(b.id,stage)
-      }));
+      [1,2,3,4].forEach(stage=>result.push({id:b.id,stage,key:beastStageKey(b.id,stage),number:speciesIndex*4+stage,name:nameForStage(b.id,stage),type:b.type,role:b.role,seen:stageSeen(b.id,stage)}));
     });
     return result;
   };
@@ -124,11 +115,7 @@
   };
 
   const previousRenderBestiary=renderBestiary;
-  renderBestiary=function(){
-    previousRenderBestiary();
-    const bp=document.querySelector('#bestiaryProgress');
-    if(bp)bp.textContent=`${(save.seenBeastStages||[]).length} / ${Object.keys(beasts).length*4} entries logged`;
-  };
+  renderBestiary=function(){previousRenderBestiary();const bp=document.querySelector('#bestiaryProgress');if(bp)bp.textContent=`${(save.seenBeastStages||[]).length} / ${Object.keys(beasts).length*4} entries logged`;};
 
   const previousOpenDenBeast=openDenBeast;
   openDenBeast=function(id){
@@ -142,32 +129,16 @@
       line.appendChild(node);
     }
     const pills=body.querySelector('.den-detail-pills');
-    if(pills&&progress(id).level>=FINAL_EVOLUTION_LEVEL&&!pills.querySelector('.final-form-pill')){
-      const pill=document.createElement('span');pill.className='final-form-pill';pill.textContent='FINAL EVOLUTION';pills.appendChild(pill);
-    }
+    if(pills&&progress(id).level>=FINAL_EVOLUTION_LEVEL&&!pills.querySelector('.final-form-pill')){const pill=document.createElement('span');pill.className='final-form-pill';pill.textContent='FINAL EVOLUTION';pills.appendChild(pill);}
   };
 
-  document.querySelectorAll('.den-summary').forEach(el=>{
-    const labels=[...el.querySelectorAll('span')];
-    const target=labels.find(x=>x.textContent.trim()==='EVOLUTIONS');
-    if(target){const b=target.parentElement?.querySelector('b');if(b)b.textContent='30 / 60 / 100';}
-  });
-  document.querySelectorAll('p').forEach(p=>{
-    if(p.textContent.includes('evolves at Levels 30 and 60'))p.textContent=p.textContent.replace('evolves at Levels 30 and 60','evolves at Levels 30, 60 and 100');
-  });
+  document.querySelectorAll('.den-summary').forEach(el=>{const labels=[...el.querySelectorAll('span')];const target=labels.find(x=>x.textContent.trim()==='EVOLUTIONS');if(target){const b=target.parentElement?.querySelector('b');if(b)b.textContent='30 / 60 / 100';}});
+  document.querySelectorAll('p').forEach(p=>{if(p.textContent.includes('evolves at Levels 30 and 60'))p.textContent=p.textContent.replace('evolves at Levels 30 and 60','evolves at Levels 30, 60 and 100');});
 
   const css=document.createElement('style');
-  css.textContent=`
-    .den-evo-line{grid-template-columns:repeat(4,minmax(0,1fr))!important}
-    .den-evo-line .final-evo-node{border-color:#d6bd6577!important;background:linear-gradient(180deg,#1a291f,#18170f)!important;box-shadow:inset 0 0 18px #e6c55d10}
-    .den-evo-line .final-evo-node em{display:block;margin-top:4px;color:#bea95f;font-size:6px;font-style:normal;line-height:1.3}
-    .final-form-pill{color:#f3dc83!important;border-color:#d6bd6577!important;background:#2a2413!important}
-    .stage-sprite.stage-4{filter:drop-shadow(0 0 9px #e8ca6550)}
-    @media(max-width:650px){.den-evo-line{grid-template-columns:repeat(2,minmax(0,1fr))!important}.den-evo-line .final-evo-node em{font-size:5px}}
-  `;
+  css.textContent=`.den-evo-line{grid-template-columns:repeat(4,minmax(0,1fr))!important}.den-evo-line .final-evo-node{border-color:#d6bd6577!important;background:linear-gradient(180deg,#1a291f,#18170f)!important;box-shadow:inset 0 0 18px #e6c55d10}.den-evo-line .final-evo-node em{display:block;margin-top:4px;color:#bea95f;font-size:6px;font-style:normal;line-height:1.3}.final-form-pill{color:#f3dc83!important;border-color:#d6bd6577!important;background:#2a2413!important}.stage-sprite.stage-4{filter:drop-shadow(0 0 9px #e8ca6550)}@media(max-width:650px){.den-evo-line{grid-template-columns:repeat(2,minmax(0,1fr))!important}.den-evo-line .final-evo-node em{font-size:5px}}`;
   document.head.appendChild(css);
 
-  // Refresh screens that may have rendered before this patch loaded.
   try{renderStarters();}catch(e){}
   try{renderCollection();}catch(e){}
 })();
