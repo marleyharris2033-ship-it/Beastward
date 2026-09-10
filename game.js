@@ -1,4 +1,4 @@
-// BeastBorn loader v38
+// BeastBorn loader v39
 (() => {
   const core=document.createElement('script');
   core.src='game-core.js?v=20260909-57';
@@ -17,6 +17,11 @@
           brand.onload=()=>{
             const stats=document.createElement('script');
             stats.src='beast-stats-patch.js?v=20260910-75';
+            stats.onload=()=>{
+              const balance=document.createElement('script');
+              balance.src='enemy-balance-patch.js?v=20260910-76';
+              document.head.appendChild(balance);
+            };
             document.head.appendChild(stats);
           };
           document.head.appendChild(brand);
