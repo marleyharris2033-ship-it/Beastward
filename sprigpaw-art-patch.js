@@ -1,13 +1,13 @@
 // Beastward approved Sprigpaw four-stage PNG art
 (() => {
-  const ART_VERSION='20260910-sprigpaw-48px-final-v4';
+  const ART_VERSION='20260910-sprigpaw-clean-v5';
   const id='sprigpaw';
   if(!beasts[id])return;
   beasts[id].evo20='Leafstride';
   beasts[id].evo30='Brambleclaw';
   beasts[id].evo100='Verdantyr';
   beasts[id].sprite=`assets/pixel/redesign/sprigpaw_1.png?v=${ART_VERSION}`;
-  beasts[id].towerSprite=beasts[id].sprite;
+  beasts[id].towerSprite=`assets/pixel/redesign/sprigpaw_tower_1.png?v=${ART_VERSION}`;
   const previousSpritePathForStage=spritePathForStage;
   spritePathForStage=function(beastId,stage=1){
     if(beastId===id){const s=Math.max(1,Math.min(4,stage));return `assets/pixel/redesign/sprigpaw_${s}.png?v=${ART_VERSION}`;}
