@@ -1,4 +1,4 @@
-// BeastBorn loader v52
+// BeastBorn loader v53
 (() => {
   const core=document.createElement('script');
   core.src='game-core.js?v=20260909-57';
@@ -17,21 +17,25 @@
               balance.onload=()=>{
                 const finalEvo=document.createElement('script');finalEvo.src='level100-evolution-patch.js?v=20260910-82';
                 finalEvo.onload=()=>{
-                  const sprigpawArt=document.createElement('script');sprigpawArt.src='sprigpaw-art-patch.js?v=20260910-84';
-                  sprigpawArt.onload=()=>{
-                    const desert=document.createElement('script');desert.src='desert-region-patch.js?v=20260910-4';
-                    desert.onload=()=>{
-                      const landscape=document.createElement('script');landscape.src='battle-landscape-patch.js?v=20260910-5';
-                      landscape.onload=()=>{
-                        const ergonomics=document.createElement('script');ergonomics.src='battle-ergonomics-patch.js?v=20260910-2';
-                        ergonomics.onload=()=>{const controls=document.createElement('script');controls.src='battle-controls-patch.js?v=20260910-2';document.head.appendChild(controls);};
-                        document.head.appendChild(ergonomics);
+                  const embercubArt=document.createElement('script');embercubArt.src='embercub-art-patch.js?v=20260910-1';
+                  embercubArt.onload=()=>{
+                    const sprigpawArt=document.createElement('script');sprigpawArt.src='sprigpaw-art-patch.js?v=20260910-84';
+                    sprigpawArt.onload=()=>{
+                      const desert=document.createElement('script');desert.src='desert-region-patch.js?v=20260910-4';
+                      desert.onload=()=>{
+                        const landscape=document.createElement('script');landscape.src='battle-landscape-patch.js?v=20260910-5';
+                        landscape.onload=()=>{
+                          const ergonomics=document.createElement('script');ergonomics.src='battle-ergonomics-patch.js?v=20260910-2';
+                          ergonomics.onload=()=>{const controls=document.createElement('script');controls.src='battle-controls-patch.js?v=20260910-2';document.head.appendChild(controls);};
+                          document.head.appendChild(ergonomics);
+                        };
+                        document.head.appendChild(landscape);
                       };
-                      document.head.appendChild(landscape);
+                      document.head.appendChild(desert);
                     };
-                    document.head.appendChild(desert);
+                    document.head.appendChild(sprigpawArt);
                   };
-                  document.head.appendChild(sprigpawArt);
+                  document.head.appendChild(embercubArt);
                 };document.head.appendChild(finalEvo);
               };document.head.appendChild(balance);
             };document.head.appendChild(stats);
