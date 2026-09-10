@@ -34,7 +34,7 @@
     </div>
   </div>
 </section>
-<section id="saveSelectScreen" class="screen"><div class="panel wide save-panel"><button class="back" data-back="titleScreen">← Title</button><div class="screen-crest">✦</div><h2 class="fantasy-heading">Choose Your Warden Save</h2><p class="sub centred">Three journeys can be kept separately. Each remembers its beasts, levels, Essence and progress.</p><div id="saveSlots" class="save-slots"></div></div></section><section id="starterScreen" class="screen"><div class="panel wide starter-panel"><button class="back" data-back="saveSelectScreen">← Save Slots</button><div class="screen-crest">✦</div><h2 class="fantasy-heading">Choose Your First Beast</h2><p class="sub centred">Your first bond shapes the opening battles. Every starter grows stronger through battle and evolves at Levels 30 and 60.</p><div id="starterGrid" class="starter-grid"></div></div></section>
+<section id="saveSelectScreen" class="screen"><div class="panel wide save-panel"><button class="back" data-back="titleScreen">← Title</button><div class="screen-crest">✦</div><h2 class="fantasy-heading">Choose Your Warden Save</h2><p class="sub centred">Three journeys can be kept separately. Each remembers its beasts, levels, Essence and progress.</p><div id="saveSlots" class="save-slots"></div></div></section><section id="starterScreen" class="screen"><div class="panel wide starter-panel"><button class="back" data-back="saveSelectScreen">← Save Slots</button><div class="screen-crest">✦</div><h2 class="fantasy-heading">Choose Your First Beast</h2><p class="sub centred">Your first bond shapes the opening battles. Every starter grows stronger through battle and evolves at Levels 30, 60 and 100.</p><div id="starterGrid" class="starter-grid"></div></div></section>
 <section id="hubScreen" class="screen"><div class="hub">
     <header class="topbar themed-topbar">
       <div><div class="mini-logo">BEASTWARD</div><small>Beast Sanctuary • Warden Level <span id="wardenLevel">1</span></small></div>
@@ -98,10 +98,10 @@
     <div class="map-node boss-node locked" style="--x:84%;--y:17%"><span>1-10</span><b>Hollowmaw</b><small>Boss</small></div>
   </div>
 </div></section>
-<section id="beastsScreen" class="screen"><div class="panel wide themed-panel den-panel pc-den-panel"><button class="back" data-back="hubScreen">← Sanctuary</button><div class="screen-crest">◆</div><h2 class="fantasy-heading">Beast Vault</h2><p class="sub centred">Your complete bonded collection. Tap any beast to inspect its level, combat stats, evolution path and Ascension progress.</p><div class="den-summary"><div><span>COLLECTED</span><b id="denCollectedCount">0</b></div><div><span>MAX LEVEL</span><b>100</b></div><div><span>EVOLUTIONS</span><b>30 / 60</b></div></div><div id="beastCollection" class="collection beast-pc-grid"></div></div></section>
+<section id="beastsScreen" class="screen"><div class="panel wide themed-panel den-panel pc-den-panel"><button class="back" data-back="hubScreen">← Sanctuary</button><div class="screen-crest">◆</div><h2 class="fantasy-heading">Beast Vault</h2><p class="sub centred">Your complete bonded collection. Tap any beast to inspect its level, combat stats, evolution path and Ascension progress.</p><div class="den-summary"><div><span>COLLECTED</span><b id="denCollectedCount">0</b></div><div><span>MAX LEVEL</span><b>100</b></div><div><span>EVOLUTIONS</span><b>30 / 60 / 100</b></div></div><div id="beastCollection" class="collection beast-pc-grid"></div></div></section>
 <section id="bestiaryScreen" class="screen"><div class="panel wide bestiary-panel">
     <button class="back" data-back="hubScreen">← Sanctuary</button>
-    <div class="bestiary-head"><div><div class="mini-logo">BEASTWARD</div><h2>Bestiary</h2><p class="sub">A living log of every beast form you have encountered.</p></div><div id="bestiaryProgress" class="bestiary-progress">0 / 57 entries logged</div></div>
+    <div class="bestiary-head"><div><div class="mini-logo">BEASTWARD</div><h2>Bestiary</h2><p class="sub">A living log of every beast form you have encountered.</p></div><div id="bestiaryProgress" class="bestiary-progress">0 / 76 entries logged</div></div>
     <div class="bestiary-tabs">
       <button class="bestiary-tab active" data-btab="beasts">🐾 Beasts</button>
       <button class="bestiary-tab" data-btab="enemies">☠ Enemies</button>
@@ -183,4 +183,4 @@
 </div>
 <div id="progressToast" class="progress-toast hidden"><b id="progressToastTitle">BEAST LEVEL UP</b><span id="progressToastText"></span></div><div id="resultModal" class="modal hidden"><div class="modal-card result-report-card"><h2 id="resultTitle"></h2><p id="resultText"></p><div id="battleSummary" class="battle-summary"></div><button id="resultContinue" class="primary">Continue</button></div></div>
 <div id="eggModal" class="modal hidden"><div class="modal-card"><h2 id="eggResultTitle"></h2><img id="eggResultSprite" class="result-sprite"><h3 id="eggResultName"></h3><p id="eggResultText"></p><button id="eggResultContinue" class="primary">Continue</button></div></div>
-</div><script src="game.js?v=20260910-78"></script></body></html>
+</div><script src="game.js?v=20260910-80"></script></body></html>
