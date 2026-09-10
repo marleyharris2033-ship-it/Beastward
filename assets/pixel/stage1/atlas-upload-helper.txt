@@ -1,0 +1,1 @@
+Sprite atlas binary upload follows in the same Stage-1 replacement batch.
