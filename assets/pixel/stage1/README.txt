@@ -1,0 +1,1 @@
+Stage-1 sprite atlas wrappers. Large sprites use stage1_base_atlas.png; battle tower sprites use stage1_tower_atlas.png. Generated 2026-09-10.
