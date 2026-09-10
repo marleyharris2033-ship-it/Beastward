@@ -1,0 +1,1 @@
+Sprigpaw v5 uses clean transparent isolated sprites. Main forms are 64x64; tower forms are 48x48.
