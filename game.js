@@ -1,4 +1,4 @@
-// BeastBorn loader v53
+// BeastBorn loader v54
 (() => {
   const core=document.createElement('script');
   core.src='game-core.js?v=20260909-57';
@@ -26,7 +26,15 @@
                         const landscape=document.createElement('script');landscape.src='battle-landscape-patch.js?v=20260910-5';
                         landscape.onload=()=>{
                           const ergonomics=document.createElement('script');ergonomics.src='battle-ergonomics-patch.js?v=20260910-2';
-                          ergonomics.onload=()=>{const controls=document.createElement('script');controls.src='battle-controls-patch.js?v=20260910-2';document.head.appendChild(controls);};
+                          ergonomics.onload=()=>{
+                            const controls=document.createElement('script');controls.src='battle-controls-patch.js?v=20260910-2';
+                            controls.onload=()=>{
+                              const stage1Art=document.createElement('script');
+                              stage1Art.src='stage1-roster-art-patch.js?v=20260910-2';
+                              document.head.appendChild(stage1Art);
+                            };
+                            document.head.appendChild(controls);
+                          };
                           document.head.appendChild(ergonomics);
                         };
                         document.head.appendChild(landscape);
