@@ -1,5 +1,11 @@
 // Beastward Region III — Sunscar Desert
 (() => {
+  if(!window.__beastbornLandscapeLoader){
+    window.__beastbornLandscapeLoader=true;
+    const landscape=document.createElement('script');
+    landscape.src='battle-landscape-patch.js?v=20260910-3';
+    document.head.appendChild(landscape);
+  }
   if(levels.some(l=>l.world===3))return;
   const desert=[
     {id:21,world:3,name:'Sunscar Approach',theme:'canyon',waves:10,reward:850,hp:7.0,speed:1.31,pathWidth:70,pathEdge:'#8b6238',pathFill:'#d5ad70',path:[{x:-30,y:470},{x:155,y:470},{x:155,y:300},{x:350,y:300},{x:350,y:125},{x:570,y:125},{x:570,y:410},{x:760,y:410},{x:760,y:235},{x:930,y:235}],scenery:[{kind:'dryBush',x:90,y:120},{kind:'boulder',x:250,y:500,block:true},{kind:'bones',x:470,y:475},{kind:'dustRock',x:690,y:110},{kind:'dryBush',x:850,y:510}]},
@@ -15,7 +21,6 @@
   ];
   levels.push(...desert);
   worldMeta[3]={name:'Sunscar Desert',subtitle:'A scorched land of dunes, buried temples and ancient predators.',label:'REGION III',boss:'Sandwyrm'};
-
   function ensureButton(){
     if(document.querySelector('#campaignWorld3Btn'))return;
     const b=document.createElement('button');b.id='campaignWorld3Btn';b.className='campaign-world-btn';b.textContent='REGION 3 • LOCKED';
