@@ -1,4 +1,4 @@
-// BeastBorn loader v41
+// BeastBorn loader v42
 (() => {
   const core=document.createElement('script');
   core.src='game-core.js?v=20260909-57';
@@ -22,7 +22,7 @@
               balance.src='enemy-balance-patch.js?v=20260910-76';
               balance.onload=()=>{
                 const finalEvo=document.createElement('script');
-                finalEvo.src='level100-evolution-patch.js?v=20260910-78';
+                finalEvo.src='level100-evolution-patch.js?v=20260910-80';
                 document.head.appendChild(finalEvo);
               };
               document.head.appendChild(balance);
