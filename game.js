@@ -1,4 +1,4 @@
-// BeastBorn loader v45
+// BeastBorn loader v46
 (() => {
   const core=document.createElement('script');
   core.src='game-core.js?v=20260909-57';
@@ -26,11 +26,6 @@
                 finalEvo.onload=()=>{
                   const sprigpawArt=document.createElement('script');
                   sprigpawArt.src='sprigpaw-art-patch.js?v=20260910-84';
-                  sprigpawArt.onload=()=>{
-                    const simpleSprites=document.createElement('script');
-                    simpleSprites.src='simple-sprite-patch.js?v=20260910-1';
-                    document.head.appendChild(simpleSprites);
-                  };
                   document.head.appendChild(sprigpawArt);
                 };
                 document.head.appendChild(finalEvo);
