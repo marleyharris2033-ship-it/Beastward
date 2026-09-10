@@ -1,6 +1,6 @@
 // Beastward approved Sprigpaw four-stage PNG art
 (() => {
-  const ART_VERSION='20260910-sprigpaw-rgba48-v3';
+  const ART_VERSION='20260910-sprigpaw-48px-final-v4';
   const id='sprigpaw';
   if(!beasts[id])return;
   beasts[id].evo20='Leafstride';
