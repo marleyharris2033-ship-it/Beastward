@@ -1,4 +1,4 @@
-// BeastBorn loader v50
+// BeastBorn loader v51
 (() => {
   const core=document.createElement('script');
   core.src='game-core.js?v=20260909-57';
@@ -20,7 +20,11 @@
                   const sprigpawArt=document.createElement('script');sprigpawArt.src='sprigpaw-art-patch.js?v=20260910-84';
                   sprigpawArt.onload=()=>{
                     const desert=document.createElement('script');desert.src='desert-region-patch.js?v=20260910-4';
-                    desert.onload=()=>{const landscape=document.createElement('script');landscape.src='battle-landscape-patch.js?v=20260910-5';document.head.appendChild(landscape);};
+                    desert.onload=()=>{
+                      const landscape=document.createElement('script');landscape.src='battle-landscape-patch.js?v=20260910-5';
+                      landscape.onload=()=>{const ergo=document.createElement('script');ergo.src='battle-ergonomics-patch.js?v=20260910-1';document.head.appendChild(ergo);};
+                      document.head.appendChild(landscape);
+                    };
                     document.head.appendChild(desert);
                   };
                   document.head.appendChild(sprigpawArt);
