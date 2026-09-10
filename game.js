@@ -1,4 +1,4 @@
-// BeastBorn loader v49
+// BeastBorn loader v50
 (() => {
   const core=document.createElement('script');
   core.src='game-core.js?v=20260909-57';
@@ -21,9 +21,7 @@
                   sprigpawArt.onload=()=>{
                     const desert=document.createElement('script');desert.src='desert-region-patch.js?v=20260910-1';
                     desert.onload=()=>{
-                      const compact=document.createElement('script');compact.src='compact-campaign-patch.js?v=20260910-1';
-                      compact.onload=()=>{const battleCompact=document.createElement('script');battleCompact.src='battle-compact-patch.js?v=20260910-1';document.head.appendChild(battleCompact);};
-                      document.head.appendChild(compact);
+                      const mobileBattle=document.createElement('script');mobileBattle.src='game-mobile-layout-patch.js?v=20260910-2';document.head.appendChild(mobileBattle);
                     };
                     document.head.appendChild(desert);
                   };
