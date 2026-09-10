@@ -1,4 +1,4 @@
-// BeastBorn Level 100 final evolution system v1
+// BeastBorn Level 100 final evolution system v2
 (() => {
   const FINAL_EVOLUTION_LEVEL=100;
   const FINAL_FORMS={
@@ -29,6 +29,15 @@
     beasts[id].finalEvolution=data;
   });
 
+  // First completed redesign: Embercub -> Flarecub -> Blazefang -> Emberlord.
+  if(beasts.embercub){
+    beasts.embercub.evo20='Flarecub';
+    beasts.embercub.evo30='Blazefang';
+    beasts.embercub.evo100='Emberlord';
+    beasts.embercub.sprite='assets/pixel/redesign/embercub_1.svg?v=78';
+    beasts.embercub.towerSprite='assets/pixel/redesign/embercub_1.svg?v=78';
+  }
+
   evolutionStage=function(id){
     const l=progress(id).level;
     return l>=FINAL_EVOLUTION_LEVEL?4:l>=SECOND_EVOLUTION_LEVEL?3:l>=FIRST_EVOLUTION_LEVEL?2:1;
@@ -38,7 +47,6 @@
     const b=beasts[id];
     return stage>=4?(b.evo100||b.evo30):stage===3?b.evo30:stage===2?b.evo20:b.name;
   };
-
   nameFor=function(id){return nameForStage(id,evolutionStage(id));};
 
   const previousSyncSeenStages=syncSeenStages;
@@ -47,9 +55,10 @@
     if(progress(id).level>=FINAL_EVOLUTION_LEVEL)markStageSeen(id,4);
   };
 
-  // Lv100 art temporarily reuses the Lv60 sprite until each line receives its redesigned final PNG.
   const previousSpritePathForStage=spritePathForStage;
   spritePathForStage=function(id,stage=1){
+    if(id==='embercub')return `assets/pixel/redesign/embercub_${Math.max(1,Math.min(4,stage))}.svg?v=78`;
+    // Other Lv100 forms temporarily reuse their Lv60 art until their individual redesign pass.
     if(stage>=4)return `assets/pixel/evolved/${id}_3.svg?v=48`;
     return previousSpritePathForStage(id,stage);
   };
@@ -57,9 +66,11 @@
 
   const previousStageSpriteMarkup=stageSpriteMarkup;
   stageSpriteMarkup=function(id,stage=evolutionStage(id),extra='',unseen=false){
-    if(stage<4)return previousStageSpriteMarkup(id,stage,extra,unseen);
-    const b=beasts[id],name=nameForStage(id,4),src=spritePathForStage(id,4);
-    return `<span class="stage-sprite stage-4 type-${b.type.toLowerCase()} ${unseen?'unseen-sprite':''} ${extra}" aria-label="${unseen?'Undiscovered beast':name}"><img class="stage-form" src="${src}" alt="${unseen?'Undiscovered beast':name}" style="display:block!important;width:100%!important;height:100%!important;object-fit:contain!important;${unseen?'filter:brightness(0) saturate(0) contrast(1.2)!important;':''}"></span>`;
+    if(id==='embercub'||stage>=4){
+      const b=beasts[id],safeStage=Math.max(1,Math.min(4,stage)),name=nameForStage(id,safeStage),src=spritePathForStage(id,safeStage);
+      return `<span class="stage-sprite stage-${safeStage} type-${b.type.toLowerCase()} ${unseen?'unseen-sprite':''} ${extra}" aria-label="${unseen?'Undiscovered beast':name}"><img class="stage-form" src="${src}" alt="${unseen?'Undiscovered beast':name}" style="display:block!important;width:100%!important;height:100%!important;object-fit:contain!important;image-rendering:pixelated!important;${unseen?'filter:brightness(0) saturate(0) contrast(1.2)!important;':''}"></span>`;
+    }
+    return previousStageSpriteMarkup(id,stage,extra,unseen);
   };
 
   Object.keys(beasts).forEach(id=>{
@@ -68,7 +79,19 @@
     if(progress(id).level>=FINAL_EVOLUTION_LEVEL)syncSeenStages(id);
   });
 
-  // The final evolution gives a species-flavoured capstone bonus on top of level/stat progression.
+  // Load the full redesigned Embercub line for battle, collection, Bestiary and drag placement.
+  if(beasts.embercub){
+    [1,2,3,4].forEach(stage=>{
+      const img=new Image();
+      img.src=spritePathForStage('embercub',stage);
+      if(stage===1)spriteImgs.embercub=img;
+      else evolutionSpriteImgs.embercub[stage]=img;
+    });
+    const titleEmber=document.querySelector('#titleScreen .title-beast-left img');
+    if(titleEmber)titleEmber.src=spritePathForStage('embercub',1);
+  }
+
+  // Final evolution capstones sit on top of level, Ascension and the player's 100-point stat build.
   const previousBattleStats=battleStats;
   battleStats=function(id){
     const b=previousBattleStats(id),f=FINAL_FORMS[id];
@@ -82,7 +105,6 @@
     };
   };
 
-  const previousBestiaryBeastEntries=bestiaryBeastEntries;
   bestiaryBeastEntries=function(){
     const result=[];
     Object.values(beasts).forEach((b,speciesIndex)=>{
@@ -98,7 +120,7 @@
   bestiaryStageDescription=function(id,stage){
     if(stage<4)return previousBestiaryStageDescription(id,stage);
     const b=beasts[id],f=FINAL_FORMS[id];
-    return `${f.name} is the ultimate Level 100 evolution of ${b.name}. This final form represents complete mastery of its ${b.type.toLowerCase()} bond and gains a unique capstone combat bonus.`;
+    return `${f.name} is the ultimate Level 100 evolution of ${b.name}. This final form represents complete mastery of its ${b.type.toLowerCase()} bond and gains a species-specific capstone combat bonus.`;
   };
 
   const previousRenderBestiary=renderBestiary;
@@ -125,7 +147,6 @@
     }
   };
 
-  // Update player-facing evolution references from three forms to four.
   document.querySelectorAll('.den-summary').forEach(el=>{
     const labels=[...el.querySelectorAll('span')];
     const target=labels.find(x=>x.textContent.trim()==='EVOLUTIONS');
@@ -145,4 +166,8 @@
     @media(max-width:650px){.den-evo-line{grid-template-columns:repeat(2,minmax(0,1fr))!important}.den-evo-line .final-evo-node em{font-size:5px}}
   `;
   document.head.appendChild(css);
+
+  // Refresh screens that may have rendered before this patch loaded.
+  try{renderStarters();}catch(e){}
+  try{renderCollection();}catch(e){}
 })();
