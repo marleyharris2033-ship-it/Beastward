@@ -1,20 +1,20 @@
-// Beastward approved Sprigpaw four-stage art v1
+// Beastward approved Sprigpaw four-stage art v2
 (() => {
-  const ART_VERSION='20260910-sprigpaw-1';
+  const ART_VERSION='20260910-sprigpaw-code-2';
   const id='sprigpaw';
   if(!beasts[id])return;
 
   beasts[id].evo20='Leafstride';
   beasts[id].evo30='Brambleclaw';
   beasts[id].evo100='Verdantyr';
-  beasts[id].sprite=`assets/pixel/redesign/sprigpaw_1.png?v=${ART_VERSION}`;
+  beasts[id].sprite=`assets/pixel/redesign/sprigpaw_1.svg?v=${ART_VERSION}`;
   beasts[id].towerSprite=beasts[id].sprite;
 
   const previousSpritePathForStage=spritePathForStage;
   spritePathForStage=function(beastId,stage=1){
     if(beastId===id){
       const safeStage=Math.max(1,Math.min(4,stage));
-      return `assets/pixel/redesign/sprigpaw_${safeStage}.png?v=${ART_VERSION}`;
+      return `assets/pixel/redesign/sprigpaw_${safeStage}.svg?v=${ART_VERSION}`;
     }
     return previousSpritePathForStage(beastId,stage);
   };
@@ -30,14 +30,10 @@
 
   evolutionSpriteImgs[id]=evolutionSpriteImgs[id]||{};
   [1,2,3,4].forEach(stage=>{
-    const img=new Image();
-    img.decoding='async';
-    img.src=spritePathForStage(id,stage);
-    if(stage===1)spriteImgs[id]=img;
-    else evolutionSpriteImgs[id][stage]=img;
+    const img=new Image();img.decoding='async';img.src=spritePathForStage(id,stage);
+    if(stage===1)spriteImgs[id]=img;else evolutionSpriteImgs[id][stage]=img;
   });
 
-  // Re-render any screens that may already be open when this patch finishes loading.
   try{renderStarters();}catch(e){}
   try{renderCollection();}catch(e){}
   try{if(document.querySelector('#denBeastModal:not(.hidden)'))openDenBeast(id);}catch(e){}
