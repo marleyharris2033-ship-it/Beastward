@@ -1,4 +1,4 @@
-// BeastBorn loader v51
+// BeastBorn loader v47
 (() => {
   const core=document.createElement('script');
   core.src='game-core.js?v=20260909-57';
@@ -18,9 +18,7 @@
                 const finalEvo=document.createElement('script');finalEvo.src='level100-evolution-patch.js?v=20260910-82';
                 finalEvo.onload=()=>{
                   const sprigpawArt=document.createElement('script');sprigpawArt.src='sprigpaw-art-patch.js?v=20260910-84';
-                  sprigpawArt.onload=()=>{
-                    const desert=document.createElement('script');desert.src='desert-region-patch.js?v=20260910-1';document.head.appendChild(desert);
-                  };
+                  sprigpawArt.onload=()=>{const desert=document.createElement('script');desert.src='desert-region-patch.js?v=20260910-1';document.head.appendChild(desert);};
                   document.head.appendChild(sprigpawArt);
                 };document.head.appendChild(finalEvo);
               };document.head.appendChild(balance);
