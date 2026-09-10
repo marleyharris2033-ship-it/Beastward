@@ -22,7 +22,7 @@
                     const desert=document.createElement('script');desert.src='desert-region-patch.js?v=20260910-4';
                     desert.onload=()=>{
                       const landscape=document.createElement('script');landscape.src='battle-landscape-patch.js?v=20260910-5';
-                      landscape.onload=()=>{const ergo=document.createElement('script');ergo.src='battle-ergonomics-patch.js?v=20260910-1';document.head.appendChild(ergo);};
+                      landscape.onload=()=>{const controls=document.createElement('script');controls.src='battle-controls-patch.js?v=20260910-1';document.head.appendChild(controls);};
                       document.head.appendChild(landscape);
                     };
                     document.head.appendChild(desert);
