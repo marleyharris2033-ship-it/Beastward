@@ -1,9 +1,9 @@
-// BeastBorn loader v68
+// BeastBorn loader v69
 (() => {
   // Apply the final home screen immediately so older title layers never flash
   // while the rest of the game patches load.
   const earlyHome=document.createElement('script');
-  earlyHome.src='home-screen-art-patch.js?v=20260911-3';
+  earlyHome.src='home-screen-art-patch.js?v=20260911-4';
   document.head.appendChild(earlyHome);
 
   const core=document.createElement('script');
