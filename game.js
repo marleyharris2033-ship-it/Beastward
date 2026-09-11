@@ -1,4 +1,4 @@
-// BeastBorn loader v62
+// BeastBorn loader v63
 (() => {
   const core=document.createElement('script');
   core.src='game-core.js?v=20260909-57';
@@ -43,6 +43,11 @@
                                     bestiaryVisual.onload=()=>{
                                       const preview=document.createElement('script');
                                       preview.src='bestiary-preview-patch.js?v=20260911-1';
+                                      preview.onload=()=>{
+                                        const warden=document.createElement('script');
+                                        warden.src='warden-skill-tree-patch.js?v=20260911-1';
+                                        document.head.appendChild(warden);
+                                      };
                                       document.head.appendChild(preview);
                                     };
                                     document.head.appendChild(bestiaryVisual);
