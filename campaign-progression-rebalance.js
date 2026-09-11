@@ -1,7 +1,7 @@
-// Beastward campaign progression rebalance v1
+// Beastward campaign progression rebalance v2
 // Normal campaign = full Lv1-100 journey. Hard Mode unlocks only after 10-10.
 (()=>{
-  const VERSION='20260911-progression-v1';
+  const VERSION='20260911-progression-v2';
 
   // ---- XP curve ----
   // ~193k XP from Lv1->100. Early levels move quickly, later levels become meaningful.
@@ -56,7 +56,6 @@
 
   // ---- Battle XP ----
   // XP belongs to the selected party. New content is best; farming old maps is deliberately inefficient.
-  const oldCompleteWave=completeWave;
   completeWave=function(){
     const hard=battleMode==='hard';
     const completed=hard?save.hardCompletedLevels:save.completedLevels;
@@ -101,15 +100,13 @@
   };
 
   // Campaign copy/UI: show the intended level journey and make Hard's endgame requirement explicit.
-  Object.values(worldMeta||{}).forEach((meta,index)=>{
-    if(!meta)return;
-    const w=index;
+  Object.entries(worldMeta||{}).forEach(([key,meta])=>{
+    const w=Number(key);
+    if(!meta||w<1||w>10)return;
     const endId=w*10;
-    if(w>=1&&w<=10){
-      const startTarget=Math.round(targetLevelAfterStage((w-1)*10+1));
-      const endTarget=Math.round(targetLevelAfterStage(endId));
-      meta.subtitle=(meta.subtitle||'')+` • Recommended roughly Lv${startTarget}–${endTarget}.`;
-    }
+    const startTarget=Math.round(targetLevelAfterStage((w-1)*10+1));
+    const endTarget=Math.round(targetLevelAfterStage(endId));
+    meta.subtitle=(meta.subtitle||'')+` • Recommended roughly Lv${startTarget}–${endTarget}.`;
   });
 
   const oldRenderCampaignMap=renderCampaignMap;
