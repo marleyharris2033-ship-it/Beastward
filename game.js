@@ -1,4 +1,4 @@
-// BeastBorn loader v79
+// BeastBorn loader v80
 (() => {
   const earlyHome=document.createElement('script');earlyHome.src='home-screen-art-patch.js?v=20260911-4';document.head.appendChild(earlyHome);
   const core=document.createElement('script');core.src='game-core.js?v=20260909-57';core.onload=()=>{
@@ -23,7 +23,9 @@
                                         const preview=document.createElement('script');preview.src='bestiary-preview-patch.js?v=20260911-1';preview.onload=()=>{
                                           const warden=document.createElement('script');warden.src='warden-skill-tree-patch.js?v=20260911-1';warden.onload=()=>{
                                             const eggBalance=document.createElement('script');eggBalance.src='egg-cost-balance-patch.js?v=20260911-1';eggBalance.onload=()=>{
-                                              const saveTransfer=document.createElement('script');saveTransfer.src='save-transfer-patch.js?v=20260911-1';document.head.appendChild(saveTransfer);
+                                              const saveTransfer=document.createElement('script');saveTransfer.src='save-transfer-patch.js?v=20260911-1';saveTransfer.onload=()=>{
+                                                const hardBalance=document.createElement('script');hardBalance.src='hard-mode-balance-patch.js?v=20260911-1';document.head.appendChild(hardBalance);
+                                              };document.head.appendChild(saveTransfer);
                                             };document.head.appendChild(eggBalance);
                                           };document.head.appendChild(warden);
                                         };document.head.appendChild(preview);
