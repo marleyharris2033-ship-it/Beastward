@@ -1,4 +1,4 @@
-// BeastBorn loader v64
+// BeastBorn loader v65
 (() => {
   const core=document.createElement('script');
   core.src='game-core.js?v=20260909-57';
@@ -49,6 +49,11 @@
                                         warden.onload=()=>{
                                           const eggBalance=document.createElement('script');
                                           eggBalance.src='egg-cost-balance-patch.js?v=20260911-1';
+                                          eggBalance.onload=()=>{
+                                            const saveTransfer=document.createElement('script');
+                                            saveTransfer.src='save-transfer-patch.js?v=20260911-1';
+                                            document.head.appendChild(saveTransfer);
+                                          };
                                           document.head.appendChild(eggBalance);
                                         };
                                         document.head.appendChild(warden);
