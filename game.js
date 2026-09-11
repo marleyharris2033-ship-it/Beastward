@@ -1,4 +1,4 @@
-// BeastBorn loader v56
+// BeastBorn loader v57
 (() => {
   const core=document.createElement('script');
   core.src='game-core.js?v=20260909-57';
@@ -34,6 +34,11 @@
                               stage1Art.onload=()=>{
                                 const visualFix=document.createElement('script');
                                 visualFix.src='sprite-visual-fix.js?v=20260910-1';
+                                visualFix.onload=()=>{
+                                  const preview=document.createElement('script');
+                                  preview.src='bestiary-preview-patch.js?v=20260911-1';
+                                  document.head.appendChild(preview);
+                                };
                                 document.head.appendChild(visualFix);
                               };
                               document.head.appendChild(stage1Art);
