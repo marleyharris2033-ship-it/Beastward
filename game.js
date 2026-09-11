@@ -1,4 +1,4 @@
-// BeastBorn loader v76
+// BeastBorn loader v77
 (() => {
   // Apply the final home screen immediately so older title layers never flash
   // while the rest of the game patches load.
@@ -36,7 +36,7 @@
                             const controls=document.createElement('script');controls.src='battle-controls-patch.js?v=20260910-2';
                             controls.onload=()=>{
                               const stage1Art=document.createElement('script');
-                              stage1Art.src='stage1-roster-art-patch.js?v=20260911-6';
+                              stage1Art.src='stage1-roster-art-patch.js?v=20260911-7';
                               stage1Art.onload=()=>{
                                 const battleMainSprites=document.createElement('script');
                                 battleMainSprites.src='battle-main-sprite-patch.js?v=20260911-2';
