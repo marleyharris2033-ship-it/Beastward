@@ -14,10 +14,11 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import subprocess,re
           p=Path('index.html')
           s=p.read_text()
-          import re
-          s=re.sub(r'game\.js\?v=[^"\']+', 'game.js?v=20260911-85', s)
+          sha=subprocess.check_output(['git','rev-parse','--short','HEAD'], text=True).strip()
+          s=re.sub(r'game\.js\?v=[^"\']+', f'game.js?v={sha}', s)
           s=s.replace('Duplicate beasts become Ascension copies instead of being wasted.', 'Every egg hatches an individual beast with its own level and XP. Duplicate species can be trained separately or sacrificed for Ascension.')
           p.write_text(s)
           PY
@@ -27,6 +28,6 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           if ! git diff --cached --quiet; then
-            git commit -m "Bust game loader cache for individual beast system"
+            git commit -m "Bust deployed game loader cache"
             git push
           fi
