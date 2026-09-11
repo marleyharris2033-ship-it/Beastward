@@ -1,4 +1,4 @@
-// BeastBorn loader v60
+// BeastBorn loader v61
 (() => {
   const core=document.createElement('script');
   core.src='game-core.js?v=20260909-57';
@@ -32,19 +32,24 @@
                               const stage1Art=document.createElement('script');
                               stage1Art.src='stage1-roster-art-patch.js?v=20260911-6';
                               stage1Art.onload=()=>{
-                                const visualFix=document.createElement('script');
-                                visualFix.src='sprite-visual-fix.js?v=20260910-1';
-                                visualFix.onload=()=>{
-                                  const bestiaryVisual=document.createElement('script');
-                                  bestiaryVisual.src='bestiary-sprite-visual-patch.js?v=20260911-1';
-                                  bestiaryVisual.onload=()=>{
-                                    const preview=document.createElement('script');
-                                    preview.src='bestiary-preview-patch.js?v=20260911-1';
-                                    document.head.appendChild(preview);
+                                const battleMainSprites=document.createElement('script');
+                                battleMainSprites.src='battle-main-sprite-patch.js?v=20260911-1';
+                                battleMainSprites.onload=()=>{
+                                  const visualFix=document.createElement('script');
+                                  visualFix.src='sprite-visual-fix.js?v=20260910-1';
+                                  visualFix.onload=()=>{
+                                    const bestiaryVisual=document.createElement('script');
+                                    bestiaryVisual.src='bestiary-sprite-visual-patch.js?v=20260911-1';
+                                    bestiaryVisual.onload=()=>{
+                                      const preview=document.createElement('script');
+                                      preview.src='bestiary-preview-patch.js?v=20260911-1';
+                                      document.head.appendChild(preview);
+                                    };
+                                    document.head.appendChild(bestiaryVisual);
                                   };
-                                  document.head.appendChild(bestiaryVisual);
+                                  document.head.appendChild(visualFix);
                                 };
-                                document.head.appendChild(visualFix);
+                                document.head.appendChild(battleMainSprites);
                               };
                               document.head.appendChild(stage1Art);
                             };
