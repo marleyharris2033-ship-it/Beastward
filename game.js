@@ -1,4 +1,4 @@
-// BeastBorn loader v61
+// BeastBorn loader v62
 (() => {
   const core=document.createElement('script');
   core.src='game-core.js?v=20260909-57';
@@ -33,7 +33,7 @@
                               stage1Art.src='stage1-roster-art-patch.js?v=20260911-6';
                               stage1Art.onload=()=>{
                                 const battleMainSprites=document.createElement('script');
-                                battleMainSprites.src='battle-main-sprite-patch.js?v=20260911-1';
+                                battleMainSprites.src='battle-main-sprite-patch.js?v=20260911-2';
                                 battleMainSprites.onload=()=>{
                                   const visualFix=document.createElement('script');
                                   visualFix.src='sprite-visual-fix.js?v=20260910-1';
