@@ -1,4 +1,4 @@
-// BeastBorn loader v57
+// BeastBorn loader v58
 (() => {
   const core=document.createElement('script');
   core.src='game-core.js?v=20260909-57';
@@ -30,14 +30,19 @@
                             const controls=document.createElement('script');controls.src='battle-controls-patch.js?v=20260910-2';
                             controls.onload=()=>{
                               const stage1Art=document.createElement('script');
-                              stage1Art.src='stage1-roster-art-patch.js?v=20260910-3';
+                              stage1Art.src='stage1-roster-art-patch.js?v=20260911-4';
                               stage1Art.onload=()=>{
                                 const visualFix=document.createElement('script');
                                 visualFix.src='sprite-visual-fix.js?v=20260910-1';
                                 visualFix.onload=()=>{
-                                  const preview=document.createElement('script');
-                                  preview.src='bestiary-preview-patch.js?v=20260911-1';
-                                  document.head.appendChild(preview);
+                                  const bestiaryVisual=document.createElement('script');
+                                  bestiaryVisual.src='bestiary-sprite-visual-patch.js?v=20260911-1';
+                                  bestiaryVisual.onload=()=>{
+                                    const preview=document.createElement('script');
+                                    preview.src='bestiary-preview-patch.js?v=20260911-1';
+                                    document.head.appendChild(preview);
+                                  };
+                                  document.head.appendChild(bestiaryVisual);
                                 };
                                 document.head.appendChild(visualFix);
                               };
