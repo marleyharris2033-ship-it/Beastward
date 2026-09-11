@@ -1,4 +1,4 @@
-// BeastBorn loader v81
+// BeastBorn loader v82
 (() => {
   const earlyHome=document.createElement('script');earlyHome.src='home-screen-art-patch.js?v=20260911-4';document.head.appendChild(earlyHome);
   const core=document.createElement('script');core.src='game-core.js?v=20260909-57';core.onload=()=>{
@@ -12,6 +12,7 @@
                   const embercubArt=document.createElement('script');embercubArt.src='embercub-art-patch.js?v=20260910-1';embercubArt.onload=()=>{
                     const sprigpawArt=document.createElement('script');sprigpawArt.src='sprigpaw-art-patch.js?v=20260910-84';sprigpawArt.onload=()=>{
                       const desert=document.createElement('script');desert.src='desert-region-patch.js?v=20260910-4';desert.onload=()=>{
+                        const regions=document.createElement('script');regions.src='regions-4-10-patch.js?v=20260911-1';regions.onload=()=>{
                         const landscape=document.createElement('script');landscape.src='battle-landscape-patch.js?v=20260910-5';landscape.onload=()=>{
                           const ergonomics=document.createElement('script');ergonomics.src='battle-ergonomics-patch.js?v=20260910-2';ergonomics.onload=()=>{
                             const controls=document.createElement('script');controls.src='battle-controls-patch.js?v=20260910-2';controls.onload=()=>{
@@ -37,6 +38,7 @@
                             };document.head.appendChild(controls);
                           };document.head.appendChild(ergonomics);
                         };document.head.appendChild(landscape);
+                        };document.head.appendChild(regions);
                       };document.head.appendChild(desert);
                     };document.head.appendChild(sprigpawArt);
                   };document.head.appendChild(embercubArt);
