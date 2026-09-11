@@ -1,5 +1,11 @@
-// BeastBorn loader v66
+// BeastBorn loader v67
 (() => {
+  // Apply the final home screen immediately so older title layers never flash
+  // while the rest of the game patches load.
+  const earlyHome=document.createElement('script');
+  earlyHome.src='home-screen-art-patch.js?v=20260911-2';
+  document.head.appendChild(earlyHome);
+
   const core=document.createElement('script');
   core.src='game-core.js?v=20260909-57';
   core.onload=()=>{
@@ -52,11 +58,6 @@
                                           eggBalance.onload=()=>{
                                             const saveTransfer=document.createElement('script');
                                             saveTransfer.src='save-transfer-patch.js?v=20260911-1';
-                                            saveTransfer.onload=()=>{
-                                              const homeArt=document.createElement('script');
-                                              homeArt.src='home-screen-art-patch.js?v=20260911-1';
-                                              document.head.appendChild(homeArt);
-                                            };
                                             document.head.appendChild(saveTransfer);
                                           };
                                           document.head.appendChild(eggBalance);
