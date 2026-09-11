@@ -1,4 +1,4 @@
-// BeastBorn loader v83
+// BeastBorn loader v84
 (() => {
   const earlyHome=document.createElement('script');earlyHome.src='home-screen-art-patch.js?v=20260911-4';document.head.appendChild(earlyHome);
   const core=document.createElement('script');core.src='game-core.js?v=20260909-57';core.onload=()=>{
@@ -26,7 +26,7 @@
                                             const eggBalance=document.createElement('script');eggBalance.src='egg-cost-balance-patch.js?v=20260911-1';eggBalance.onload=()=>{
                                               const saveTransfer=document.createElement('script');saveTransfer.src='save-transfer-patch.js?v=20260911-1';saveTransfer.onload=()=>{
                                                 const hardBalance=document.createElement('script');hardBalance.src='hard-mode-balance-patch.js?v=20260911-2';hardBalance.onload=()=>{
-                                                  const campaignBalance=document.createElement('script');campaignBalance.src='campaign-progression-rebalance.js?v=20260911-1';document.head.appendChild(campaignBalance);
+                                                  const campaignBalance=document.createElement('script');campaignBalance.src='campaign-progression-rebalance.js?v=20260911-2';document.head.appendChild(campaignBalance);
                                                 };document.head.appendChild(hardBalance);
                                               };document.head.appendChild(saveTransfer);
                                             };document.head.appendChild(eggBalance);
