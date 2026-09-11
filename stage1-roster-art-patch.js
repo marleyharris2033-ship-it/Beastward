@@ -1,6 +1,6 @@
 // Beastward full Stage-1 roster pixel-art override
 (() => {
-  const VERSION='20260911-stage1-roster-v5';
+  const VERSION='20260911-stage1-roster-v6';
   const IDS=[
     'embercub','sprigpaw','bubblit','sparkit','pebblum',
     'gustwing','toxip','scorchick','mosshell','drizzlet',
@@ -97,7 +97,7 @@
     try{renderCollection();}catch(e){}
     try{renderBestiary();}catch(e){}
     try{choices();}catch(e){}
-    document.documentElement.dataset.stage1RosterArt='ready-v5';
+    document.documentElement.dataset.stage1RosterArt='ready-v6';
   }
 
   install().catch(error=>{
