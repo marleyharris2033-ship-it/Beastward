@@ -1,4 +1,4 @@
-// BeastBorn loader v75
+// BeastBorn loader v76
 (() => {
   // Apply the final home screen immediately so older title layers never flash
   // while the rest of the game patches load.
@@ -48,7 +48,7 @@
                                     bestiaryVisual.src='bestiary-sprite-visual-patch.js?v=20260911-1';
                                     bestiaryVisual.onload=()=>{
                                       const stage2Art=document.createElement('script');
-                                      stage2Art.src='stage2-sheet-fix.js?v=20260911-65';
+                                      stage2Art.src='stage2-sheet-fix.js?v=20260911-66';
                                       stage2Art.onload=()=>{
                                         const preview=document.createElement('script');
                                         preview.src='bestiary-preview-patch.js?v=20260911-1';
