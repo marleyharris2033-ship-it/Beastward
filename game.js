@@ -1,4 +1,4 @@
-// BeastBorn loader v69
+// BeastBorn loader v70
 (() => {
   // Apply the final home screen immediately so older title layers never flash
   // while the rest of the game patches load.
@@ -47,24 +47,29 @@
                                     const bestiaryVisual=document.createElement('script');
                                     bestiaryVisual.src='bestiary-sprite-visual-patch.js?v=20260911-1';
                                     bestiaryVisual.onload=()=>{
-                                      const preview=document.createElement('script');
-                                      preview.src='bestiary-preview-patch.js?v=20260911-1';
-                                      preview.onload=()=>{
-                                        const warden=document.createElement('script');
-                                        warden.src='warden-skill-tree-patch.js?v=20260911-1';
-                                        warden.onload=()=>{
-                                          const eggBalance=document.createElement('script');
-                                          eggBalance.src='egg-cost-balance-patch.js?v=20260911-1';
-                                          eggBalance.onload=()=>{
-                                            const saveTransfer=document.createElement('script');
-                                            saveTransfer.src='save-transfer-patch.js?v=20260911-1';
-                                            document.head.appendChild(saveTransfer);
+                                      const stage2Art=document.createElement('script');
+                                      stage2Art.src='stage2-sheet-fix.js?v=20260911-60';
+                                      stage2Art.onload=()=>{
+                                        const preview=document.createElement('script');
+                                        preview.src='bestiary-preview-patch.js?v=20260911-1';
+                                        preview.onload=()=>{
+                                          const warden=document.createElement('script');
+                                          warden.src='warden-skill-tree-patch.js?v=20260911-1';
+                                          warden.onload=()=>{
+                                            const eggBalance=document.createElement('script');
+                                            eggBalance.src='egg-cost-balance-patch.js?v=20260911-1';
+                                            eggBalance.onload=()=>{
+                                              const saveTransfer=document.createElement('script');
+                                              saveTransfer.src='save-transfer-patch.js?v=20260911-1';
+                                              document.head.appendChild(saveTransfer);
+                                            };
+                                            document.head.appendChild(eggBalance);
                                           };
-                                          document.head.appendChild(eggBalance);
+                                          document.head.appendChild(warden);
                                         };
-                                        document.head.appendChild(warden);
+                                        document.head.appendChild(preview);
                                       };
-                                      document.head.appendChild(preview);
+                                      document.head.appendChild(stage2Art);
                                     };
                                     document.head.appendChild(bestiaryVisual);
                                   };
