@@ -1,1 +1,0 @@
-(()=>{document.documentElement.classList.add('bb-home-preload')})();
