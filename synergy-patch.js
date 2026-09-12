@@ -1,5 +1,5 @@
-// Beastward team synergies v2
-(() => {
+// Beastward team synergies v3
+(()=>{
   const synergyDefs = [
     {id:'wildfire',name:'Wildfire',types:['Fire','Wind'],icon:'🔥',desc:'Fire burn damage +25%. Wind deals +20% damage to burning enemies.'},
     {id:'stormfront',name:'Stormfront',types:['Water','Electric'],icon:'⚡',desc:'Electric attacks chain to +1 enemy. Water slows last 20% longer.'},
@@ -13,7 +13,12 @@
 
   let synergyBattleActive = false;
 
-  const typesFor = ids => new Set((ids || []).filter(id => beasts[id]).map(id => beasts[id].type));
+  const speciesFor = key => {
+    if(beasts[key]) return key;
+    const i=(save.beastInstances||[]).find(x=>x&&x.uid===key);
+    return i?.species||null;
+  };
+  const typesFor = ids => new Set((ids||[]).map(speciesFor).filter(id=>id&&beasts[id]).map(id=>beasts[id].type));
   const teamIds = () => synergyBattleActive && battleLoadout?.length ? battleLoadout : (loadoutDraft || []);
   const activeSynergies = (ids = teamIds()) => {
     const types = typesFor(ids);
@@ -75,20 +80,10 @@
       .filter(s => s.owned.length === 1 && s.missing.length === 1)
       .slice(0,3);
 
-    const activeHtml = active.map(s => `
-      <div class="synergy-card"><span class="synergy-icon">${s.icon}</span><div><b>${s.name}</b><small>${s.desc}</small></div></div>
-    `).join('');
-    const suggestionHtml = suggestions.map(s => `
-      <div class="synergy-card suggestion"><span class="synergy-icon">${s.icon}</span><div><b>${s.name}</b><em>Add ${s.missing[0]} to activate</em><small>${s.desc}</small></div></div>
-    `).join('');
+    const activeHtml = active.map(s => `<div class="synergy-card"><span class="synergy-icon">${s.icon}</span><div><b>${s.name}</b><small>${s.desc}</small></div></div>`).join('');
+    const suggestionHtml = suggestions.map(s => `<div class="synergy-card suggestion"><span class="synergy-icon">${s.icon}</span><div><b>${s.name}</b><em>Add ${s.missing[0]} to activate</em><small>${s.desc}</small></div></div>`).join('');
 
-    panel.innerHTML = `
-      <div class="synergy-preview-head"><b>TEAM SYNERGIES</b><small>${active.length} active</small></div>
-      <div class="synergy-list">
-        ${activeHtml || suggestionHtml || '<div class="synergy-empty">Select a beast to reveal compatible type pairings.</div>'}
-        ${activeHtml ? suggestionHtml : ''}
-      </div>
-    `;
+    panel.innerHTML = `<div class="synergy-preview-head"><b>TEAM SYNERGIES</b><small>${active.length} active</small></div><div class="synergy-list">${activeHtml || suggestionHtml || '<div class="synergy-empty">Select a beast to reveal compatible type pairings.</div>'}${activeHtml ? suggestionHtml : ''}</div>`;
   }
 
   function ensureBattlePanel(){
@@ -115,11 +110,7 @@
   }
 
   const baseRenderLoadoutPicker = renderLoadoutPicker;
-  renderLoadoutPicker = function(){
-    const result = baseRenderLoadoutPicker();
-    renderSynergyPreview();
-    return result;
-  };
+  renderLoadoutPicker = function(){const result = baseRenderLoadoutPicker();renderSynergyPreview();return result;};
 
   const baseBeginSelectedLevel = beginSelectedLevel;
   beginSelectedLevel = function(){
@@ -127,122 +118,41 @@
     synergyBattleActive = true;
     const result = baseBeginSelectedLevel();
     renderBattleSynergies();
-    if(selected.length){
-      setTimeout(() => showProgressToast(
-        selected.length > 1 ? 'TEAM SYNERGIES ACTIVE' : 'TEAM SYNERGY ACTIVE',
-        selected.map(s => s.name).join(' • '),
-        'evolution'
-      ), 180);
-    }
+    if(selected.length){setTimeout(() => showProgressToast(selected.length > 1 ? 'TEAM SYNERGIES ACTIVE' : 'TEAM SYNERGY ACTIVE',selected.map(s => s.name).join(' • '),'evolution'),180);}
     return result;
   };
 
   const baseShow = show;
-  show = function(id){
-    if(id !== 'gameScreen') synergyBattleActive = false;
-    return baseShow(id);
-  };
+  show = function(id){if(id !== 'gameScreen') synergyBattleActive = false;return baseShow(id);};
 
   const baseReset = reset;
-  reset = function(){
-    const result = baseReset();
-    renderBattleSynergies();
-    return result;
-  };
+  reset = function(){const result = baseReset();renderBattleSynergies();return result;};
 
   const baseBattleStats = battleStats;
-  battleStats = function(id){
-    const stats = baseBattleStats(id);
-    if(synergyBattleActive && hasSynergy('sunstone-ward')){
-      return {...stats, damage:stats.damage*1.08, range:clampCombatRange(stats.range*1.06)};
-    }
-    return stats;
-  };
+  battleStats = function(id){const stats = baseBattleStats(id);if(synergyBattleActive && hasSynergy('sunstone-ward'))return {...stats, damage:stats.damage*1.08, range:clampCombatRange(stats.range*1.06)};return stats;};
 
-  function reportExtraDamage(beastId, amount){
-    if(!battleReport || !beastId || amount <= 0) return;
-    battleReport.damageByBeast[beastId] = (battleReport.damageByBeast[beastId] || 0) + amount;
-  }
+  function reportExtraDamage(beastId, amount){if(!battleReport || !beastId || amount <= 0) return;battleReport.damageByBeast[beastId] = (battleReport.damageByBeast[beastId] || 0) + amount;}
 
   const baseHitProjectile = hitProjectile;
   hitProjectile = function(p){
-    const t = p?.target;
-    if(!t) return baseHitProjectile(p);
-
-    const wasBurning = (t.burn || 0) > 0;
-    const wasSlowed = (t.slow || 0) > 0;
-    const wasStunned = (t.stun || 0) > 0;
-    const beforeSlow = t.slow || 0;
-    const beforeBurnDps = t.burnDps || 0;
-    const beforePoisonDps = t.poisonDps || 0;
-
-    const result = baseHitProjectile(p);
-
-    if(p.type === 'Fire' && t.burnDps > beforeBurnDps){
-      let factor = 1;
-      if(hasSynergy('wildfire')) factor *= 1.25;
-      if(hasSynergy('blightfire')) factor *= 1.15;
-      if(factor > 1) t.burnDps *= factor;
-    }
-
-    if(p.type === 'Poison' && t.poisonDps > beforePoisonDps && hasSynergy('blightfire')){
-      t.poisonDps *= 1.15;
-    }
-
-    if(hasSynergy('wildfire') && p.type === 'Wind' && wasBurning && t.hp > 0){
-      const bonus = p.damage * .20;
-      t.hp -= bonus; reportExtraDamage(p.beastId, bonus);
-      fx('burst',t.x,t.y,'#ff9b45',{size:44,life:.45,maxLife:.45});
-    }
-
-    if(hasSynergy('stormfront')){
-      if(p.type === 'Water' && t.slow > beforeSlow) t.slow *= 1.20;
-      if(p.type === 'Electric'){
-        const extra = enemies
-          .filter(e => e !== t && e.hp > 0 && Math.hypot(e.x-t.x,e.y-t.y) < 120)
-          .sort((a,b) => Math.hypot(a.x-t.x,a.y-t.y)-Math.hypot(b.x-t.x,b.y-t.y))[0];
-        if(extra){
-          const bonus = p.damage * .35;
-          extra.hp -= bonus; reportExtraDamage(p.beastId, bonus);
-          fx('lightning',t.x,t.y,'#fff36c',{x2:extra.x,y2:extra.y,life:.38,maxLife:.38});
-        }
-      }
-    }
-
-    if(hasSynergy('permafrost') && (p.type === 'Water' || p.type === 'Ice') && (wasSlowed || t.slow > 0) && Math.random() < .20){
-      t.stun = Math.max(t.stun || 0, .55);
-      fx('freeze',t.x,t.y,'#d9fbff',{size:58,life:.5,maxLife:.5});
-    }
-
-    if(hasSynergy('eclipse') && p.type === 'Dark' && t.hp > 0 && Math.random() < .10){
-      const bonus = p.damage;
-      t.hp -= bonus; reportExtraDamage(p.beastId, bonus);
-      fx('crit',t.x,t.y,'#fff2a6',{life:.65,maxLife:.65});
-      fx('light',t.x,t.y,'#d7b7ff',{size:62,life:.5,maxLife:.5});
-    }
-
-    if(hasSynergy('thundercliff') && p.type === 'Electric' && wasStunned && t.hp > 0){
-      const bonus = p.damage * .25;
-      t.hp -= bonus; reportExtraDamage(p.beastId, bonus);
-      fx('zap',t.x,t.y,'#ffe66a',{size:52,life:.45,maxLife:.45});
-    }
-
+    const t = p?.target;if(!t) return baseHitProjectile(p);
+    const wasBurning=(t.burn||0)>0,wasSlowed=(t.slow||0)>0,wasStunned=(t.stun||0)>0,beforeSlow=t.slow||0,beforeBurnDps=t.burnDps||0,beforePoisonDps=t.poisonDps||0;
+    const result=baseHitProjectile(p);
+    if(p.type==='Fire'&&t.burnDps>beforeBurnDps){let factor=1;if(hasSynergy('wildfire'))factor*=1.25;if(hasSynergy('blightfire'))factor*=1.15;if(factor>1)t.burnDps*=factor;}
+    if(p.type==='Poison'&&t.poisonDps>beforePoisonDps&&hasSynergy('blightfire'))t.poisonDps*=1.15;
+    if(hasSynergy('wildfire')&&p.type==='Wind'&&wasBurning&&t.hp>0){const bonus=p.damage*.20;t.hp-=bonus;reportExtraDamage(p.beastId,bonus);fx('burst',t.x,t.y,'#ff9b45',{size:44,life:.45,maxLife:.45});}
+    if(hasSynergy('stormfront')){if(p.type==='Water'&&t.slow>beforeSlow)t.slow*=1.20;if(p.type==='Electric'){const extra=enemies.filter(e=>e!==t&&e.hp>0&&Math.hypot(e.x-t.x,e.y-t.y)<120).sort((a,b)=>Math.hypot(a.x-t.x,a.y-t.y)-Math.hypot(b.x-t.x,b.y-t.y))[0];if(extra){const bonus=p.damage*.35;extra.hp-=bonus;reportExtraDamage(p.beastId,bonus);fx('lightning',t.x,t.y,'#fff36c',{x2:extra.x,y2:extra.y,life:.38,maxLife:.38});}}}
+    if(hasSynergy('permafrost')&&(p.type==='Water'||p.type==='Ice')&&(wasSlowed||t.slow>0)&&Math.random()<.20){t.stun=Math.max(t.stun||0,.55);fx('freeze',t.x,t.y,'#d9fbff',{size:58,life:.5,maxLife:.5});}
+    if(hasSynergy('eclipse')&&p.type==='Dark'&&t.hp>0&&Math.random()<.10){const bonus=p.damage;t.hp-=bonus;reportExtraDamage(p.beastId,bonus);fx('crit',t.x,t.y,'#fff2a6',{life:.65,maxLife:.65});fx('light',t.x,t.y,'#d7b7ff',{size:62,life:.5,maxLife:.5});}
+    if(hasSynergy('thundercliff')&&p.type==='Electric'&&wasStunned&&t.hp>0){const bonus=p.damage*.25;t.hp-=bonus;reportExtraDamage(p.beastId,bonus);fx('zap',t.x,t.y,'#ffe66a',{size:52,life:.45,maxLife:.45});}
     return result;
   };
 
   const baseDefeatEnemy = defeatEnemy;
   defeatEnemy = function(e){
-    const shouldSpread = synergyBattleActive && hasSynergy('toxic-growth') && e && (e.poison || 0) > 0;
-    const x = e?.x, y = e?.y, dps = e?.poisonDps || 0;
-    const result = baseDefeatEnemy(e);
-    if(result && shouldSpread){
-      const nearby = enemies.filter(n => n.hp > 0 && Math.hypot(n.x-x,n.y-y) < 82).slice(0,4);
-      nearby.forEach(n => {
-        n.poison = Math.max(n.poison || 0, 2.8);
-        n.poisonDps = Math.max(n.poisonDps || 0, Math.max(4,dps*.65));
-      });
-      if(nearby.length) fx('poison',x,y,'#9be76c',{size:76,life:.6,maxLife:.6});
-    }
+    const shouldSpread=synergyBattleActive&&hasSynergy('toxic-growth')&&e&&(e.poison||0)>0,x=e?.x,y=e?.y,dps=e?.poisonDps||0;
+    const result=baseDefeatEnemy(e);
+    if(result&&shouldSpread){const nearby=enemies.filter(n=>n.hp>0&&Math.hypot(n.x-x,n.y-y)<82).slice(0,4);nearby.forEach(n=>{n.poison=Math.max(n.poison||0,2.8);n.poisonDps=Math.max(n.poisonDps||0,Math.max(4,dps*.65));});if(nearby.length)fx('poison',x,y,'#9be76c',{size:76,life:.6,maxLife:.6});}
     return result;
   };
 
