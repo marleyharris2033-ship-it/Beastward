@@ -1,6 +1,6 @@
 // Beastward: starter third-form artwork + clear First/Second/Third/Fourth Form naming
 (()=>{
-  const VERSION='20260913-1';
+  const VERSION='20260913-2';
   const SOURCE='assets/pixel/evolved/stage3_custom_sheet.svg';
   const IDS=['embercub','bubblit','sprigpaw','sparkit'];
   const urls={},imgs={};
@@ -48,9 +48,9 @@
     draw=function(){oldDraw();towers.forEach(t=>{if(evolutionStage(t.b.id)!==3)return;const im=imgs[t.b.id];if(!(im&&im.complete&&im.naturalWidth))return;ctx.imageSmoothingEnabled=true;ctx.drawImage(im,t.x-47,t.y-51,94,94);});};
 
     try{renderCollection();}catch(e){}try{renderBestiary();}catch(e){}try{choices();}catch(e){}relabel(document);
-    document.documentElement.dataset.thirdFormArt='ready';
+    document.documentElement.dataset.thirdFormArt='ready-v2';
   };
-  sheet.onerror=()=>{console.error('Third-form sheet failed to load');document.documentElement.dataset.thirdFormArt='failed';};
+  sheet.onerror=()=>{console.error('Third-form sheet failed to load');document.documentElement.dataset.thirdFormArt='failed-v2';};
   sheet.src=`${SOURCE}?v=${VERSION}`;
 
   const oldBestiary=renderBestiary;renderBestiary=function(){oldBestiary();relabel(document.querySelector('#bestiaryScreen')||document);};
