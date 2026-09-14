@@ -1,7 +1,7 @@
 // Beastward: starter third-form artwork + clear First/Second/Third/Fourth Form naming
 (()=>{
-  const VERSION='20260913-2';
-  const SOURCE='assets/pixel/evolved/stage3_custom_sheet.svg';
+  const VERSION='20260914-1';
+  const SOURCE='assets/pixel/A435E827-2DBD-48FA-8B37-18A0DB549134.png';
   const IDS=['embercub','bubblit','sprigpaw','sparkit'];
   const urls={},imgs={};
 
@@ -9,10 +9,15 @@
   window.beastFormLabel=formLabel;
 
   function crop(img,index){
-    const cellW=img.naturalWidth/4,cellH=img.naturalHeight;
+    // The uploaded sheet has slightly uneven columns. Keep each complete beast.
+    const edges=[0,400/1536,755/1536,1140/1536,1];
+    const left=edges[index]*img.naturalWidth;
+    const cellW=(edges[index+1]-edges[index])*img.naturalWidth,cellH=img.naturalHeight;
     const c=document.createElement('canvas');c.width=300;c.height=300;
     const x=c.getContext('2d');x.imageSmoothingEnabled=true;
-    x.drawImage(img,index*cellW,0,cellW,cellH,0,0,300,300);
+    const scale=Math.min(300/cellW,300/cellH);
+    const width=cellW*scale,height=cellH*scale;
+    x.drawImage(img,left,0,cellW,cellH,(300-width)/2,300-height,width,height);
     return c.toDataURL('image/png');
   }
 
@@ -45,12 +50,12 @@
     };
 
     const oldDraw=draw;
-    draw=function(){oldDraw();towers.forEach(t=>{if(evolutionStage(t.b.id)!==3)return;const im=imgs[t.b.id];if(!(im&&im.complete&&im.naturalWidth))return;ctx.imageSmoothingEnabled=true;ctx.drawImage(im,t.x-47,t.y-51,94,94);});};
+    draw=function(){oldDraw();towers.forEach(t=>{if(evolutionStage(t.instanceUid||t.b.id)!==3)return;const im=imgs[t.b.id];if(!(im&&im.complete&&im.naturalWidth))return;ctx.imageSmoothingEnabled=true;ctx.drawImage(im,t.x-47,t.y-51,94,94);});};
 
     try{renderCollection();}catch(e){}try{renderBestiary();}catch(e){}try{choices();}catch(e){}relabel(document);
-    document.documentElement.dataset.thirdFormArt='ready-v2';
+    document.documentElement.dataset.thirdFormArt='ready-v3';
   };
-  sheet.onerror=()=>{console.error('Third-form sheet failed to load');document.documentElement.dataset.thirdFormArt='failed-v2';};
+  sheet.onerror=()=>{console.error('Third-form sheet failed to load');document.documentElement.dataset.thirdFormArt='failed-v3';};
   sheet.src=`${SOURCE}?v=${VERSION}`;
 
   const oldBestiary=renderBestiary;renderBestiary=function(){oldBestiary();relabel(document.querySelector('#bestiaryScreen')||document);};
