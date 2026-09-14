@@ -1,6 +1,6 @@
 // Beastward v66: build reliable Stage 2 sprites directly from the uploaded source sheets
 (() => {
-  const VERSION='20260911-stage2-v66';
+  const VERSION='20260914-stage2-v67';
   const sources={
     C44819DD:{file:'assets/pixel/evolved/C44819DD-A9D7-4A61-AD93-30575D1661BB.png',ids:['embercub','bubblit','sprigpaw','sparkit']},
     B97276ECB:{file:'assets/pixel/evolved/97276ECB-8B19-4973-849E-1E2DB5A57E84.png',ids:['pebblum','gustwing','toxip','scorchick']},
@@ -21,26 +21,54 @@
     });
   }
 
-  function makeTransparentCrop(img,index,count){
-    const cellW=Math.floor(img.naturalWidth/count);
+function edgeWhite(d,w,h){const white=new Uint8Array(w*h),seen=new Uint8Array(w*h),q=[];for(let y=0;y<h;y++)for(let x=0;x<w;x++){const p=(y*w+x)*4,r=d[p],g=d[p+1],b=d[p+2],lo=Math.min(r,g,b),hi=Math.max(r,g,b);if(lo>232&&hi-lo<18)white[y*w+x]=1}const add=(x,y)=>{const i=y*w+x;if(white[i]&&!seen[i]){seen[i]=1;q.push(i)}};for(let x=0;x<w;x++){add(x,0);add(x,h-1)}for(let y=0;y<h;y++){add(0,y);add(w-1,y)}for(let n=0;n<q.length;n++){const i=q[n],x=i%w,y=(i/w)|0;d[i*4+3]=0;if(x)add(x-1,y);if(x<w-1)add(x+1,y);if(y)add(x,y-1);if(y<h-1)add(x,y+1)}}
+
+  // Locate the whitespace between beasts instead of assuming equal-width artwork.
+  function findSheetEdges(img,count){
+    const scan=document.createElement('canvas');
+    scan.width=Math.min(img.naturalWidth,1600);
+    scan.height=Math.max(1,Math.round(img.naturalHeight*scan.width/img.naturalWidth));
+    const context=scan.getContext('2d',{willReadFrequently:true});
+    context.drawImage(img,0,0,scan.width,scan.height);
+    const pixels=context.getImageData(0,0,scan.width,scan.height).data;
+    const density=new Float64Array(scan.width);
+    for(let y=0;y<scan.height;y++)for(let x=0;x<scan.width;x++){
+      const p=(y*scan.width+x)*4;
+      if(pixels[p+3]>24&&Math.min(pixels[p],pixels[p+1],pixels[p+2])<232)density[x]++;
+    }
+    return sheetEdgesFromDensity(density,count).map(x=>Math.round(x*img.naturalWidth/scan.width));
+  }
+  function sheetEdgesFromDensity(density,count){
+    const width=density.length,cell=width/count,edges=[0];
+    for(let i=1;i<count;i++){
+      const centre=i*cell,lo=Math.max(1,Math.round(centre-cell*.22)),hi=Math.min(width-2,Math.round(centre+cell*.22));
+      let best=Math.round(centre),score=Infinity;
+      for(let x=lo;x<=hi;x++){
+        let ink=0;for(let k=Math.max(0,x-2);k<=Math.min(width-1,x+2);k++)ink+=density[k];
+        const candidate=ink+Math.abs(x-centre)*.0001;
+        if(candidate<score){score=candidate;best=x;}
+      }
+      edges.push(best);
+    }
+    edges.push(width);return edges;
+  }
+
+  function makeTransparentCrop(img,index,count,edges){
+    const cellW=edges[index+1]-edges[index];
     const cellH=img.naturalHeight;
-    const sx=index*cellW;
+    const sx=edges[index];
     const work=document.createElement('canvas');
     work.width=cellW;work.height=cellH;
     const wctx=work.getContext('2d',{willReadFrequently:true});
     wctx.drawImage(img,sx,0,cellW,cellH,0,0,cellW,cellH);
     const frame=wctx.getImageData(0,0,cellW,cellH);
     const d=frame.data;
+    edgeWhite(d,cellW,cellH);
     let minX=cellW,minY=cellH,maxX=-1,maxY=-1;
-    for(let y=0;y<cellH;y++){
-      for(let x=0;x<cellW;x++){
-        const p=(y*cellW+x)*4,r=d[p],g=d[p+1],b=d[p+2];
-        const lo=Math.min(r,g,b),hi=Math.max(r,g,b);
-        // The approved source sheets have a white/near-white studio background.
-        // Remove only neutral bright pixels so highlights on the beasts survive.
-        if(lo>242 && hi-lo<13){d[p+3]=0;continue;}
-        if(lo>228 && hi-lo<10){d[p+3]=Math.min(d[p+3],Math.max(0,(242-lo)*18));}
-        if(d[p+3]>24){if(x<minX)minX=x;if(x>maxX)maxX=x;if(y<minY)minY=y;if(y>maxY)maxY=y;}
+    for(let y=0;y<cellH;y++)for(let x=0;x<cellW;x++){
+      if(d[(y*cellW+x)*4+3]>24){
+        minX=Math.min(minX,x);maxX=Math.max(maxX,x);
+        minY=Math.min(minY,y);maxY=Math.max(maxY,y);
       }
     }
     wctx.putImageData(frame,0,0);
@@ -63,8 +91,9 @@
   async function install(){
     for(const source of Object.values(sources)){
       const sheet=await loadImage(source.file);
+      const edges=findSheetEdges(sheet,source.ids.length);
       source.ids.forEach((id,index)=>{
-        const url=makeTransparentCrop(sheet,index,source.ids.length);
+        const url=makeTransparentCrop(sheet,index,source.ids.length,edges);
         stage2Urls[id]=url;
         const img=new Image();img.src=url;stage2Images[id]=img;
       });
@@ -88,7 +117,7 @@
     draw=function(){
       previousDraw();
       towers.forEach(t=>{
-        if(evolutionStage(t.b.id)!==2)return;
+        if(evolutionStage(t.instanceUid||t.b.id)!==2)return;
         const img=stage2Images[t.b.id];
         if(!(img&&img.complete&&img.naturalWidth))return;
         const size=88;
