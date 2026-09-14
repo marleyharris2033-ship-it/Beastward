@@ -50,7 +50,7 @@ function isolatePortrait(d,w,h){
   const mw=main.maxX-main.minX+1,mh=main.maxY-main.minY+1;
   const selected=components.filter(c=>c===main||(
     c.n>=main.n*.001&&c.n<main.n*.06&&
-    c.minX>=main.minX-mw*.12&&c.maxX<=main.maxX+mw*.12&&
+    c.minX>=main.minX-mw*.18&&c.maxX<=main.maxX+mw*.18&&
     c.minY>=main.minY-mh*.10&&c.maxY<=main.maxY+mh*.06
   ));
   const keep=new Set(selected.map(c=>c.label));
