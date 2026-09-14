@@ -464,7 +464,7 @@ function renderBestiary(){
     arr.forEach(entry=>{
       const row=document.createElement('button');
       row.className='best-row bestiary-entry'+(entry.key===bestiarySelected?' active':'')+(entry.seen?' seen':' unseen');
-      row.innerHTML=`${stageSpriteMarkup(entry.id,entry.stage,'row-sprite',!entry.seen)}<div><h4>${entry.seen?entry.name:'???'}</h4><small>#${String(entry.number).padStart(3,'0')} • ${entry.seen?(entry.stage===1?'Base Form':entry.stage===2?'Evolution I':'Evolution II'):'Not yet encountered'}</small></div><span class="tag">${entry.seen?entry.type:'???'}</span>`;
+      row.innerHTML=`${stageSpriteMarkup(entry.id,entry.stage,'row-sprite',!entry.seen)}<div><h4>${entry.seen?entry.name:'???'}</h4><small>#${String(entry.number).padStart(3,'0')} • ${entry.seen?(entry.stage===1?'First Form':entry.stage===2?'Second Form':entry.stage===3?'Third Form':'Fourth Form'):'Not yet encountered'}</small></div><span class="tag">${entry.seen?entry.type:'???'}</span>`;
       row.onclick=()=>{
         bestiarySelected=bestiarySelected===entry.key?null:entry.key;
         renderBestiary();
@@ -489,7 +489,7 @@ function renderBestiary(){
       detail.innerHTML=`<button class="best-detail-close" type="button" aria-label="Close entry">×</button><div class="best-hero undiscovered-entry"><div class="best-portrait silhouette-portrait">${stageSpriteMarkup(entry.id,entry.stage,'portrait-sprite',true)}</div><div class="best-detail-title"><span class="dex-number">#${String(entry.number).padStart(3,'0')}</span><h3>Undiscovered</h3><div class="best-pills"><span class="best-pill">No data recorded</span></div><p>This Beastiary entry has not been encountered yet. Hatch and train this species to reveal the form permanently.</p></div></div>`;
     }else{
       const b=beasts[entry.id],stats=stageStatsAt(entry.id,entry.stage);
-      const requirement=entry.stage===1?'Base form':entry.stage===2?`Evolves at Level ${FIRST_EVOLUTION_LEVEL}`:`Evolves at Level ${SECOND_EVOLUTION_LEVEL}`;
+      const requirement=entry.stage===1?'First Form':entry.stage===2?`Evolves at Level ${FIRST_EVOLUTION_LEVEL}`:entry.stage===3?`Evolves at Level ${SECOND_EVOLUTION_LEVEL}`:'Evolves at Level 100';
       const prev=entry.stage===1?null:nameForStage(entry.id,entry.stage-1);
       detail.innerHTML=`<button class="best-detail-close" type="button" aria-label="Close entry">×</button><div class="best-hero"><div class="best-portrait">${stageSpriteMarkup(entry.id,entry.stage,'portrait-sprite')}</div><div class="best-detail-title"><span class="dex-number">#${String(entry.number).padStart(3,'0')}</span><h3>${entry.name}</h3><div class="best-pills"><span class="best-pill">${b.type}</span><span class="best-pill">${b.role}</span><span class="best-pill">${requirement}</span><span class="best-pill">Logged</span></div><p>${bestiaryStageDescription(entry.id,entry.stage)}</p></div></div><div class="stat-grid dex-stat-grid"><div><span>Power</span><b>${stats.power}/${stats.cap}</b></div><div><span>Speed</span><b>${stats.speed}/${stats.cap}</b></div><div><span>Range</span><b>${stats.range}/${stats.cap}</b></div><div><span>Special</span><b>${stats.special}/${stats.cap}</b></div></div><div class="best-section"><b>Evolution record</b><p>${entry.stage===1?`${entry.name} is the first known form of this species.`:`${entry.name} evolves from ${prev}.`}</p></div>`;
     }
