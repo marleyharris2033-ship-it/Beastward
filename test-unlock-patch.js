@@ -62,7 +62,12 @@
       badge.id='qaUnlockBadge';
       badge.textContent='QA TEST MODE • EVERYTHING UNLOCKED';
       badge.style.cssText='position:fixed;z-index:99999;left:50%;top:8px;transform:translateX(-50%);padding:7px 12px;border-radius:999px;background:#24163f;color:#fff;font:700 11px system-ui;letter-spacing:.08em;box-shadow:0 3px 12px #0008;pointer-events:none;white-space:nowrap';
-      document.body.appendChild(badge);
+      const heading=document.querySelector('#bestiaryScreen .bestiary-head');
+      if(heading){
+        badge.textContent='TEST MODE • ALL FORMS UNLOCKED';
+        badge.style.cssText='position:static;display:block;margin:8px 0;padding:7px 10px;border-radius:10px;background:#24163f;color:#fff;font:700 10px system-ui;letter-spacing:.04em;white-space:normal;text-align:center';
+        heading.insertAdjacentElement('afterend',badge);
+      }else document.body.appendChild(badge);
     }
   }
 
