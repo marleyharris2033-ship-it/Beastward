@@ -2,6 +2,8 @@
 (() => {
   const css=document.createElement('style');
   css.textContent=`
+    #bestiaryDetail{scroll-margin-top:16px;padding-bottom:max(24px,env(safe-area-inset-bottom))!important}
+    #bestiaryScreen .best-portrait img{image-rendering:auto!important}
     .best-row .row-sprite{
       overflow:hidden!important;
       display:grid!important;
@@ -18,7 +20,7 @@
       object-fit:contain!important;
       object-position:center!important;
       transform:none!important;
-      image-rendering:pixelated!important;
+      image-rendering:auto!important;
     }
     .best-portrait .stage1-roster-form,
     .best-portrait .stage2-fallback-form{
@@ -29,7 +31,7 @@
       object-fit:contain!important;
       object-position:center!important;
       transform:none!important;
-      image-rendering:pixelated!important;
+      image-rendering:auto!important;
     }
   `;
   document.head.appendChild(css);
