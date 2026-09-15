@@ -7,7 +7,7 @@
 
   window.drawCore=function(){
     const end=path[path.length-1];
-    const x=Math.min(canvas.width-82,end.x),y=end.y;
+    const x=Math.min(canvas.width-92,end.x),y=end.y;
     ctx.save();
     ctx.translate(x,y);
 
@@ -15,14 +15,14 @@
     const pulse=.92+Math.sin(performance.now()/520)*.08;
     ctx.globalAlpha=.24;
     ctx.fillStyle=levelWorld(currentLevel)===2?'#75dcff':'#66dfff';
-    ctx.shadowBlur=22;ctx.shadowColor='#65dcff';
-    ctx.beginPath();ctx.ellipse(0,27,50*pulse,16*pulse,0,0,Math.PI*2);ctx.fill();
+    ctx.shadowBlur=24;ctx.shadowColor='#65dcff';
+    ctx.beginPath();ctx.ellipse(0,31,58*pulse,18*pulse,0,0,Math.PI*2);ctx.fill();
     ctx.shadowBlur=0;ctx.globalAlpha=1;
 
     if(coreImg.complete&&coreImg.naturalWidth){
-      // Slightly smaller than the first version so it sits naturally at the path end.
-      const size=116;
-      ctx.drawImage(coreImg,-size/2,-size/2-13,size,size);
+      // Enlarged protected Core for better readability on mobile while keeping it clear of the edge.
+      const size=142;
+      ctx.drawImage(coreImg,-size/2,-size/2-16,size,size);
     }else{
       ctx.fillStyle='#bff7ff';ctx.shadowBlur=18;ctx.shadowColor='#69dfff';
       ctx.beginPath();ctx.moveTo(0,-28);ctx.lineTo(18,0);ctx.lineTo(0,28);ctx.lineTo(-18,0);ctx.closePath();ctx.fill();
