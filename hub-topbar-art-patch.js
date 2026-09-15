@@ -1,6 +1,6 @@
-// Beastward illustrated Sanctuary topbar v4
+// Beastward illustrated Sanctuary topbar v5
 (()=>{
- const V='20260915-topbar-art-4';
+ const V='20260915-topbar-art-5';
  const SRC=`assets/sheets/58DDA63A-8BB0-4AED-A748-67806BD05417.png?v=${V}`;
  const bar=document.querySelector('#hubScreen .themed-topbar');
  if(!bar)return;
@@ -14,6 +14,7 @@
  if(saves)saves.classList.add('topbar-live-save');
  if(essence)essence.classList.add('topbar-live-essence');
  const st=document.createElement('style');st.id='hubTopbarArtStyles';st.textContent=`
+ #hubScreen{background:#07150e!important;background-image:radial-gradient(circle at 50% 0%,rgba(25,65,42,.42),transparent 48%),linear-gradient(180deg,#0b2116 0%,#06130d 55%,#040d09 100%)!important}
  #hubScreen .themed-topbar.illustrated-topbar{position:relative!important;width:100%!important;min-height:0!important;aspect-ratio:3.2/1!important;padding:0!important;overflow:hidden!important;border:0!important;border-radius:0!important;background:transparent url('${SRC}') center/100% 100% no-repeat!important;box-shadow:none!important;display:block!important}
  #hubScreen .illustrated-topbar .topbar-live-brand{display:none!important}
  #hubScreen .illustrated-topbar .topbar-live-actions{position:absolute!important;inset:0!important;display:block!important;pointer-events:none!important}
@@ -21,5 +22,5 @@
  #hubScreen .illustrated-topbar .topbar-live-essence{position:absolute!important;right:9.6%!important;bottom:22%!important;width:21.5%!important;height:20%!important;margin:0!important;padding:0!important;display:flex!important;align-items:center!important;justify-content:center!important;background:transparent!important;border:0!important;box-shadow:none!important;color:#fff0a0!important;font-weight:800!important;font-size:clamp(12px,2.05vw,23px)!important;white-space:nowrap!important;pointer-events:none!important}
  #hubScreen .illustrated-topbar .topbar-live-save:active{transform:scale(.96)!important;filter:brightness(.9)!important}
  @media(max-width:700px){#hubScreen .illustrated-topbar .topbar-live-save{font-size:clamp(11px,3.2vw,18px)!important}#hubScreen .illustrated-topbar .topbar-live-essence{font-size:clamp(11px,3vw,17px)!important}}
- `;document.head.appendChild(st);document.documentElement.dataset.hubTopbarArt='v4';
+ `;document.head.appendChild(st);document.documentElement.dataset.hubTopbarArt='v5';
 })();
