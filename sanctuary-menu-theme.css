@@ -1,0 +1,97 @@
+/* Illustrated woodland interiors, shared by every sanctuary menu. */
+:root{--sanctuary-gold:#d7b967;--sanctuary-ink:#061b15;--sanctuary-paper:#f5ebcb;--sanctuary-line:#b49a5466}
+#app .screen:not(#titleScreen):not(#hubScreen):not(#gameScreen){background:radial-gradient(ellipse at 50% 0,#244d35 0,transparent 65%),#061810;color:var(--sanctuary-paper)}
+#app .screen>.panel,.warden-top,.quest-shell,.loadout-card-shell,.den-beast-card,.tower-modal-card,#resultModal .modal-card,#eggModal .modal-card,.exit-confirm-card{border:1px solid var(--sanctuary-gold)!important;border-radius:22px!important;background:linear-gradient(140deg,#183b2de8,#071d16f5 65%),var(--sanctuary-scene) center top/cover!important;box-shadow:inset 0 0 0 4px #081b13,inset 0 0 0 5px #b49a5438,0 18px 55px #0007!important;color:var(--sanctuary-paper)}
+#app .screen>.panel{width:min(1040px,calc(100% - 24px));padding:22px;position:relative}
+.sanctuary-banner{display:none;background:var(--banner) center/contain no-repeat;aspect-ratio:3.02;width:100%;max-width:742px;margin:10px auto 22px;filter:drop-shadow(0 9px 8px #0005)}
+.sanctuary-art-ready .sanctuary-banner{display:block}
+#app .screen .back,.warden-back{min-height:44px;padding:9px 15px;border:1px solid var(--sanctuary-line);background:#071c15;border-radius:10px;color:#efd992;font-size:14px}
+#app .panel>.screen-crest,.quest-crest{display:none}
+#app .fantasy-heading,.quest-screen-head h2,.loadout-card-shell h2,.bestiary-head h2{font-family:Georgia,serif;color:#f4dfa0;font-size:clamp(26px,4vw,40px);line-height:1.1;margin:12px 0}
+#app .panel>.sub,.quest-screen-head p{font-size:14px;line-height:1.6;color:#c0cebc;max-width:620px;margin:8px auto 22px}
+.sanctuary-art-ready #hatcheryScreen .fantasy-heading,.sanctuary-art-ready #bestiaryScreen .bestiary-head h2,.sanctuary-art-ready .quest-screen-head h2{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+#app :is(.egg-card,.beast-pc-slot,.best-row,.setting-card,.save-slot,.starter-card),.quest-chain-card,.loadout-card,.warden-tree{border:1px solid var(--sanctuary-line)!important;border-radius:15px;background:linear-gradient(145deg,#244631a8,#081e17 75%)!important;box-shadow:inset 0 0 0 3px #05191066,0 7px 16px #0003}
+#app :is(.primary,.setting-action),.loadout-start,.quest-claim{border:1px solid #dfc477;background:linear-gradient(#416b3e,#1b402c);color:#fff0bd;box-shadow:inset 0 1px #ffecae55,0 4px 10px #0004;border-radius:10px;min-height:44px}
+#app button:focus-visible,.quest-modal button:focus-visible,.loadout-modal button:focus-visible{outline:3px solid #fff0ad;outline-offset:3px}
+#app button:disabled,.quest-modal button:disabled{cursor:default}
+#app :is(input,select){border:1px solid #9b915c88;border-radius:9px;background:#071b15;color:#f1e8ce;min-height:44px}
+#app .campaign-world-switch{gap:8px;padding:3px 1px 12px;scrollbar-width:thin;scrollbar-color:#ae9853 #0d251a}
+#app .campaign-world-btn{font-size:12px;min-height:44px;padding:10px 14px;border-radius:9px}
+#app .campaign-heading{gap:16px;align-items:center;margin:8px 0 16px}
+#app .campaign-heading .screen-crest{display:none}
+#app .campaign-heading .sub{font-size:13px;line-height:1.5}
+#app .region-progress{padding:12px;min-width:105px;border-radius:12px;background:#0a2119}
+#app .region-progress b{font-size:23px}
+#app .campaign-mode-bar{padding:12px;border:1px solid var(--sanctuary-line);background:#071c15;border-radius:14px;margin-bottom:18px}
+#app .campaign-mode-btn{min-height:44px;padding:10px;font-size:13px;border-radius:9px}
+#app .campaign-mode-bar>small{font-size:12px;margin-top:10px;line-height:1.4}
+#app .campaign-map{border-color:#b49a5488;background-image:linear-gradient(#102e22df,#071c16ed),var(--sanctuary-scene);background-size:cover;background-position:center;box-shadow:inset 0 0 40px #0006}
+#app .region-trait-card{border:1px solid #9c985044;background:#071b15df;border-radius:12px}
+#app .map-node{max-width:365px;border-color:#a18a5366;min-height:78px}
+#app .map-node.unlocked{background:linear-gradient(135deg,#33583c,#143424);border-color:#d7b967}
+#app .map-node.cleared{border-color:#88bd7c}
+#app .map-node-copy>b{font-size:18px;line-height:1.2}
+#app .map-node-copy>small{font-size:12px}
+#app .hatchery-altar{min-height:80px;padding:16px;display:flex;gap:16px;align-items:center;justify-content:center;border:1px solid var(--sanctuary-line);background:radial-gradient(ellipse,#47714255,#071c15 75%);margin:0 0 22px}
+#app .hatchery-altar .altar-ring{display:none}
+#app .hatchery-altar .altar-core{position:static;transform:none;font-size:38px;line-height:1;text-shadow:0 0 25px #98ff9f}
+#app .hatchery-altar p{margin:0;font-size:14px}
+#app .egg-row{gap:16px;align-items:stretch}
+#app .egg-card{padding:24px 18px 18px;display:flex;flex-direction:column;align-items:center;position:relative;overflow:hidden}
+#app .egg-card:before{content:'✦';position:absolute;top:12px;right:16px;color:#e3c779;font-size:20px}
+#app .egg-card h3{font:700 26px Georgia,serif;margin:16px 0 8px;color:#f3dea1}
+#app .egg-card p{font-size:13px;line-height:1.6;flex:1;color:#c3cebb}
+#app .egg-art{width:92px;height:120px;min-height:120px;margin:4px auto;filter:drop-shadow(0 9px 15px #0008)}
+#app .common-egg{background:radial-gradient(ellipse at 30% 25%,#fff9ca,#d4c57e 55%,#52613e);box-shadow:inset -10px -10px 20px #213c3266,0 0 30px #dcd08c22}
+#app .rare-egg{background:radial-gradient(ellipse at 30% 25%,#d6fdff,#52bac7 45%,#143c73);box-shadow:inset -10px -10px 20px #123e7666,0 0 30px #5fd5ff33}
+#app .epic-egg{background:radial-gradient(ellipse at 30% 25%,#f4c5ff,#aa61b6 45%,#35224d);box-shadow:inset -10px -10px 20px #32164d88,0 0 30px #cf7bea33}
+#app .egg-card .primary{width:100%;margin-top:10px;font-size:13px}
+#app .egg-cost{font-size:16px}
+#app .den-summary,.quest-overview{gap:8px;margin:16px 0;grid-template-columns:repeat(3,minmax(0,1fr))}
+#app .den-summary>div,.quest-overview>div,.warden-summary>div{padding:12px 8px;border:1px solid var(--sanctuary-line);background:#09231bcc;border-radius:12px}
+#app .den-summary span,.quest-overview small{font-size:10px;letter-spacing:.12em}
+#app .den-summary b,.quest-overview b{font-size:22px;color:#f0d88c}
+#app .den-individual-controls{padding:10px 12px;border-color:var(--sanctuary-line);font-size:14px}
+#app .beast-pc-grid{grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:14px}
+#app .beast-pc-slot{padding:12px 8px;gap:5px}
+#app .beast-pc-sprite{width:100%;height:130px;background:radial-gradient(ellipse at 50% 75%,#63804b66,#09281c 65%);border-bottom:1px solid #b49a5444;border-radius:50% 50% 12px 12px}
+#app .beast-pc-slot>b{font-size:18px}#app .beast-pc-slot>span{font-size:13px}#app .beast-pc-slot>small{font-size:11px}
+#app .bestiary-head{padding:0 0 16px;border:0;background:none;box-shadow:none;border-radius:0;gap:12px}
+#app .bestiary-head .mini-logo{display:none}#app .bestiary-head .sub{font-size:14px;margin:0}
+#app .bestiary-progress{font-size:14px;padding:10px 14px;border-color:var(--sanctuary-line)}
+#app .bestiary-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+#app .bestiary-tab{padding:12px 6px;font-size:14px;min-height:44px;border-radius:10px}
+#app .bestiary-filters{gap:6px}#app .bestiary-filter{font-size:12px;padding:8px 11px;min-height:40px}
+#app .best-row{padding:10px;min-height:76px}#app .best-row.active{border-color:#ecd17b!important;background:#284a32!important}
+#app .best-row b{font-family:Georgia,serif;font-size:18px}#app .best-row small{font-size:12px}
+#app .best-hero{background:radial-gradient(ellipse at center,#34573a,#081d16);border-color:var(--sanctuary-line)}
+.quest-shell{padding:18px 22px 24px}.quest-close,.tower-modal-close{width:44px!important;height:44px!important;border:1px solid #d7b967!important;background:#102a1e!important;color:#f9e4a4!important;z-index:4}
+.quest-shell>.sanctuary-banner{margin-top:38px}.quest-chain-card{padding:18px}.quest-chain-head{gap:10px}.quest-chain-card h3{font-family:Georgia,serif}.quest-chain-card p{font-size:14px;line-height:1.5}.quest-progress{height:8px}.quest-footer{gap:10px;flex-wrap:wrap}
+.warden-top{padding:20px}.warden-hero{margin-top:12px;border-color:var(--sanctuary-line);background:#092319b8}.warden-hero h2{font-size:32px;line-height:1.1}.warden-hero p{font-size:14px;line-height:1.5}.warden-tree-head{background:linear-gradient(120deg,#304c30,#0b241b)}
+.loadout-card-shell,.den-beast-card{padding:24px}.loadout-card-shell>.screen-crest{display:none}.loadout-card-shell>h2{padding-right:32px}.loadout-card{border-color:var(--sanctuary-line)}.loadout-card.selected{border-color:#f5d67c!important;background:linear-gradient(135deg,#3b5a31,#133b28)!important;box-shadow:inset 0 0 0 1px #e6c770}.loadout-start{position:sticky;bottom:0;z-index:3}
+#app .setting-card,#app .save-slot{padding:20px}#app .setting-card small{font-size:13px;line-height:1.5}.result-report-card h2,#eggModal h2{color:#f4dfa0;font-family:Georgia,serif}
+@media(max-width:600px){
+ #app .screen:not(#gameScreen):not(#titleScreen):not(#hubScreen){padding:10px 0 24px}
+ #app .screen>.panel{width:calc(100% - 16px);padding:14px 12px;border-radius:16px!important}
+ .sanctuary-banner{margin:8px auto 16px;width:calc(100% + 12px);max-width:none;transform:translateX(-6px)}
+ #app .campaign-heading{align-items:flex-start;gap:10px}#app .region-progress{min-width:78px;padding:10px 6px}#app .region-progress b{font-size:18px}#app .region-progress span{font-size:9px}
+ #app .campaign-map{padding:55px 12px 18px;min-height:0}
+ #app .map-stage-row.left,#app .map-stage-row.right{padding:0 0 0 16px;margin:0 0 12px;justify-content:stretch}
+ #app .map-stage-row:after{left:0!important;right:auto!important;width:16px}
+ #app .map-route-line{left:14px;top:75px;bottom:55px}
+ #app .map-node{max-width:none;min-height:82px;gap:12px;padding:12px}
+ #app .map-node-copy{flex:1}#app .map-node-copy>b{font-size:18px}#app .map-node-copy>span{font-size:11px}#app .map-node-copy>small{font-size:12px}
+ #app .stage-stars{display:flex;gap:2px;flex-wrap:nowrap;font-size:13px}
+ #app .egg-row{display:grid;grid-template-columns:1fr;gap:14px}
+ #app .egg-card{display:grid;grid-template-columns:90px minmax(0,1fr);column-gap:16px;text-align:left;padding:18px}
+ #app .egg-card .egg-art{grid-column:1;grid-row:1/5;width:76px;height:102px;min-height:102px;align-self:center}
+ #app .egg-card h3,#app .egg-card p,#app .egg-card .egg-cost,#app .egg-card .primary{grid-column:2;margin:0 0 8px;width:100%}
+ #app .egg-card h3{font-size:23px}#app .egg-card p{font-size:12px}#app .egg-card:before{display:none}
+ #app .beast-pc-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}#app .beast-pc-sprite{height:120px}#app .beast-pc-slot>b{font-size:17px}
+ #app .den-summary b{font-size:19px}#app .den-summary span{font-size:9px;letter-spacing:.06em}
+ #app .bestiary-head{display:flex;flex-direction:column;align-items:stretch}#app .bestiary-tools{margin-top:14px}#app .bestiary-filters button{font-size:12px;padding:8px 11px;min-height:40px}
+ .quest-modal{padding:8px}.quest-shell{width:100%;padding:12px;max-height:94svh}.quest-screen-head p{font-size:13px}.quest-overview b{font-size:22px}.quest-chain-card{padding:14px}.quest-tier-path{gap:4px}.quest-tier-dot{width:10px;height:10px}
+ .warden-screen-shell{padding:8px!important}.warden-top{padding:12px}.warden-hero{padding:14px;gap:12px}.warden-hero h2{font-size:27px}.warden-hero p{font-size:13px}.warden-level-orb{width:72px;height:72px}.warden-summary{gap:8px}
+ .loadout-card-shell,.den-beast-card{padding:18px 12px;max-height:92svh}.loadout-card-shell h2{font-size:26px}.loadout-topline{flex-wrap:wrap;gap:6px}
+}
+@media(prefers-reduced-motion:reduce){.sanctuary-banner,#app .panel button{animation:none!important;transition:none!important}}
