@@ -1,6 +1,6 @@
 // Shared illustrated sanctuary presentation. Gameplay and save data are untouched.
 (()=>{
- const link=document.createElement('link');link.rel='stylesheet';link.href='sanctuary-menu-theme.css?v=20260916-1';document.head.appendChild(link);
+ const link=document.createElement('link');link.rel='stylesheet';link.href='sanctuary-menu-theme.css?v=20260916-2';document.head.appendChild(link);
  const cuts={campaign:[18,48,742,246],hatchery:[778,48,742,246],den:[18,305,742,246],quests:[778,305,742,246],bestiary:[18,560,742,230],warden:[778,560,742,230]};
  const headers=[['#campaignScreen .campaign-panel','campaign'],['#hatcheryScreen .hatchery-panel','hatchery'],['#beastsScreen .den-panel','den'],['#bestiaryScreen .bestiary-panel','bestiary'],['.quest-shell','quests'],['.warden-top','warden']];
  function decorate(){

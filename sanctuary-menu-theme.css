@@ -32,7 +32,7 @@
 #app .map-node.cleared{border-color:#88bd7c}
 #app .map-node-copy>b{font-size:18px;line-height:1.2}
 #app .map-node-copy>small{font-size:12px}
-#app .hatchery-altar{min-height:80px;padding:16px;display:flex;gap:16px;align-items:center;justify-content:center;border:1px solid var(--sanctuary-line);background:radial-gradient(ellipse,#47714255,#071c15 75%);margin:0 0 22px}
+#app .hatchery-altar{height:auto;min-height:80px;padding:16px;display:flex;flex-direction:row;gap:16px;align-items:center;justify-content:center;border:1px solid var(--sanctuary-line);background:radial-gradient(ellipse,#47714255,#071c15 75%);margin:0 0 22px}
 #app .hatchery-altar .altar-ring{display:none}
 #app .hatchery-altar .altar-core{position:static;transform:none;font-size:38px;line-height:1;text-shadow:0 0 25px #98ff9f}
 #app .hatchery-altar p{margin:0;font-size:14px}
